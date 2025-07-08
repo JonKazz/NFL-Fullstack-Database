@@ -1,0 +1,21 @@
+# .gitignore
+
+# Node
+node_modules/
+build/
+
+# Java
+target/
+*.class
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# IntelliJ / VSCode
+.idea/
+.vscode/
+
+# OS
+.DS_Store
