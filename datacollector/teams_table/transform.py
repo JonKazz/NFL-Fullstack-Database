@@ -1,4 +1,6 @@
 import pandas as pd
+import re
+from config import TEAM_NAME_MAP, TEAM_CITY_MAP
 
 def team_mapping(df):
     col_map = {
@@ -10,8 +12,6 @@ def team_mapping(df):
         'Offensive Coordinator': 'off_coordinator',
         'Defensive Coordinator': 'def_coordinator',
         'Stadium': 'stadium',
-        'Chairman/CEO': 'chairman_ceo',
-        'General Manager': 'general_manager',
         'Offensive Scheme': 'off_scheme',
         'Defensive Alignment': 'def_alignment',
         'team': 'team',
@@ -19,8 +19,13 @@ def team_mapping(df):
     }
     df = df.rename(columns=col_map)
     df = df[list(col_map.values())]
+    
+    df['team_id'] = df['team'] + '_' + df['year']
     df = parse_playoffs_column(df)
     df = parse_record_column(df)
+    df['name'] = df['team'].map(TEAM_NAME_MAP)
+    df['city'] = df['team'].map(TEAM_CITY_MAP)
+    df = df.drop(columns=['record', 'playoffs'])
     return df
 
 def parse_playoffs_column(df):
@@ -58,17 +63,20 @@ def parse_playoffs_column(df):
 
 
 def parse_record_column(df):
-    def extract_record_parts(record):
+    def extract_all_parts(record):
         if pd.isna(record):
-            return pd.Series([None, None, None])
-        
-        try:
-            record_part = record.split(',')[0]
-            wins, losses, ties = map(int, record_part.split('-'))
-            return pd.Series([wins, losses, ties])
-        except Exception:
-            return pd.Series([None, None, None])
+            return pd.Series([None, None, None, None, None])
 
-    df[['wins', 'losses', 'ties']] = df['record'].apply(extract_record_parts)
+        match = re.search(r'(\d+)-(\d+)-(\d+),\s*(\d+)(?:st|nd|rd|th)\s+in\s*([A-Z]+ [A-Za-z]+)', record)
+        if match:
+            wins = int(match.group(1))
+            losses = int(match.group(2))
+            ties = int(match.group(3))
+            division_rank = int(match.group(4))
+            division = match.group(5)
+            return pd.Series([wins, losses, ties, division_rank, division])
+        else:
+            return pd.Series([None, None, None, None, None])
+
+    df[['wins', 'losses', 'ties', 'division_rank', 'division']] = df['record'].apply(extract_all_parts)
     return df
-

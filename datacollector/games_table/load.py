@@ -9,6 +9,7 @@ def create_games_table():
         game_id VARCHAR(30) NOT NULL,
         team VARCHAR(10) NOT NULL,
         year INT NOT NULL,
+        date VARCHAR(30) NOT NULL,
         game_number INT NOT NULL,
         season_week INT NOT NULL,
         home_game BOOLEAN NOT NULL,

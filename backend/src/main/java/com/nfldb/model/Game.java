@@ -15,6 +15,7 @@ public class Game {
 
     private String team;
     private Integer year;
+    private String date;
     private String opponent;
     private String result;
 
@@ -49,6 +50,7 @@ public class Game {
     public String getGameId() { return gameId; }
     public String getTeam() { return team; }
     public Integer getYear() { return year; }
+    public String getDate() { return date; }
     public Integer getGameNumber() { return gameNumber; }
     public Integer getSeasonWeek() { return seasonWeek; }
     public String getOpponent() { return opponent; }
@@ -65,6 +67,7 @@ public class Game {
     public void setGameId(String gameId) { this.gameId = gameId; }
     public void setTeam(String team) { this.team = team; }
     public void setYear(Integer year) { this.year = year; }
+    public void setDate(String date) { this.date = date; }
     public void setGameNumber(Integer gameNumber) { this.gameNumber = gameNumber; }
     public void setSeasonWeek(Integer seasonWeek) { this.seasonWeek = seasonWeek; }
     public void setOpponent(String opponent) { this.opponent = opponent; }

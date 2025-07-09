@@ -5,6 +5,7 @@ def game_mapping(df):
         'Gtm': 'game_number',
         'Week': 'season_week',
         'Opp': 'opponent',
+        'Date': 'date',
         'Rslt': 'result',
         'Pts': 'points_for',
         'PtsO': 'points_against',

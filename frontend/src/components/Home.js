@@ -23,13 +23,13 @@ function Home() {
       <div>
         <input
           type="text"
-          placeholder="Team (e.g. KC)"
+          placeholder="Team"
           value={team}
           onChange={(e) => setTeam(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Year (e.g. 2023)"
+          placeholder="Year"
           value={year}
           onChange={(e) => setYear(e.target.value)}
         />
