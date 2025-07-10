@@ -1,4 +1,4 @@
-package com.nfldb.model;
+package com.nfldb.team;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,7 +58,7 @@ public class Team {
     private Boolean wonSuperbowl;
 
     // Getters
-    public String getGameId() { return gameId; }
+    public String getTeamId() { return teamId; }
     public String getTeam() { return team; }
     public String getName() { return name; }
     public Integer getYear() { return year; }
@@ -81,7 +81,7 @@ public class Team {
     public Boolean getWonSuperbowl() { return wonSuperbowl; }
 
     // Setters
-    public void setGameId(String gameId) { this.gameId = gameId; }
+    public void setTeamId(String teamId) { this.teamId = teamId; }
     public void setTeam(String team) { this.team = team; }
     public void setName(String name) { this.name = name; }
     public void setYear(Integer year) { this.year = year; }

@@ -1,31 +1,53 @@
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import GameTable from './GameTable';
+import { fetchGameInfo, fetchTeamInfo } from '../api';
 
 function GameResults() {
-  const { state } = useLocation();
-  const { team, year, games } = state || {};
+  const [searchParams] = useSearchParams();
+  const team = searchParams.get('team');
+  const year = searchParams.get('year');
   const [teamName, setTeamName] = useState('');
+  const [games, setGames] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchTeamName = async () => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch(`http://localhost:8080/api/teams/info?team=${team}&year=${year}`);
-        const data = await res.json();
-        setTeamName(data.name);
-      } catch (error) {
-        console.error('Failed to fetch team info:', error);
+        const [teamInfo, gameResults] = await Promise.allSettled([
+          fetchTeamInfo(team, year),
+          fetchGameInfo(team, year)
+        ]);
+
+        if (teamInfo.status === 'fulfilled') {
+          setTeamName(teamInfo.value.name);
+        } else {
+          setError('Failed to fetch team info');
+        }
+
+        if (gameResults.status === 'fulfilled') {
+          setGames(gameResults.value);
+        } else {
+          setError(prev => (prev ? prev + ' and game info' : 'Failed to fetch game info'));
+        }
+
+      } finally {
+        setLoading(false);
       }
     };
-
-    if (team && year) fetchTeamName();
+    if (team && year) fetchData();
   }, [team, year]);
 
-  if (!games) return <p>No game data provided.</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (!games || games.length === 0) return <p>No game data found.</p>;
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h2>{teamName || team.toUpperCase()} - {year}</h2>
+      <h2>{teamName} - {year}</h2>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <GameTable games={games} />
       </div>

@@ -8,7 +8,7 @@ def create_teams_table():
     CREATE TABLE teams (
         team_id VARCHAR(50) NOT NULL,
         team VARCHAR(50) NOT NULL,
-        year VARCHAR(50) NOT NULL,
+        year INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         city VARCHAR(100) NOT NULL,
         coach VARCHAR(100),

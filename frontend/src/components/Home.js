@@ -6,15 +6,9 @@ function Home() {
   const [year, setYear] = useState('');
   const navigate = useNavigate();
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!team || !year) return;
-    try {
-      const res = await fetch(`http://localhost:8080/api/games/search?team=${team}&year=${year}`);
-      const data = await res.json();
-      navigate('/results', { state: { team, year, games: data } });
-    } catch (error) {
-      console.error('Failed to fetch games:', error);
-    }
+    navigate(`/results?team=${encodeURIComponent(team)}&year=${encodeURIComponent(year)}`);
   };
 
   return (
