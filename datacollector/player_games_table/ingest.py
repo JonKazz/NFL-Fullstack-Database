@@ -29,7 +29,6 @@ def scrape_player_game_logs(limit=None):
             player_ids += get_team_roster_ids(team, season)
     if limit:
         player_ids = player_ids[:limit]
-        player_ids = player_ids[::-1]
     
     
     df = pd.DataFrame()
@@ -39,6 +38,7 @@ def scrape_player_game_logs(limit=None):
         try:
             player_df = pd.read_html(url, header=0, attrs={'id': 'stats'})[0]
             player_df['player_id'] = player_id
+            player_df.at[0, 'player_id'] = 'player_id'
             transformed_df = playergame_mapping(player_df)
             df = pd.concat([df, transformed_df], ignore_index=True)
         except Exception as e:

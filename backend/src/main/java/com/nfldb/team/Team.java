@@ -18,7 +18,6 @@ public class Team {
     private Integer year;
     private String city;
     private String coach;
-
     private Integer wins;
     private Integer losses;
     private Integer ties;
@@ -58,48 +57,172 @@ public class Team {
     private Boolean wonSuperbowl;
 
     // Getters
-    public String getTeamId() { return teamId; }
-    public String getTeam() { return team; }
-    public String getName() { return name; }
-    public Integer getYear() { return year; }
-    public String getCity() { return city; }
-    public String getCoach() { return coach; }
-    public Integer getWins() { return wins; }
-    public Integer getLosses() { return losses; }
-    public Integer getTies() { return ties; }
-    public String getDivision() { return division; }
-    public Integer getDivisionRank() { return divisionRank; }
-    public String getOffCoordinator() { return offCoordinator; }
-    public String getDefCoordinator() { return defCoordinator; }
-    public String getOffScheme() { return offScheme; }
-    public String getDefAlignment() { return defAlignment; }
-    public Boolean getMissedPlayoffs() { return missedPlayoffs; }
-    public Boolean getLostWildCard() { return lostWildCard; }
-    public Boolean getLostDivisional() { return lostDivisional; }
-    public Boolean getLostConferenceChampionship() { return lostConferenceChampionship; }
-    public Boolean getLostSuperbowl() { return lostSuperbowl; }
-    public Boolean getWonSuperbowl() { return wonSuperbowl; }
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCoach() {
+        return coach;
+    }
+
+    public Integer getWins() {
+        return wins;
+    }
+
+    public Integer getLosses() {
+        return losses;
+    }
+
+    public Integer getTies() {
+        return ties;
+    }
+
+    public String getDivision() {
+        return division;
+    }
+
+    public Integer getDivisionRank() {
+        return divisionRank;
+    }
+
+    public String getOffCoordinator() {
+        return offCoordinator;
+    }
+
+    public String getDefCoordinator() {
+        return defCoordinator;
+    }
+
+    public String getOffScheme() {
+        return offScheme;
+    }
+
+    public String getDefAlignment() {
+        return defAlignment;
+    }
+
+    public Boolean getMissedPlayoffs() {
+        return missedPlayoffs;
+    }
+
+    public Boolean getLostWildCard() {
+        return lostWildCard;
+    }
+
+    public Boolean getLostDivisional() {
+        return lostDivisional;
+    }
+
+    public Boolean getLostConferenceChampionship() {
+        return lostConferenceChampionship;
+    }
+
+    public Boolean getLostSuperbowl() {
+        return lostSuperbowl;
+    }
+
+    public Boolean getWonSuperbowl() {
+        return wonSuperbowl;
+    }
 
     // Setters
-    public void setTeamId(String teamId) { this.teamId = teamId; }
-    public void setTeam(String team) { this.team = team; }
-    public void setName(String name) { this.name = name; }
-    public void setYear(Integer year) { this.year = year; }
-    public void setCity(String city) { this.city = city; }
-    public void setCoach(String coach) { this.coach = coach; }
-    public void setWins(Integer wins) { this.wins = wins; }
-    public void setLosses(Integer losses) { this.losses = losses; }
-    public void setTies(Integer ties) { this.ties = ties; }
-    public void setDivision(String division) { this.division = division; }
-    public void setDivisionRank(Integer divisionRank) { this.divisionRank = divisionRank; }
-    public void setOffCoordinator(String offCoordinator) { this.offCoordinator = offCoordinator; }
-    public void setDefCoordinator(String defCoordinator) { this.defCoordinator = defCoordinator; }
-    public void setOffScheme(String offScheme) { this.offScheme = offScheme; }
-    public void setDefAlignment(String defAlignment) { this.defAlignment = defAlignment; }
-    public void setMissedPlayoffs(Boolean missedPlayoffs) { this.missedPlayoffs = missedPlayoffs; }
-    public void setLostWildCard(Boolean lostWildCard) { this.lostWildCard = lostWildCard; }
-    public void setLostDivisional(Boolean lostDivisional) { this.lostDivisional = lostDivisional; }
-    public void setLostConferenceChampionship(Boolean lostConferenceChampionship) { this.lostConferenceChampionship = lostConferenceChampionship; }
-    public void setLostSuperbowl(Boolean lostSuperbowl) { this.lostSuperbowl = lostSuperbowl; }
-    public void setWonSuperbowl(Boolean wonSuperbowl) { this.wonSuperbowl = wonSuperbowl; }
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setCoach(String coach) {
+        this.coach = coach;
+    }
+
+    public void setWins(Integer wins) {
+        this.wins = wins;
+    }
+
+    public void setLosses(Integer losses) {
+        this.losses = losses;
+    }
+
+    public void setTies(Integer ties) {
+        this.ties = ties;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
+    }
+
+    public void setDivisionRank(Integer divisionRank) {
+        this.divisionRank = divisionRank;
+    }
+
+    public void setOffCoordinator(String offCoordinator) {
+        this.offCoordinator = offCoordinator;
+    }
+
+    public void setDefCoordinator(String defCoordinator) {
+        this.defCoordinator = defCoordinator;
+    }
+
+    public void setOffScheme(String offScheme) {
+        this.offScheme = offScheme;
+    }
+
+    public void setDefAlignment(String defAlignment) {
+        this.defAlignment = defAlignment;
+    }
+
+    public void setMissedPlayoffs(Boolean missedPlayoffs) {
+        this.missedPlayoffs = missedPlayoffs;
+    }
+
+    public void setLostWildCard(Boolean lostWildCard) {
+        this.lostWildCard = lostWildCard;
+    }
+
+    public void setLostDivisional(Boolean lostDivisional) {
+        this.lostDivisional = lostDivisional;
+    }
+
+    public void setLostConferenceChampionship(Boolean lostConferenceChampionship) {
+        this.lostConferenceChampionship = lostConferenceChampionship;
+    }
+
+    public void setLostSuperbowl(Boolean lostSuperbowl) {
+        this.lostSuperbowl = lostSuperbowl;
+    }
+
+    public void setWonSuperbowl(Boolean wonSuperbowl) {
+        this.wonSuperbowl = wonSuperbowl;
+    }
 }

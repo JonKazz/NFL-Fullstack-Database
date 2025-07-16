@@ -1,11 +1,12 @@
 import numpy as np
+from config import PFR_ABR_MAP
 
 def playergame_mapping(df):
     
     column_map = dict(enumerate(['default' if 'Unnamed' in col else col for col in df.columns]))
     df.columns = df.iloc[0]
     df = df[1:].reset_index(drop=True)
-    
+         
     new_columns = []
     for idx, col_name in enumerate(df.columns):
         stat_type = column_map[idx]
@@ -18,6 +19,7 @@ def playergame_mapping(df):
     
     df['home_game'] = df['home_game'].apply(lambda x: False if x == '@' else True)
     df['game_started'] = df['game_started'].apply(lambda x: True if x == '*' else False)
+    df['opponent'] = df['opponent'].map(PFR_ABR_MAP)
     df['game_id'] = np.where(
         df['home_game'],
         df['date'].str.split('-').str[0] + "_" + df['team'] + '_' + df['opponent'] + '_' + df['week'].astype(int).astype(str),

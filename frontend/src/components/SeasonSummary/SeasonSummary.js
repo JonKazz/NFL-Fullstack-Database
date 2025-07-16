@@ -1,13 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import GameTable from './GameTable';
-import { fetchGameInfo, fetchTeamInfo } from '../api';
+import GameTable from '../GamesTable/GameTable';
+import { fetchGames, fetchTeamInfo } from '../../api/fetches';
 
 function GameResults() {
   const [searchParams] = useSearchParams();
   const team = searchParams.get('team');
   const year = searchParams.get('year');
-  const [teamName, setTeamName] = useState('');
+  const [teamInfo, setTeamInfo] = useState(null);
   const [games, setGames] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,21 +17,23 @@ function GameResults() {
       setLoading(true);
       setError(null);
       try {
-        const [teamInfo, gameResults] = await Promise.allSettled([
+        const [teamInfoResult, gameResults] = await Promise.allSettled([
           fetchTeamInfo(team, year),
-          fetchGameInfo(team, year)
+          fetchGames(team, year)
         ]);
 
-        if (teamInfo.status === 'fulfilled') {
-          setTeamName(teamInfo.value.name);
+        if (teamInfoResult.status === 'fulfilled') {
+          setTeamInfo(teamInfoResult.value);
         } else {
           setError('Failed to fetch team info');
         }
 
+        console.log(gameResults.status);
+
         if (gameResults.status === 'fulfilled') {
           setGames(gameResults.value);
         } else {
-          setError(prev => (prev ? prev + ' and game info' : 'Failed to fetch game info'));
+          setError(prev => (prev ? prev + ' and game infi' : 'Failed to fetch game infooo'));
         }
 
       } finally {
@@ -46,9 +48,14 @@ function GameResults() {
   if (!games || games.length === 0) return <p>No game data found.</p>;
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>{teamName} - {year}</h2>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', minHeight: '100vh' }}>
+      <div style={{ width: '800px', marginLeft: '40px', textAlign: 'left' }}>
+        <h2>{teamInfo ? `${teamInfo.name} - ${year}` : `${team} - ${year}`}</h2>
+        {teamInfo && (
+          <div style={{ fontWeight: 'bold', marginBottom: '1em' }}>
+            Record: {teamInfo.wins} - {teamInfo.losses}
+          </div>
+        )}
         <GameTable games={games} />
       </div>
     </div>

@@ -11,7 +11,7 @@ public class GameService {
         this.repository = repository;
     }
 
-    public List<Game> getGamesByTeamAndYear(String team, Integer year) {
-        return repository.findByTeamAndYear(team, year);
+    public List<Game> getGamesByYear(String team, Integer year) {
+        return repository.findByIdTeamIdAndYear(team, year);
     }
 }

@@ -1,9 +1,6 @@
 package com.nfldb.game;
 
-import com.nfldb.game.Game;
-import com.nfldb.game.GameService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -16,8 +13,8 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping("/search")
-    public List<Game> getByTeamAndYear(@RequestParam String team, @RequestParam Integer year) {
-        return gameService.getGamesByTeamAndYear(team, year);
+    @GetMapping("/fullseason")
+    public List<Game> getFullYearGames(@RequestParam String team, @RequestParam Integer year) {
+        return gameService.getGamesByYear(team, year);
     }
 }

@@ -7,7 +7,7 @@ def create_games_table():
     DROP TABLE IF EXISTS games;
     CREATE TABLE games (
         game_id VARCHAR(30) NOT NULL,
-        team VARCHAR(10) NOT NULL,
+        team_id VARCHAR(10) NOT NULL,
         year INT NOT NULL,
         date VARCHAR(30) NOT NULL,
         game_number INT NOT NULL,
@@ -49,7 +49,7 @@ def create_games_table():
         interceptions_thrown INT NOT NULL,
         turnovers_total INT NOT NULL,
         time_of_possesion VARCHAR(10) NOT NULL,
-        PRIMARY KEY (game_id)
+        PRIMARY KEY (game_id, team_id)
     );
     '''
 

@@ -1,6 +1,15 @@
+import { useNavigate } from 'react-router-dom';
+import './GameTable.css';
+
 function GameTable({ games }) {
+  const navigate = useNavigate();
+
+  const handleClick = (gameId, teamId) => {
+    navigate(`/game/${gameId}/${teamId}`);
+  };
+
   return (
-    <table>
+    <table className="game-table">
       <thead>
         <tr>
           <th>Date</th>
@@ -11,7 +20,11 @@ function GameTable({ games }) {
       </thead>
       <tbody>
         {games.map((game) => (
-          <tr key={game.id}>
+          <tr
+            key={game.gameId}
+            style={{ cursor: 'pointer' }}
+            onClick={() => handleClick(game.gameId, game.teamId)}
+          >
             <td>{game.date}</td>
             <td>{game.seasonWeek}</td>
             <td>{game.opponent}</td>

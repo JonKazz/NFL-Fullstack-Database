@@ -1,10 +1,8 @@
 package com.nfldb.game;
 
-import com.nfldb.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 
-public interface GameRepository extends JpaRepository<Game, String> {
-    List<Game> findByTeamAndYear(String team, Integer year);
+public interface GameRepository extends JpaRepository<Game, GameId> {
+    List<Game> findByIdTeamIdAndYear(String team, Integer year);
 }

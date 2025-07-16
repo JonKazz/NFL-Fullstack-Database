@@ -7,12 +7,47 @@ PORT = 1234
 
 # Scraping configuration
 SEASONS = [str(season) for season in range(2024, 2025)]
-TEAM_ABR = ['kan','atl']
+TEAM_ABR = ['kan', 'buf']
 
 # TEAM_ABR = [
 #     'crd','atl','rav','buf','car','chi','cin','cle','dal','den','det','gnb','htx','clt','jax','kan',
 #     'sdg','ram','rai','mia','min','nwe','nor','nyg','nyj','phi','pit','sea','sfo','tam','oti','was'
 # ]
+
+PFR_ABR_MAP = {
+    "ARI": "crd",
+    "ATL": "atl",
+    "BAL": "rav",
+    "BUF": "buf",
+    "CAR": "car",
+    "CHI": "chi",
+    "CIN": "cin",
+    "CLE": "cle",
+    "DAL": "dal",
+    "DEN": "den",
+    "DET": "det",
+    "GNB": "gnb",
+    "HOU": "htx",
+    "IND": "clt",
+    "JAX": "jax",
+    "KAN": "kan",
+    "LAC": "sdg",
+    "LAR": "ram",
+    "LVR": "rai",
+    "MIA": "mia",
+    "MIN": "min",
+    "NWE": "nwe",
+    "NOR": "nor",
+    "NYG": "nyg",
+    "NYJ": "nyj",
+    "PHI": "phi",
+    "PIT": "pit",
+    "SEA": "sea",
+    "SFO": "sfo",
+    "TAM": "tam",
+    "TEN": "oti",
+    "WAS": "was"
+}
 
 TEAM_NAME_MAP = {
     'crd': 'Arizona Cardinals',

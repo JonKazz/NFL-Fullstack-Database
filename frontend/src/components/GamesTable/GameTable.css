@@ -1,0 +1,19 @@
+.game-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1em;
+}
+
+.game-table th, .game-table td {
+  border: 1px solid #ddd;
+  padding: 10px 16px;
+  text-align: left;
+}
+
+.game-table tr {
+  transition: background 0.2s;
+}
+
+.game-table tr:hover {
+  background-color: #f0f8ff; /* Light blue highlight */
+}

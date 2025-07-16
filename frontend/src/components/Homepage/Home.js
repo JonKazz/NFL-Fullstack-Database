@@ -8,7 +8,7 @@ function Home() {
 
   const handleSearch = () => {
     if (!team || !year) return;
-    navigate(`/results?team=${encodeURIComponent(team)}&year=${encodeURIComponent(year)}`);
+    navigate(`/season?team=${encodeURIComponent(team)}&year=${encodeURIComponent(year)}`);
   };
 
   return (
