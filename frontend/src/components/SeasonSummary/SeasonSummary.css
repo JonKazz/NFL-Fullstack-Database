@@ -13,7 +13,7 @@ body {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -52,11 +52,6 @@ body {
   font-size: 2.5rem;
   margin-bottom: 5px;
   color: #ffffff;
-}
-
-.season-year {
-  font-size: 1.2rem;
-  opacity: 0.8;
 }
 
 .stats-grid {
@@ -114,7 +109,7 @@ body {
 
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
 }
 
@@ -176,24 +171,25 @@ body {
   margin-bottom: 12px;
 }
 
-.team {
+.team-ss {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.team-name {
-  font-weight: 600;
+.team-name-city {
+  font-weight: 500;
   font-size: 1rem;
+  color: #000000;
 }
 
 .score {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #3b82f6;
+  color: #2969d7;
 }
 
-.vs {
+.vs-ss {
   font-size: 0.85rem;
   color: #64748b;
 }

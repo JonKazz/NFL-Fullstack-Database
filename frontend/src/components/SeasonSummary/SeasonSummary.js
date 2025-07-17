@@ -57,8 +57,7 @@ function GameResults() {
         <div className="team-info">
           <div className="team-logo">{logo ? <img src={logo} alt={teamName} style={{width: '80px', height: '80px', borderRadius: '50%'}} /> : teamName?.slice(0,2)}</div>
           <div className="team-details">
-            <h1>{teamName}</h1>
-            <div className="season-year">{year} Season</div>
+            <h1>{year} {teamName}</h1>
           </div>
         </div>
         <div className="stats-grid">
@@ -114,14 +113,14 @@ function GameResults() {
                 <div className="game-date">{game.date}</div>
               </div>
               <div className="matchup">
-                <div className="team">
-                  <div className="team-name">{TEAM_MAP[game.id.teamId]?.city}</div>
+                <div className="team-ss">
+                  <div className="team-name-city">{TEAM_MAP[game.id.teamId]?.city}</div>
                   <div className="score">{game.pointsFor}</div>
                 </div>
-                <div className="vs">{game.homeGame ? 'vs' : '@'}</div>
-                <div className="team">
+                <div className="vs-ss">{game.homeGame ? 'vs' : '@'}</div>
+                <div className="team-ss">
                   <div className="score">{game.pointsAgainst}</div>
-                  <div className="team-name">{TEAM_MAP[game.opponentId]?.city}</div>
+                  <div className="team-name-city">{TEAM_MAP[game.opponentId]?.city}</div>
                 </div>
               </div>
               <div className={`game-result ${game.result === 'W' ? 'win' : 'loss'}`}>
