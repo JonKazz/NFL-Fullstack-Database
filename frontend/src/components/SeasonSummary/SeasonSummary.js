@@ -13,11 +13,11 @@ function GameResults() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       setLoading(true);
       setError(null);
       try {
-        const [teamInfoResult, gameResults] = await Promise.allSettled([
+        const [teamInfoResult, gamesResult] = await Promise.allSettled([
           fetchTeamInfo(team, year),
           fetchGames(team, year)
         ]);
@@ -28,31 +28,31 @@ function GameResults() {
           setError('Failed to fetch team info');
         }
 
-        console.log(gameResults.status);
-
-        if (gameResults.status === 'fulfilled') {
-          setGames(gameResults.value);
+        if (gamesResult.status === 'fulfilled') {
+          setGames(gamesResult.value);
         } else {
-          setError(prev => (prev ? prev + ' and game infi' : 'Failed to fetch game infooo'));
+          setError(('Failed to fetch game info'));
         }
 
       } finally {
         setLoading(false);
       }
     };
-    if (team && year) fetchData();
+    
+    if (team && year) {
+      fetchData();
+    }
   }, [team, year]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!games || games.length === 0) return <p>No game data found.</p>;
+  if (error) return <p className="season-summary-error">{error}</p>;
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', minHeight: '100vh' }}>
-      <div style={{ width: '800px', marginLeft: '40px', textAlign: 'left' }}>
-        <h2>{teamInfo ? `${teamInfo.name} - ${year}` : `${team} - ${year}`}</h2>
+    <div className="season-summary-root">
+      <div className="season-summary-content">
+        <h2>{teamInfo.name}</h2>
         {teamInfo && (
-          <div style={{ fontWeight: 'bold', marginBottom: '1em' }}>
+          <div className="season-summary-record">
             Record: {teamInfo.wins} - {teamInfo.losses}
           </div>
         )}

@@ -5,7 +5,7 @@ function GameTable({ games }) {
   const navigate = useNavigate();
 
   const handleClick = (gameId, teamId) => {
-    navigate(`/game/${gameId}/${teamId}`);
+    navigate(`/game?gameId=${encodeURIComponent(gameId)}&teamId=${encodeURIComponent(teamId)}`);
   };
 
   return (
@@ -23,7 +23,7 @@ function GameTable({ games }) {
           <tr
             key={game.gameId}
             style={{ cursor: 'pointer' }}
-            onClick={() => handleClick(game.gameId, game.teamId)}
+            onClick={() => handleClick(game.id.gameId, game.id.teamId)}
           >
             <td>{game.date}</td>
             <td>{game.seasonWeek}</td>

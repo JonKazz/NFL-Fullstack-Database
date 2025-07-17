@@ -15,9 +15,13 @@ public class Game {
     private Integer year;
     private String opponent;
     private String result;
-
-    @Column(name = "date")
     private String date;
+
+    @Column(name = "points_for")
+    private Integer pointsFor;
+
+    @Column(name = "points_against")
+    private Integer pointsAgainst;
 
     @Column(name = "game_number")
     private Integer gameNumber;
@@ -65,6 +69,14 @@ public class Game {
 
     public String getDate() {
         return date;
+    }
+
+    public Integer getPointsFor() {
+        return pointsFor;
+    }
+
+    public Integer getPointsAgainst() {
+        return pointsAgainst;
     }
 
     public Integer getGameNumber() {
@@ -122,6 +134,14 @@ public class Game {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setPointsFor(Integer pointsFor) {
+        this.pointsFor = pointsFor;
+    }
+
+    public void setPointsAgainst(Integer pointsAgainst) {
+        this.pointsAgainst = pointsAgainst;
     }
 
     public void setGameNumber(Integer gameNumber) {

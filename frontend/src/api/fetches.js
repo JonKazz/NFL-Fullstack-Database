@@ -17,3 +17,11 @@ export async function fetchGames(team, year) {
   return response.json();
 }
 
+export async function fetchGame(gameId, teamId) {
+  const params = new URLSearchParams({ gameId, teamId });
+  const response = await fetch(`http://localhost:8080/api/games/game?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch game info (api)');
+  }
+  return response.json();
+}

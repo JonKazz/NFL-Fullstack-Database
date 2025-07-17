@@ -11,6 +11,10 @@ public class GameService {
         this.repository = repository;
     }
 
+    public Game getGame(String gameId, String teamId) {
+        return repository.findByIdGameIdAndIdTeamId(gameId, teamId);
+    }
+
     public List<Game> getGamesByYear(String team, Integer year) {
         return repository.findByIdTeamIdAndYear(team, year);
     }

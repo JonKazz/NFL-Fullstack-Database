@@ -1,0 +1,21 @@
+.season-summary-root {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.season-summary-content {
+  width: 800px;
+  margin-left: 40px;
+  text-align: left;
+}
+
+.season-summary-record {
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+.season-summary-error {
+  color: red;
+}
