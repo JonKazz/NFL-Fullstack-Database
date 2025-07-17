@@ -2,63 +2,60 @@ import pandas as pd
 import re
 from config import TEAM_NAME_MAP, TEAM_CITY_MAP
 
-def team_mapping(df):
+def transform_teams_table(df):
+    df = column_mapping(df)
+    df = parse_playoffs_column(df)
+    df = parse_record_column(df)
+    
+    df['team_id'] = df['team'] + '_' + df['year']
+    df['name'] = df['team'].map(TEAM_NAME_MAP)
+    df['city'] = df['team'].map(TEAM_CITY_MAP)
+    df['coach'] = df['coach'].str.replace(r'\s*\(\d+-\d+-\d+\)', '', regex=True)
+    df['pointsFor'] = df['pointsFor'].str.split(' ').str[0]
+    df['pointsAgainst'] = df['pointsAgainst'].str.split(' ').str[0]
+    df = df.drop(columns=['record'])
+    return df
+
+    
+def column_mapping(df):
     col_map = {
         'Coach': 'coach',
-        'Points For': 'points_for',
-        'Points Against': 'points_against',
+        'Points For': 'pointsFor',
+        'Points Against': 'pointsAgainst',
         'Record': 'record',
         'Playoffs': 'playoffs',
-        'Offensive Coordinator': 'off_coordinator',
-        'Defensive Coordinator': 'def_coordinator',
+        'Offensive Coordinator': 'offCoordinator',
+        'Defensive Coordinator': 'defCoordinator',
         'Stadium': 'stadium',
-        'Offensive Scheme': 'off_scheme',
-        'Defensive Alignment': 'def_alignment',
+        'Offensive Scheme': 'offScheme',
+        'Defensive Alignment': 'defAlignment',
         'team': 'team',
-        'year': 'year'
+        'year': 'year',
+        'logo': 'logo'
     }
     df = df.rename(columns=col_map)
     df = df[list(col_map.values())]
-    
-    df['team_id'] = df['team'] + '_' + df['year']
-    df = parse_playoffs_column(df)
-    df = parse_record_column(df)
-    df['name'] = df['team'].map(TEAM_NAME_MAP)
-    df['city'] = df['team'].map(TEAM_CITY_MAP)
-    df = df.drop(columns=['record', 'playoffs'])
     return df
+    
 
 def parse_playoffs_column(df):
-    df['missed_playoffs'] = df['playoffs'].isna()
-    df['lost_wild_card'] = False
-    df['lost_divisional'] = False
-    df['lost_conference_championship'] = False
-    df['lost_superbowl'] = False
-    df['won_superbowl'] = False
-
     def classify_playoffs(playoff_text):
         if pd.isna(playoff_text):
-            return {
-                'missed_playoffs': True,
-                'lost_wild_card': False,
-                'lost_divisional': False,
-                'lost_conference_championship': False,
-                'lost_superbowl': False,
-                'won_superbowl': False
-            }
+            return 'Missed Playoffs'
+        elif 'Won Super Bowl' in playoff_text:
+            return 'Won Super Bowl'
+        elif 'Lost Super Bowl' in playoff_text:
+            return 'Lost Super Bowl'
+        elif 'Lost Conference Championship' in playoff_text:
+            return 'Lost Conference Championship'
+        elif 'Lost Divisional' in playoff_text:
+            return 'Lost Divisional'
+        elif 'Lost Wild Card' in playoff_text:
+            return 'Lost Wild Card'
+        else:
+            return 'Unknown'
 
-        return {
-            'missed_playoffs': False,
-            'lost_wild_card': 'Lost Wild Card' in playoff_text,
-            'lost_divisional': 'Lost Divisional' in playoff_text,
-            'lost_conference_championship': 'Lost Conference Championship' in playoff_text,
-            'lost_superbowl': 'Lost Super Bowl' in playoff_text,
-            'won_superbowl': 'Won Super Bowl' in playoff_text
-        }
-
-    playoff_flags = df['playoffs'].apply(classify_playoffs).apply(pd.Series)
-    df.update(playoff_flags)
-
+    df['playoffs'] = df['playoffs'].apply(classify_playoffs)
     return df
 
 
@@ -78,5 +75,5 @@ def parse_record_column(df):
         else:
             return pd.Series([None, None, None, None, None])
 
-    df[['wins', 'losses', 'ties', 'division_rank', 'division']] = df['record'].apply(extract_all_parts)
+    df[['wins', 'losses', 'ties', 'divisionRank', 'division']] = df['record'].apply(extract_all_parts)
     return df

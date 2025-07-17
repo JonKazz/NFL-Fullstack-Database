@@ -16,6 +16,9 @@ def scrape_team_summary(team, season):
         print(f'Summary section not found for {team} {season}')
         return pd.DataFrame()
 
+    logo_img = soup.find('img', class_='teamlogo')
+    logo_src = logo_img['src'] if logo_img else None
+    
     headers = {'Coach', 'Points For', 'Points Against', 'Record', 'Playoffs', 'Offensive Coordinator', 
                'Defensive Coordinator', 'Stadium', 'Chairman/CEO', 'General Manager', 'Offensive Scheme', 
                'Defensive Alignment'}
@@ -30,6 +33,7 @@ def scrape_team_summary(team, season):
                 value = p.get_text(strip=True)
                 data[key] = value
 
+    data['logo'] = logo_src
     data['team'] = team
     data['year'] = season
     return pd.DataFrame([data])
