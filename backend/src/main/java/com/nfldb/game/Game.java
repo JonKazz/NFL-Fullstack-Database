@@ -9,174 +9,94 @@ import jakarta.persistence.Table;
 @Table(name = "games")
 public class Game {
 
+    // 1. Identifiers
     @EmbeddedId
     private GameId id;
-
     private Integer year;
-    private String opponent;
+
+    // 2. Opponent & Result
+    @Column(name = "opponent_id")
+    private String opponentId;
+    @Column(name = "home_game")
+    private Boolean homeGame;
     private String result;
     private String date;
 
+    // 3. Scoring
     @Column(name = "points_for")
     private Integer pointsFor;
-
     @Column(name = "points_against")
     private Integer pointsAgainst;
 
+    // 4. Game Info
     @Column(name = "game_number")
     private Integer gameNumber;
-
     @Column(name = "season_week")
     private Integer seasonWeek;
 
+    // 5. Offensive Stats
     @Column(name = "passing_yards")
     private Integer passingYards;
-
     @Column(name = "passing_touchdowns")
     private Integer passingTouchdowns;
-
     @Column(name = "rushing_yards")
     private Integer rushingYards;
-
     @Column(name = "rushing_touchdowns")
     private Integer rushingTouchdowns;
-
     @Column(name = "field_goals_made")
     private Integer fieldGoalsMade;
 
+    // 6. Turnovers
     @Column(name = "fumbles_lost")
     private Integer fumblesLost;
-
     @Column(name = "interceptions_thrown")
     private Integer interceptionsThrown;
 
-    // Getters
-    public GameId getId() {
-        return id;
-    }
+    // --- Getters and Setters ---
 
-    public Integer getYear() {
-        return year;
-    }
+    // 1. Identifiers
+    public GameId getId() { return id; }
+    public void setId(GameId id) { this.id = id; }
+    public Integer getYear() { return year; }
+    public void setYear(Integer year) { this.year = year; }
 
-    public String getOpponent() {
-        return opponent;
-    }
+    // 2. Opponent & Result
+    public String getOpponentId() { return opponentId; }
+    public void setOpponentId(String opponentId) { this.opponentId = opponentId; }
+    public Boolean getHomeGame() { return homeGame; }
+    public void setHomeGame(Boolean homeGame) { this.homeGame = homeGame; }
+    public String getResult() { return result; }
+    public void setResult(String result) { this.result = result; }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
 
-    public String getResult() {
-        return result;
-    }
+    // 3. Scoring
+    public Integer getPointsFor() { return pointsFor; }
+    public void setPointsFor(Integer pointsFor) { this.pointsFor = pointsFor; }
+    public Integer getPointsAgainst() { return pointsAgainst; }
+    public void setPointsAgainst(Integer pointsAgainst) { this.pointsAgainst = pointsAgainst; }
 
-    public String getDate() {
-        return date;
-    }
+    // 4. Game Info
+    public Integer getGameNumber() { return gameNumber; }
+    public void setGameNumber(Integer gameNumber) { this.gameNumber = gameNumber; }
+    public Integer getSeasonWeek() { return seasonWeek; }
+    public void setSeasonWeek(Integer seasonWeek) { this.seasonWeek = seasonWeek; }
 
-    public Integer getPointsFor() {
-        return pointsFor;
-    }
+    // 5. Offensive Stats
+    public Integer getPassingYards() { return passingYards; }
+    public void setPassingYards(Integer passingYards) { this.passingYards = passingYards; }
+    public Integer getPassingTouchdowns() { return passingTouchdowns; }
+    public void setPassingTouchdowns(Integer passingTouchdowns) { this.passingTouchdowns = passingTouchdowns; }
+    public Integer getRushingYards() { return rushingYards; }
+    public void setRushingYards(Integer rushingYards) { this.rushingYards = rushingYards; }
+    public Integer getRushingTouchdowns() { return rushingTouchdowns; }
+    public void setRushingTouchdowns(Integer rushingTouchdowns) { this.rushingTouchdowns = rushingTouchdowns; }
+    public Integer getFieldGoalsMade() { return fieldGoalsMade; }
+    public void setFieldGoalsMade(Integer fieldGoalsMade) { this.fieldGoalsMade = fieldGoalsMade; }
 
-    public Integer getPointsAgainst() {
-        return pointsAgainst;
-    }
-
-    public Integer getGameNumber() {
-        return gameNumber;
-    }
-
-    public Integer getSeasonWeek() {
-        return seasonWeek;
-    }
-
-    public Integer getPassingYards() {
-        return passingYards;
-    }
-
-    public Integer getPassingTouchdowns() {
-        return passingTouchdowns;
-    }
-
-    public Integer getRushingYards() {
-        return rushingYards;
-    }
-
-    public Integer getRushingTouchdowns() {
-        return rushingTouchdowns;
-    }
-
-    public Integer getFieldGoalsMade() {
-        return fieldGoalsMade;
-    }
-
-    public Integer getFumblesLost() {
-        return fumblesLost;
-    }
-
-    public Integer getInterceptionsThrown() {
-        return interceptionsThrown;
-    }
-
-    // Setters
-    public void setId(GameId id) {
-        this.id = id;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-
-    public void setOpponent(String opponent) {
-        this.opponent = opponent;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void setPointsFor(Integer pointsFor) {
-        this.pointsFor = pointsFor;
-    }
-
-    public void setPointsAgainst(Integer pointsAgainst) {
-        this.pointsAgainst = pointsAgainst;
-    }
-
-    public void setGameNumber(Integer gameNumber) {
-        this.gameNumber = gameNumber;
-    }
-
-    public void setSeasonWeek(Integer seasonWeek) {
-        this.seasonWeek = seasonWeek;
-    }
-
-    public void setPassingYards(Integer passingYards) {
-        this.passingYards = passingYards;
-    }
-
-    public void setPassingTouchdowns(Integer passingTouchdowns) {
-        this.passingTouchdowns = passingTouchdowns;
-    }
-
-    public void setRushingYards(Integer rushingYards) {
-        this.rushingYards = rushingYards;
-    }
-
-    public void setRushingTouchdowns(Integer rushingTouchdowns) {
-        this.rushingTouchdowns = rushingTouchdowns;
-    }
-
-    public void setFieldGoalsMade(Integer fieldGoalsMade) {
-        this.fieldGoalsMade = fieldGoalsMade;
-    }
-
-    public void setFumblesLost(Integer fumblesLost) {
-        this.fumblesLost = fumblesLost;
-    }
-
-    public void setInterceptionsThrown(Integer interceptionsThrown) {
-        this.interceptionsThrown = interceptionsThrown;
-    }
+    // 6. Turnovers
+    public Integer getFumblesLost() { return fumblesLost; }
+    public void setFumblesLost(Integer fumblesLost) { this.fumblesLost = fumblesLost; }
+    public Integer getInterceptionsThrown() { return interceptionsThrown; }
+    public void setInterceptionsThrown(Integer interceptionsThrown) { this.interceptionsThrown = interceptionsThrown; }
 }

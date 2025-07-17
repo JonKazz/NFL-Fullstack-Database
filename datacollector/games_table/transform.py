@@ -1,11 +1,11 @@
 import numpy as np
-from config import PFR_ABR_MAP
+from config import PFR_ABR_MAP, TEAM_CITY_MAP
 
 def game_mapping(df):
     col_map = {
         'Gtm': 'game_number',
         'Week': 'season_week',
-        'Opp': 'opponent',
+        'Opp': 'opponent_id',
         'Date': 'date',
         'Rslt': 'result',
         'Pts': 'points_for',
@@ -53,10 +53,10 @@ def game_mapping(df):
     df = df[df['game_number'].notna()]
     df['home_game'] = df['home_game'].apply(lambda x: False if x == "@" else True)
     df['overtime'] = df['overtime'].apply(lambda x: True if x == "OT" else False)
-    df['opponent'] = df['opponent'].map(PFR_ABR_MAP)
+    df['opponent_id'] = df['opponent_id'].map(PFR_ABR_MAP)
     df['game_id'] = np.where(
         df['home_game'],
-        df['year'] + "_" + df['team_id'] + "_" + df['opponent'] + "_" + df['season_week'].astype(int).astype(str),
-        df['year'] + "_" + df['opponent'] + "_" + df['team_id'] + "_" + df['season_week'].astype(int).astype(str)
+        df['year'] + "_" + df['team_id'] + "_" + df['opponent_id'] + "_" + df['season_week'].astype(int).astype(str),
+        df['year'] + "_" + df['opponent_id'] + "_" + df['team_id'] + "_" + df['season_week'].astype(int).astype(str)
     )
     return df

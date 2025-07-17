@@ -13,7 +13,7 @@ def create_games_table():
         game_number INT NOT NULL,
         season_week INT NOT NULL,
         home_game BOOLEAN NOT NULL,
-        opponent VARCHAR(10) NOT NULL,
+        opponent_id VARCHAR(10) NOT NULL,
         result VARCHAR(10) NOT NULL,
         points_for INT NOT NULL,
         points_against INT NOT NULL,

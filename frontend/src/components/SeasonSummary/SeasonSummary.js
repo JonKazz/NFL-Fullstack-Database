@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './SeasonSummary.css';
 import { fetchGames, fetchTeamInfo } from '../../api/fetches';
+import { TEAM_MAP } from '../../utils';
 
 function GameResults() {
   const [searchParams] = useSearchParams();
@@ -47,15 +48,16 @@ function GameResults() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="season-summary-error">{error}</p>;
 
-  const { name, logo, wins, losses, division, coach, pointsFor, pointsAgainst } = teamInfo;
-
+  const { logo, wins, losses, division, coach, pointsFor, pointsAgainst } = teamInfo;
+  const teamName = TEAM_MAP[teamId]?.name
+  
   return (
     <div className="container">
       <div className="header">
         <div className="team-info">
-          <div className="team-logo">{logo ? <img src={logo} alt={name} style={{width: '80px', height: '80px', borderRadius: '50%'}} /> : name?.slice(0,2)}</div>
+          <div className="team-logo">{logo ? <img src={logo} alt={teamName} style={{width: '80px', height: '80px', borderRadius: '50%'}} /> : teamName?.slice(0,2)}</div>
           <div className="team-details">
-            <h1>{name}</h1>
+            <h1>{teamName}</h1>
             <div className="season-year">{year} Season</div>
           </div>
         </div>
@@ -113,13 +115,13 @@ function GameResults() {
               </div>
               <div className="matchup">
                 <div className="team">
-                  <div className="team-name">{game.team}</div>
+                  <div className="team-name">{TEAM_MAP[game.id.teamId]?.city}</div>
                   <div className="score">{game.pointsFor}</div>
                 </div>
-                <div className="vs">{game.homeOrAway === 'AWAY' ? '@' : 'vs'}</div>
+                <div className="vs">{game.homeGame ? 'vs' : '@'}</div>
                 <div className="team">
                   <div className="score">{game.pointsAgainst}</div>
-                  <div className="team-name">{game.opponent}</div>
+                  <div className="team-name">{TEAM_MAP[game.opponentId]?.city}</div>
                 </div>
               </div>
               <div className={`game-result ${game.result === 'W' ? 'win' : 'loss'}`}>
