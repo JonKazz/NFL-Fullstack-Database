@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, String> {
-    Optional<Team> findFirstByTeamAndYear(String team, Integer year);
+    Optional<Team> findFirstByTeamIdAndYear(String teamId, Integer year);
 }

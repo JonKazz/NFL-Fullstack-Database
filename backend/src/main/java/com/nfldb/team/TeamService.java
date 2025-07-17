@@ -11,7 +11,7 @@ public class TeamService {
         this.repository = repository;
     }
 
-    public Optional<Team> getTeamInfo(String team, Integer year) {
-        return repository.findFirstByTeamAndYear(team, year);
+    public Optional<Team> getTeamInfo(String teamId, Integer year) {
+        return repository.findFirstByTeamIdAndYear(teamId, year);
     }
 }

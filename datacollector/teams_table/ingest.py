@@ -20,8 +20,7 @@ def scrape_team_summary(team, season):
     logo_src = logo_img['src'] if logo_img else None
     
     headers = {'Coach', 'Points For', 'Points Against', 'Record', 'Playoffs', 'Offensive Coordinator', 
-               'Defensive Coordinator', 'Stadium', 'Chairman/CEO', 'General Manager', 'Offensive Scheme', 
-               'Defensive Alignment'}
+               'Defensive Coordinator', 'Stadium', 'Offensive Scheme', 'Defensive Alignment'}
     data = {header: None for header in headers}
     
     for p in summary_div.find_all('p'):
@@ -34,7 +33,7 @@ def scrape_team_summary(team, season):
                 data[key] = value
 
     data['logo'] = logo_src
-    data['team'] = team
+    data['team_id'] = team
     data['year'] = season
     return pd.DataFrame([data])
 

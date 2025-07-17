@@ -1,8 +1,5 @@
 package com.nfldb.team;
 
-import com.nfldb.team.Team;
-import com.nfldb.team.TeamService;
-import java.util.Optional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +13,7 @@ public class TeamController {
     }
 
     @GetMapping("/info")
-    public Team getTeamInfo(@RequestParam String team, @RequestParam Integer year) {
-        return teamService.getTeamInfo(team, year).orElse(null);
+    public Team getTeamInfo(@RequestParam String teamId, @RequestParam Integer year) {
+        return teamService.getTeamInfo(teamId, year).orElse(null);
     }
 }

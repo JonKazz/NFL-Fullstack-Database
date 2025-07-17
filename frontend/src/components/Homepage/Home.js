@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
-  const [team, setTeam] = useState('');
+  const [teamId, setTeamId] = useState('');
   const [year, setYear] = useState('');
   const navigate = useNavigate();
 
   const handleSearch = () => {
-    if (!team || !year) return;
-    navigate(`/season?team=${encodeURIComponent(team)}&year=${encodeURIComponent(year)}`);
+    if (!teamId || !year) return;
+    navigate(`/season?teamId=${encodeURIComponent(teamId)}&year=${encodeURIComponent(year)}`);
   };
 
   return (
@@ -18,8 +18,8 @@ function Home() {
         <input
           type="text"
           placeholder="Team"
-          value={team}
-          onChange={(e) => setTeam(e.target.value)}
+          value={teamId}
+          onChange={(e) => setTeamId(e.target.value)}
         />
         <input
           type="text"

@@ -3,34 +3,41 @@ import re
 from config import TEAM_NAME_MAP, TEAM_CITY_MAP
 
 def transform_teams_table(df):
-    df = column_mapping(df)
     df = parse_playoffs_column(df)
     df = parse_record_column(df)
     
-    df['team_id'] = df['team'] + '_' + df['year']
-    df['name'] = df['team'].map(TEAM_NAME_MAP)
-    df['city'] = df['team'].map(TEAM_CITY_MAP)
-    df['coach'] = df['coach'].str.replace(r'\s*\(\d+-\d+-\d+\)', '', regex=True)
-    df['pointsFor'] = df['pointsFor'].str.split(' ').str[0]
-    df['pointsAgainst'] = df['pointsAgainst'].str.split(' ').str[0]
-    df = df.drop(columns=['record'])
+    df['id'] = df['team_id'] + '_' + df['year']
+    df['name'] = df['team_id'].map(TEAM_NAME_MAP)
+    df['city'] = df['team_id'].map(TEAM_CITY_MAP)
+    df['coach'] = df['Coach'].str.replace(r'\s*\(\d+-\d+-\d+\)', '', regex=True)
+    df['points_for'] = df['Points For'].str.split(' ').str[0]
+    df['points_against'] = df['Points Against'].str.split(' ').str[0]
+    df = column_mapping(df)
+    
     return df
 
     
 def column_mapping(df):
     col_map = {
-        'Coach': 'coach',
-        'Points For': 'pointsFor',
-        'Points Against': 'pointsAgainst',
-        'Record': 'record',
-        'Playoffs': 'playoffs',
-        'Offensive Coordinator': 'offCoordinator',
-        'Defensive Coordinator': 'defCoordinator',
-        'Stadium': 'stadium',
-        'Offensive Scheme': 'offScheme',
-        'Defensive Alignment': 'defAlignment',
-        'team': 'team',
+        'id': 'id',
+        'team_id': 'team_id',
         'year': 'year',
+        'name': 'name',
+        'city': 'city',
+        'Stadium': 'stadium',
+        'wins': 'wins',
+        'losses': 'losses',
+        'ties': 'ties',
+        'division': 'division',
+        'division_rank': 'division_rank',
+        'playoffs': 'playoffs',
+        'points_for': 'points_for',
+        'points_against': 'points_against',
+        'coach': 'coach',
+        'Offensive Coordinator': 'off_coordinator',
+        'Defensive Coordinator': 'def_coordinator',
+        'Offensive Scheme': 'off_scheme',
+        'Defensive Alignment': 'def_alignment',
         'logo': 'logo'
     }
     df = df.rename(columns=col_map)
@@ -55,7 +62,7 @@ def parse_playoffs_column(df):
         else:
             return 'Unknown'
 
-    df['playoffs'] = df['playoffs'].apply(classify_playoffs)
+    df['playoffs'] = df['Playoffs'].apply(classify_playoffs)
     return df
 
 
@@ -75,5 +82,5 @@ def parse_record_column(df):
         else:
             return pd.Series([None, None, None, None, None])
 
-    df[['wins', 'losses', 'ties', 'divisionRank', 'division']] = df['record'].apply(extract_all_parts)
+    df[['wins', 'losses', 'ties', 'division_rank', 'division']] = df['Record'].apply(extract_all_parts)
     return df

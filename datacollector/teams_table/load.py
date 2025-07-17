@@ -6,29 +6,27 @@ def create_teams_table():
     query = '''
     DROP TABLE IF EXISTS teams;
     CREATE TABLE teams (
+        id VARCHAR(50) PRIMARY KEY NOT NULL,
         team_id VARCHAR(50) NOT NULL,
-        team VARCHAR(50) NOT NULL,
         year INT NOT NULL,
         name VARCHAR(100) NOT NULL,
         city VARCHAR(100) NOT NULL,
-        logo VARCHAR(300) NOT NULL,
-        coach VARCHAR(100),
-        points_for INT NOT NULL,
-        points_against INT NOT NULL,
+        stadium VARCHAR(500),
         wins INT,
         losses INT,
         ties INT,
         division_rank INT,
         division VARCHAR(100),
         playoffs VARCHAR(100),
+        points_for INT NOT NULL,
+        points_against INT NOT NULL,
+        coach VARCHAR(100),
         off_coordinator VARCHAR(500),
         def_coordinator VARCHAR(500),
-        stadium VARCHAR(500),
         off_scheme VARCHAR(500),
         def_alignment VARCHAR(500),
-        PRIMARY KEY (team_id)
+        logo VARCHAR(300) NOT NULL
     );
-
     '''
     conn = psycopg2.connect(
         host=HOSTNAME, dbname=DATABASE, user=USERNAME,

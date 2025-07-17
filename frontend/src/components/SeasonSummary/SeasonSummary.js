@@ -5,7 +5,7 @@ import { fetchGames, fetchTeamInfo } from '../../api/fetches';
 
 function GameResults() {
   const [searchParams] = useSearchParams();
-  const team = searchParams.get('team');
+  const teamId = searchParams.get('teamId');
   const year = searchParams.get('year');
   const [teamInfo, setTeamInfo] = useState(null);
   const [games, setGames] = useState(null);
@@ -18,8 +18,8 @@ function GameResults() {
       setError(null);
       try {
         const [teamInfoResult, gamesResult] = await Promise.allSettled([
-          fetchTeamInfo(team, year),
-          fetchGames(team, year)
+          fetchTeamInfo(teamId, year),
+          fetchGames(teamId, year)
         ]);
 
         if (teamInfoResult.status === 'fulfilled') {
@@ -39,10 +39,10 @@ function GameResults() {
       }
     };
 
-    if (team && year) {
+    if (teamId && year) {
       fetchData();
     }
-  }, [team, year]);
+  }, [teamId, year]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="season-summary-error">{error}</p>;
