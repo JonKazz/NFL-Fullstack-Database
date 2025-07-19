@@ -49,7 +49,7 @@ def game_mapping(df):
     }
     
     df.rename(columns=col_map, inplace=True)
-    df = df[[col for col in df.columns if col in list(col_map.values())]]
+    df = df[list(col_map.values())]
     df = df[df['game_number'].notna()]
     df['home_game'] = df['home_game'].apply(lambda x: False if x == "@" else True)
     df['overtime'] = df['overtime'].apply(lambda x: True if x == "OT" else False)

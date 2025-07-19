@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './SeasonSummary.css';
 import { fetchGames, fetchTeamInfo } from '../../api/fetches';
@@ -6,6 +6,7 @@ import { TEAM_MAP } from '../../utils';
 
 function GameResults() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const teamId = searchParams.get('teamId');
   const year = searchParams.get('year');
   const [teamInfo, setTeamInfo] = useState(null);
@@ -48,7 +49,8 @@ function GameResults() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="season-summary-error">{error}</p>;
 
-  const { logo, wins, losses, division, coach, pointsFor, pointsAgainst } = teamInfo;
+  const { logo, wins, losses, division, divisionRank, playoffs, coach, offCoordinator,
+          defCoordinator, pointsFor, pointsAgainst } = teamInfo;
   const teamName = TEAM_MAP[teamId]?.name
   
   return (
@@ -66,11 +68,11 @@ function GameResults() {
             <div className="stat-label">Record</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value">{teamInfo.divisionRank || '-'}</div>
+            <div className="stat-value">{divisionRank || '-'}</div>
             <div className="stat-label">{division || 'Division'}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value playoffs-value">{teamInfo.playoffs || '-'}</div>
+            <div className="stat-value playoffs-value">{playoffs || '-'}</div>
             <div className="stat-label">Playoffs</div>
           </div>
           <div className="stat-card">
@@ -92,11 +94,11 @@ function GameResults() {
                         <div class="coach-title">Head Coach</div>
                     </div>
                     <div class="coach-card">
-                        <div class="coach-name">{teamInfo.offCoordinator}</div>
+                        <div class="coach-name">{offCoordinator}</div>
                         <div class="coach-title">Offensive Coordinator</div>
                     </div>
                     <div class="coach-card">
-                        <div class="coach-name">{teamInfo.defCoordinator}</div>
+                        <div class="coach-name">{defCoordinator}</div>
                         <div class="coach-title">Defensive Coordinator</div>
                     </div>
                 </div>
@@ -107,7 +109,10 @@ function GameResults() {
         <h2 className="section-title">Season Schedule & Results</h2>
         <div className="games-grid">
           {games.map((game, idx) => (
-            <div className="game-card" key={game.gameId || idx}>
+            <div
+              className="game-card"
+              onClick={() => navigate(`/game?gameId=${game.id.gameId}&teamId=${game.id.teamId}`)}
+            >
               <div className="game-header">
                 <div className="week">Week {game.seasonWeek}</div>
                 <div className="game-date">{game.date}</div>
@@ -123,9 +128,7 @@ function GameResults() {
                   <div className="team-name-city">{TEAM_MAP[game.opponentId]?.city}</div>
                 </div>
               </div>
-              <div className={`game-result ${game.result === 'W' ? 'win' : 'loss'}`}>
-                {game.result} {game.pointsFor}-{game.pointsAgainst}
-              </div>
+              <div className={`game-result ${game.result === 'W' ? 'win' : 'loss'}`}>{game.result} {game.pointsFor}-{game.pointsAgainst}</div>
             </div>
           ))}
         </div>

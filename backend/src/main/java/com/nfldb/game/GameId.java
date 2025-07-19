@@ -15,7 +15,7 @@ public class GameId implements Serializable {
 
     public GameId() {
     }
-
+    
     public GameId(String gameId, String teamId) {
         this.gameId = gameId;
         this.teamId = teamId;

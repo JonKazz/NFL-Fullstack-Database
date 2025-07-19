@@ -19,11 +19,12 @@ def playergame_mapping(df):
     
     df['home_game'] = df['home_game'].apply(lambda x: False if x == '@' else True)
     df['game_started'] = df['game_started'].apply(lambda x: True if x == '*' else False)
-    df['opponent'] = df['opponent'].map(PFR_ABR_MAP)
+    df['opponent_id'] = df['opponent_id'].map(PFR_ABR_MAP)
+    df['team_id'] = df['team_id'].map(PFR_ABR_MAP)
     df['game_id'] = np.where(
         df['home_game'],
-        df['date'].str.split('-').str[0] + "_" + df['team'] + '_' + df['opponent'] + '_' + df['week'].astype(int).astype(str),
-        df['date'].str.split('-').str[0] + "_" + df['opponent'] + '_' + df['team'] + '_' + df['week'].astype(int).astype(str)
+        df['date'].str.split('-').str[0] + "_" + df['team_id'] + '_' + df['opponent_id'] + '_' + df['week'].astype(int).astype(str),
+        df['date'].str.split('-').str[0] + "_" + df['opponent_id'] + '_' + df['team_id'] + '_' + df['week'].astype(int).astype(str)
     )
     
     return df
@@ -96,8 +97,8 @@ def stat_name_mapping(stat_type, stat_name, existing_columns):
         'default': {
             'Gcar': 'career_game_number',
             'Week': 'week',
-            'Team': 'team',
-            'Opp': 'opponent',
+            'Team': 'team_id',
+            'Opp': 'opponent_id',
             'GS': 'game_started',
             'Date': 'date',
             'Result': 'result',

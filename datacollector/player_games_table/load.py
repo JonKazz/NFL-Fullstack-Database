@@ -8,8 +8,8 @@ def create_player_games_table():
     CREATE TABLE player_games (
         player_id VARCHAR(20),
         game_id VARCHAR(50),
-        team VARCHAR(20),
-        opponent VARCHAR(20),
+        team_id VARCHAR(20),
+        opponent_id VARCHAR(20),
         date VARCHAR(20),
         result VARCHAR(20),
         home_game BOOLEAN,
