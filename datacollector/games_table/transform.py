@@ -1,7 +1,16 @@
 import numpy as np
-from config import PFR_ABR_MAP, TEAM_CITY_MAP
+import pandas as pd
+from config import TEAMABR_TO_TEAMID_MAP
 
-def game_mapping(df):
+
+def transform_game_table(df: pd.DataFrame) -> pd.DataFrame:
+    df = column_mapping(df)
+    df = modify_features(df)
+    df = create_game_id(df)
+    return df
+
+
+def column_mapping(df: pd.DataFrame) -> pd.DataFrame:
     col_map = {
         'Gtm': 'game_number',
         'Week': 'season_week',
@@ -41,22 +50,43 @@ def game_mapping(df):
         'FL': 'fumbles_lost',
         'Int': 'interceptions_thrown',
         'TO': 'turnovers_total',
-        'ToP': 'time_of_possesion',
+        'ToP': 'time_of_possession',
         'team_id': 'team_id',
-        'year': 'year',
-        'game_id': 'game_id',
-        'Unnamed: 5': 'home_game'
+        'year': 'year'
     }
-    
-    df.rename(columns=col_map, inplace=True)
+
+    home_cols = [col for col in df.columns if 'Unnamed' in col]
+    if home_cols:
+        col_map[home_cols[0]] = 'home_game'
+
+    missing = [col for col in col_map if col not in df.columns]
+    if missing:
+        raise ValueError(f"Missing expected columns: {missing}")
+
+    df = df.rename(columns=col_map)
     df = df[list(col_map.values())]
     df = df[df['game_number'].notna()]
-    df['home_game'] = df['home_game'].apply(lambda x: False if x == "@" else True)
-    df['overtime'] = df['overtime'].apply(lambda x: True if x == "OT" else False)
-    df['opponent_id'] = df['opponent_id'].map(PFR_ABR_MAP)
+
+    return df
+
+
+def modify_features(df: pd.DataFrame) -> pd.DataFrame:
+    df['home_game'] = df['home_game'] != "@"
+    df['overtime'] = df['overtime'] == "OT"
+    
+    df['opponent_id'] = df['opponent_id'].map(TEAMABR_TO_TEAMID_MAP).fillna(df['opponent_id'])
+
+    df['time_of_possession_seconds'] = df['time_of_possession'].str.split(':').apply(
+        lambda x: int(x[0]) * 60 + int(x[1])
+    )   
+    return df
+
+
+def create_game_id(df: pd.DataFrame) -> pd.DataFrame:
+    week = df['season_week'].astype(int).astype(str)
     df['game_id'] = np.where(
         df['home_game'],
-        df['year'] + "_" + df['team_id'] + "_" + df['opponent_id'] + "_" + df['season_week'].astype(int).astype(str),
-        df['year'] + "_" + df['opponent_id'] + "_" + df['team_id'] + "_" + df['season_week'].astype(int).astype(str)
+        df['year'] + "_" + df['team_id'] + "_" + df['opponent_id'] + "_" + week,
+        df['year'] + "_" + df['opponent_id'] + "_" + df['team_id'] + "_" + week
     )
     return df

@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import './SeasonSummary.css';
+import styles from './SeasonSummary.module.css';
 import { fetchGames, fetchTeamInfo } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 
@@ -47,116 +47,117 @@ function GameResults() {
   }, [teamId, year]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className="season-summary-error">{error}</p>;
+  if (error) return <p className={styles['season-summary-error']}>{error}</p>;
 
   const { logo, wins, losses, division, divisionRank, playoffs, coach, offCoordinator,
           defCoordinator, pointsFor, pointsAgainst } = teamInfo;
   const teamName = TEAM_MAP[teamId]?.name
   
   return (
-    <div className="container">
-      <div className="header">
-        <div className="team-info">
-          <div className="team-logo">{logo ? <img src={logo} alt={teamName} style={{width: '80px', height: '80px', borderRadius: '50%'}} /> : teamName?.slice(0,2)}</div>
-          <div className="team-details">
-            <h1>{year} {teamName}</h1>
-          </div>
-        </div>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-value">{wins}-{losses}</div>
-            <div className="stat-label">Record</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{divisionRank || '-'}</div>
-            <div className="stat-label">{division || 'Division'}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value playoffs-value">{playoffs || '-'}</div>
-            <div className="stat-label">Playoffs</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{pointsFor}</div>
-            <div className="stat-label">Points For</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{pointsAgainst}</div>
-            <div className="stat-label">Points Against</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-            <div class="coach-info">
-                <div class="coaching-staff">
-                    <div class="coach-card">
-                        <div class="coach-name">{coach}</div>
-                        <div class="coach-title">Head Coach</div>
-                    </div>
-                    <div class="coach-card">
-                        <div class="coach-name">{offCoordinator}</div>
-                        <div class="coach-title">Offensive Coordinator</div>
-                    </div>
-                    <div class="coach-card">
-                        <div class="coach-name">{defCoordinator}</div>
-                        <div class="coach-title">Defensive Coordinator</div>
-                    </div>
-                </div>
+    <div className={styles.pageBackground}>
+      <div className={styles['container']}>
+        <div className={styles['header']}>
+          <div className={styles['team-info']}>
+            <div className={styles['team-logo']}>{logo ? <img src={logo} alt={teamName} style={{width: '80px', height: '80px', borderRadius: '50%'}} /> : teamName?.slice(0,2)}</div>
+            <div className={styles['team-details']}>
+              <h1>{year} {teamName}</h1>
             </div>
-        </div>
-
-      <div className="section">
-        <h2 className="section-title">Season Schedule & Results</h2>
-        <div className="games-grid">
-          {games.map((game, idx) => (
-            <div
-              className="game-card"
-              onClick={() => navigate(`/game?gameId=${game.id.gameId}&teamId=${game.id.teamId}`)}
-            >
-              <div className="game-header">
-                <div className="week">Week {game.seasonWeek}</div>
-                <div className="game-date">{game.date}</div>
-              </div>
-              <div className="matchup">
-                <div className="team-ss">
-                  <div className="team-name-city">{TEAM_MAP[game.id.teamId]?.city}</div>
-                  <div className="score">{game.pointsFor}</div>
-                </div>
-                <div className="vs-ss">{game.homeGame ? 'vs' : '@'}</div>
-                <div className="team-ss">
-                  <div className="score">{game.pointsAgainst}</div>
-                  <div className="team-name-city">{TEAM_MAP[game.opponentId]?.city}</div>
-                </div>
-              </div>
-              <div className={`game-result ${game.result === 'W' ? 'win' : 'loss'}`}>{game.result} {game.pointsFor}-{game.pointsAgainst}</div>
+          </div>
+          <div className={styles['stats-grid']}>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-value']}>{wins}-{losses}</div>
+              <div className={styles['stat-label']}>Record</div>
             </div>
-          ))}
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-value']}>{divisionRank || '-'}</div>
+              <div className={styles['stat-label']}>{division || 'Division'}</div>
+            </div>
+            <div className={styles['stat-card']}>
+              <div className={`${styles['stat-value']} ${styles['playoffs-value']}`}>{playoffs || '-'}</div>
+              <div className={styles['stat-label']}>Playoffs</div>
+            </div>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-value']}>{pointsFor}</div>
+              <div className={styles['stat-label']}>Points For</div>
+            </div>
+            <div className={styles['stat-card']}>
+              <div className={styles['stat-value']}>{pointsAgainst}</div>
+              <div className={styles['stat-label']}>Points Against</div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      
-      {/*
-      <div className="section">
-        <h2 className="section-title">Team Roster</h2>
-        <div className="players-section">
-          {roster && Object.entries(roster).map(([position, players]) => (
-            <div className="position-group" key={position}>
-              <h3 className="position-title">{position}</h3>
-              <div className="player-list">
-                {players.map((player) => (
-                  <div className="player" key={player.name}>
-                    <div className="player-number">{player.number}</div>
-                    <div className="player-name">{player.name}</div>
+        <div className={styles.section}>
+              <div className={styles['coach-info']}>
+                  <div className={styles['coaching-staff']}>
+                      <div className={styles['coach-card']}>
+                          <div className={styles['coach-name']}>{coach}</div>
+                          <div className={styles['coach-title']}>Head Coach</div>
+                      </div>
+                      <div className={styles['coach-card']}>
+                          <div className={styles['coach-name']}>{offCoordinator}</div>
+                          <div className={styles['coach-title']}>Offensive Coordinator</div>
+                      </div>
+                      <div className={styles['coach-card']}>
+                          <div className={styles['coach-name']}>{defCoordinator}</div>
+                          <div className={styles['coach-title']}>Defensive Coordinator</div>
+                      </div>
                   </div>
-                ))}
               </div>
-            </div>
-          ))}
+          </div>
+
+        <div className={styles.section}>
+          <h2 className={styles['section-title']}>Season Schedule & Results</h2>
+          <div className={styles['games-grid']}>
+            {games.map((game, idx) => (
+              <div
+                className={styles['game-card']}
+                onClick={() => navigate(`/game?gameId=${game.id.gameId}&teamId=${game.id.teamId}`)}
+                key={game.gameId || idx}
+              >
+                <div className={styles['game-header']}>
+                  <div className={styles.week}>Week {game.seasonWeek}</div>
+                  <div className={styles['game-date']}>{game.date}</div>
+                </div>
+                <div className={styles.matchup}>
+                  <div className={styles['team-ss']}>
+                    <div className={styles['team-name-city']}>{TEAM_MAP[game.id.teamId]?.city}</div>
+                    <div className={styles.score}>{game.pointsFor}</div>
+                  </div>
+                  <div className={styles['vs-ss']}>{game.homeGame ? 'vs' : '@'}</div>
+                  <div className={styles['team-ss']}>
+                    <div className={styles.score}>{game.pointsAgainst}</div>
+                    <div className={styles['team-name-city']}>{TEAM_MAP[game.opponentId]?.city}</div>
+                  </div>
+                </div>
+                <div className={`${styles['game-result']} ${game.result === 'W' ? styles.win : styles.loss}`}>{game.result} {game.pointsFor}-{game.pointsAgainst}</div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/*
+        <div className={styles.section}>
+          <h2 className={styles['section-title']}>Team Roster</h2>
+          <div className={styles['players-section']}>
+            {roster && Object.entries(roster).map(([position, players]) => (
+              <div className={styles['position-group']} key={position}>
+                <h3 className={styles['position-title']}>{position}</h3>
+                <div className={styles['player-list']}>
+                  {players.map((player) => (
+                    <div className={styles.player} key={player.name}>
+                      <div className={styles['player-number']}>{player.number}</div>
+                      <div className={styles['player-name']}>{player.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        */}
+
       </div>
-      */}
-
-
     </div>
   );
 }

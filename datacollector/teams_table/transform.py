@@ -1,14 +1,14 @@
 import pandas as pd
 import re
-from config import TEAM_NAME_MAP, TEAM_CITY_MAP
+from config import TEAMID_TO_TEAMNAME_MAP, TEAMID_TO_CITY_MAP
 
 def transform_teams_table(df):
     df = parse_playoffs_column(df)
     df = parse_record_column(df)
     
     df['id'] = df['team_id'] + '_' + df['year']
-    df['name'] = df['team_id'].map(TEAM_NAME_MAP)
-    df['city'] = df['team_id'].map(TEAM_CITY_MAP)
+    df['name'] = df['team_id'].map(TEAMID_TO_TEAMNAME_MAP)
+    df['city'] = df['team_id'].map(TEAMID_TO_CITY_MAP)
     df['coach'] = df['Coach'].str.replace(r'\s*\(\d+-\d+-\d+\)', '', regex=True)
     df['points_for'] = df['Points For'].str.split(' ').str[0]
     df['points_against'] = df['Points Against'].str.split(' ').str[0]

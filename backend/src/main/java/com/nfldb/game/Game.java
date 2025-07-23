@@ -20,7 +20,6 @@ public class Game {
     @Column(name = "home_game")
     private Boolean homeGame;
     private String result;
-    private String date;
 
     // 3. Scoring
     @Column(name = "points_for")
@@ -33,6 +32,7 @@ public class Game {
     private Integer gameNumber;
     @Column(name = "season_week")
     private Integer seasonWeek;
+    private String date;
 
     // 5. Offensive Stats
     @Column(name = "passing_yards")
@@ -67,8 +67,6 @@ public class Game {
     public void setHomeGame(Boolean homeGame) { this.homeGame = homeGame; }
     public String getResult() { return result; }
     public void setResult(String result) { this.result = result; }
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
 
     // 3. Scoring
     public Integer getPointsFor() { return pointsFor; }
@@ -81,7 +79,9 @@ public class Game {
     public void setGameNumber(Integer gameNumber) { this.gameNumber = gameNumber; }
     public Integer getSeasonWeek() { return seasonWeek; }
     public void setSeasonWeek(Integer seasonWeek) { this.seasonWeek = seasonWeek; }
-
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
+    
     // 5. Offensive Stats
     public Integer getPassingYards() { return passingYards; }
     public void setPassingYards(Integer passingYards) { this.passingYards = passingYards; }

@@ -7,10 +7,14 @@ def scrape_team_game_logs():
     for season in SEASONS:
         for team in TEAM_ABR:
             url = f'https://www.pro-football-reference.com/teams/{team}/{season}/gamelog/'
-            print(f"Fetching {url}")
-            table_id = "table_pfr_team-year_game-logs_team-year-regular-season-game-log"
+            print(f'Fetching {url}')
+            table_id_rs = 'table_pfr_team-year_game-logs_team-year-regular-season-game-log'
+            table_id_playofss = 'table_pfr_team-year_game-logs_team-year-playoffs-game-log'
             try:
-                df = pd.read_html(url, header=1, attrs={'id': table_id})[0]
+                df_rs = pd.read_html(url, header=1, attrs={'id': table_id_rs})[0]
+                df_playoffs = pd.read_html(url, header=1, attrs={'id': table_id_playofss})[0]
+                df = pd.concat([df_rs, df_playoffs], ignore_index=True)
+                
                 df['team_id'] = team
                 df['year'] = season
                 games_df = pd.concat([games_df, df], ignore_index=True)

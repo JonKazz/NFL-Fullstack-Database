@@ -7,14 +7,18 @@ PORT = 1234
 
 # Scraping configuration
 SEASONS = [str(season) for season in range(2024, 2025)]
-TEAM_ABR = ['kan', 'buf']
+WEEKS = [str(week) for week in range(1,19)]
 
-# TEAM_ABR = [
-#     'crd','atl','rav','buf','car','chi','cin','cle','dal','den','det','gnb','htx','clt','jax','kan',
-#     'sdg','ram','rai','mia','min','nwe','nor','nyg','nyj','phi','pit','sea','sfo','tam','oti','was'
-# ]
+SEASONS_TEST = ['2024']
+WEEKS_TEST = ['1']
+TEAM_ABR_TEST = ['kan', 'buf']
 
-PFR_ABR_MAP = {
+TEAM_ABR = [
+    'crd','atl','rav','buf','car','chi','cin','cle','dal','den','det','gnb','htx','clt','jax','kan',
+    'sdg','ram','rai','mia','min','nwe','nor','nyg','nyj','phi','pit','sea','sfo','tam','oti','was'
+]
+
+TEAMABR_TO_TEAMID_MAP = {
     "ARI": "crd",
     "ATL": "atl",
     "BAL": "rav",
@@ -49,7 +53,7 @@ PFR_ABR_MAP = {
     "WAS": "was"
 }
 
-TEAM_NAME_MAP = {
+TEAMID_TO_TEAMNAME_MAP = {
     'crd': 'Arizona Cardinals',
     'atl': 'Atlanta Falcons',
     'rav': 'Baltimore Ravens',
@@ -84,7 +88,42 @@ TEAM_NAME_MAP = {
     'was': 'Washington Commanders'
 }
 
-TEAM_CITY_MAP = {
+TEAMNAME_TO_TEAMID_MAP = {
+    'Arizona Cardinals': 'crd',
+    'Atlanta Falcons': 'atl',
+    'Baltimore Ravens': 'rav',
+    'Buffalo Bills': 'buf',
+    'Carolina Panthers': 'car',
+    'Chicago Bears': 'chi',
+    'Cincinnati Bengals': 'cin',
+    'Cleveland Browns': 'cle',
+    'Dallas Cowboys': 'dal',
+    'Denver Broncos': 'den',
+    'Detroit Lions': 'det',
+    'Green Bay Packers': 'gnb',
+    'Houston Texans': 'htx',
+    'Indianapolis Colts': 'clt',
+    'Jacksonville Jaguars': 'jax',
+    'Kansas City Chiefs': 'kan',
+    'Los Angeles Chargers': 'sdg',
+    'Los Angeles Rams': 'ram',
+    'Las Vegas Raiders': 'rai',
+    'Miami Dolphins': 'mia',
+    'Minnesota Vikings': 'min',
+    'New England Patriots': 'nwe',
+    'New Orleans Saints': 'nor',
+    'New York Giants': 'nyg',
+    'New York Jets': 'nyj',
+    'Philadelphia Eagles': 'phi',
+    'Pittsburgh Steelers': 'pit',
+    'Seattle Seahawks': 'sea',
+    'San Francisco 49ers': 'sfo',
+    'Tampa Bay Buccaneers': 'tam',
+    'Tennessee Titans': 'oti',
+    'Washington Commanders': 'was'
+}
+
+TEAMID_TO_CITY_MAP = {
     'crd': 'Arizona',
     'atl': 'Atlanta',
     'rav': 'Baltimore',
@@ -118,3 +157,4 @@ TEAM_CITY_MAP = {
     'oti': 'Tennessee',
     'was': 'Washington'
 }
+
