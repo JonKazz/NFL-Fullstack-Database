@@ -14,12 +14,12 @@ public class GameController {
     }
 
     @GetMapping("/game")
-    public Game getGame(@RequestParam String gameId, @RequestParam String teamId) {
-        return gameService.getGame(gameId, teamId);
+    public Game getGame(@RequestParam String gameId) {
+        return gameService.getGame(gameId);
     }
 
     @GetMapping("/fullseason")
-    public List<Game> getFullYearGames(@RequestParam String team, @RequestParam Integer year) {
-        return gameService.getGamesByYear(team, year);
+    public List<Game> getFullYearGames(@RequestParam String teamId, @RequestParam Integer seasonYear) {
+        return gameService.getGamesByYear(teamId, seasonYear);
     }
 }
