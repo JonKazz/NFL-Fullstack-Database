@@ -148,7 +148,7 @@ def parse_game_info_table(soup):
     scorebox_meta = soup.find('div', class_=SCOREBOX_META_CLASSID)
     if scorebox_meta:
         meta_divs = scorebox_meta.find_all('div')
-        meta_labels = ['date', 'start_time', 'stadium', 'attendance']
+        meta_labels = ['date', 'start_time', 'stadium']
         for i, label in enumerate(meta_labels):
             if i < len(meta_divs):
                 game_info[label] = meta_divs[i].get_text(strip=True)

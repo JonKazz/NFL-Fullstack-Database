@@ -1,4 +1,5 @@
 # .gitignore
+datacollector/config.py
 
 # Node
 node_modules/
