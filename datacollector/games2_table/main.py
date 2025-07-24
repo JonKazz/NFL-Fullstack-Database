@@ -10,9 +10,9 @@ def scrape_tables(url, season, week):
     df_game_stats = scrape_game_stats_table(url, game_id)
     return df_game_info, df_game_stats
     
-def run():
+def run(start_week, end_week):
     for season in SEASONS_TEST:
-        for week in WEEKS_TEST:
+        for week in WEEKS_TEST[start_week - 1 : end_week - 1]:
             url = f'https://www.pro-football-reference.com/years/{season}/week_{week}.htm'
             print(f'Fetching {url}')
             game_urls = extract_game_links(url)

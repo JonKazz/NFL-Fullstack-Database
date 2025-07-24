@@ -8,20 +8,21 @@ export async function fetchTeamInfo(teamId, year) {
   return response.json();
 }
 
-export async function fetchGames(team, year) {
-  const params = new URLSearchParams({ team, year });
-  const response = await fetch(`http://localhost:8080/api/games/fullseason?${params}`);
+
+export async function fetchGame(gameId) {
+  const params = new URLSearchParams({ gameId });
+  const response = await fetch(`http://localhost:8080/api/games/game?${params}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch game info (api)');
+    throw new Error('Failed to fetch games with stats (api)');
   }
   return response.json();
 }
 
-export async function fetchGame(gameId, teamId) {
-  const params = new URLSearchParams({ gameId, teamId });
-  const response = await fetch(`http://localhost:8080/api/games/game?${params}`);
+export async function fetchFullSeason(teamId, year) {
+  const params = new URLSearchParams({ teamId, seasonYear: year });
+  const response = await fetch(`http://localhost:8080/api/games/fullseason?${params}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch game info (api)');
+    throw new Error('Failed to fetch games with stats (api)');
   }
   return response.json();
 }

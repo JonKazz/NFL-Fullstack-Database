@@ -15,6 +15,7 @@ GAME_STATS_COL_MAP = {
     'points_q2': 'points_q2',
     'points_q3': 'points_q3',
     'points_q4': 'points_q4',
+    'points_overtime': 'points_overtime',
     'points_total': 'points_total',
     'rushing_attempts': 'rushing_attempts',
     'rushing_yards': 'rushing_yards',
@@ -50,6 +51,7 @@ GAME_INFO_COL_MAP = {
     'date': 'date',
     'start_time': 'start_time',
     'stadium': 'stadium',
+    'overtime': 'overtime',
     'away_team_id': 'away_team_id',
     'home_team_id': 'home_team_id',
     'winning_team_id': 'winning_team_id',
@@ -144,11 +146,9 @@ def modify_game_stats_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def modify_game_info_features(df: pd.DataFrame) -> pd.DataFrame:
-    df['attendance'] = (
-        df['Attendance']
-        .replace({',': ''}, regex=True) 
-        .replace({'': None})  
-        .astype(float)
-        .astype('Int64')
-    )
+    if 'Attendance' in df.columns:
+        df['attendance'] = (df['Attendance'].replace({',': ''}, regex=True).replace({'': None}).astype(float).astype('Int64'))
+    else:
+        df['attendance'] = None
+        
     return df

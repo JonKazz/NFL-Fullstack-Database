@@ -1,7 +1,7 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './SeasonSummary.module.css';
-import { fetchGames, fetchTeamInfo } from '../../api/fetches';
+import { fetchFullSeason, fetchTeamInfo } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 
 function GameResults() {
@@ -21,7 +21,7 @@ function GameResults() {
       try {
         const [teamInfoResult, gamesResult] = await Promise.allSettled([
           fetchTeamInfo(teamId, year),
-          fetchGames(teamId, year)
+          fetchFullSeason(teamId, year)
         ]);
 
         if (teamInfoResult.status === 'fulfilled') {
@@ -109,30 +109,38 @@ function GameResults() {
         <div className={styles.section}>
           <h2 className={styles['section-title']}>Season Schedule & Results</h2>
           <div className={styles['games-grid']}>
-            {games.map((game, idx) => (
-              <div
-                className={styles['game-card']}
-                onClick={() => navigate(`/game?gameId=${game.id.gameId}&teamId=${game.id.teamId}`)}
-                key={game.gameId || idx}
-              >
-                <div className={styles['game-header']}>
-                  <div className={styles.week}>Week {game.seasonWeek}</div>
-                  <div className={styles['game-date']}>{game.date}</div>
-                </div>
-                <div className={styles.matchup}>
-                  <div className={styles['team-ss']}>
-                    <div className={styles['team-name-city']}>{TEAM_MAP[game.id.teamId]?.city}</div>
-                    <div className={styles.score}>{game.pointsFor}</div>
+            
+            {games.map((game, idx) => {
+              console.log(game);
+              const { gameInfo, gameStats } = game;
+              const myStats = gameStats.find(gs => gs.id.teamId === teamId);
+              const oppStats = gameStats.find(gs => gs.id.teamId !== teamId);
+              const isHome = gameInfo.homeTeamId === teamId;
+              return (
+                <div
+                  className={styles['game-card']}
+                  onClick={() => navigate(`/game?gameId=${gameInfo.gameId}`)}
+                  key={gameInfo.gameId || idx}
+                >
+                  <div className={styles['game-header']}>
+                    <div className={styles.week}>Week {gameInfo.seasonWeek}</div>
+                    <div className={styles['game-date']}>{gameInfo.date}</div>
                   </div>
-                  <div className={styles['vs-ss']}>{game.homeGame ? 'vs' : '@'}</div>
-                  <div className={styles['team-ss']}>
-                    <div className={styles.score}>{game.pointsAgainst}</div>
-                    <div className={styles['team-name-city']}>{TEAM_MAP[game.opponentId]?.city}</div>
+                  <div className={styles.matchup}>
+                    <div className={styles['team-ss']}>
+                      <div className={styles['team-name-city']}>{TEAM_MAP[myStats.id.teamId]?.city}</div>
+                      <div className={styles.score}>{myStats.pointsTotal}</div>
+                    </div>
+                    <div className={styles['vs-ss']}>{isHome ? 'vs' : '@'}</div>
+                    <div className={styles['team-ss']}>
+                      <div className={styles.score}>{oppStats.pointsTotal}</div>
+                      <div className={styles['team-name-city']}>{TEAM_MAP[oppStats.id.teamId]?.city}</div>
+                    </div>
                   </div>
+                  {/* ...other info... */}
                 </div>
-                <div className={`${styles['game-result']} ${game.result === 'W' ? styles.win : styles.loss}`}>{game.result} {game.pointsFor}-{game.pointsAgainst}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

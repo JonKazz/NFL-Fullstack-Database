@@ -11,7 +11,7 @@ public class GameStatsController {
         this.gameStatsService = gameStatsService;
     }
 
-    @GetMapping("/gamestats")
+    @GetMapping("/game")
     public GameStats getGameStats(@RequestParam String gameId, @RequestParam String teamId) {
         return gameStatsService.getGameStats(gameId, teamId);
     }

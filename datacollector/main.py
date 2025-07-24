@@ -6,5 +6,5 @@ from games2_table.main import run as tester
 
 
 if __name__ == "__main__":
-    tester()
+    tester(start_week=1, end_week=18)
     

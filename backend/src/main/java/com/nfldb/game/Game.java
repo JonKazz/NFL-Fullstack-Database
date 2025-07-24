@@ -30,8 +30,10 @@ public class Game {
     @Column(name = "season_week")
     private Integer seasonWeek;
 
+
     // --- Getters and Setters ---
 
+    
     // 1. GameId
     public String getGameId() { return gameId; }
     public void setGameId(String gameId) { this.gameId = gameId; }

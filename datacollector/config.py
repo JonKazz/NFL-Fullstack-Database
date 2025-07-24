@@ -10,7 +10,7 @@ SEASONS = [str(season) for season in range(2024, 2025)]
 WEEKS = [str(week) for week in range(1,19)]
 
 SEASONS_TEST = ['2024']
-WEEKS_TEST = ['1']
+WEEKS_TEST = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
 TEAM_ABR_TEST = ['kan', 'buf']
 
 TEAM_ABR = [

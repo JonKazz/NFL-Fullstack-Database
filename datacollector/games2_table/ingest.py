@@ -12,6 +12,7 @@ GAME_LINK_CLASSID = 'right gamelink'
 GAME_SUMMARIES_COMPRESSED_CLASSID = 'game_summaries compressed'
 SCOREBOX_META_CLASSID = 'scorebox_meta'
 
+
 def scrape_game_stats_table(url, game_id):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html.parser')
@@ -89,29 +90,49 @@ def parse_linescore_table(soup):
 
     for i, row in enumerate(rows):
         cells = row.find_all('td')
-        if len(cells) < 7:
-            raise ValueError(f"[!]Malformed row at index {i} in linescore table.")
+        if len(cells) not in [7, 8]:
+            raise ValueError(f"[!] Malformed row at index {i}: expected 7 or 8 columns, found {len(cells)}.")
 
         team_name_raw = cells[1].get_text(strip=True)
-        team_name = TEAMNAME_TO_TEAMID_MAP[team_name_raw]
+        team_name = TEAMNAME_TO_TEAMID_MAP.get(team_name_raw)
+        if not team_name:
+            raise ValueError(f"[!] Could not map team name '{team_name_raw}' to team_id.")
+
         q1 = cells[2].get_text(strip=True)
         q2 = cells[3].get_text(strip=True)
         q3 = cells[4].get_text(strip=True)
         q4 = cells[5].get_text(strip=True)
-        total = cells[6].get_text(strip=True)
 
-        for label, val in zip(['Q1', 'Q2', 'Q3', 'Q4', 'Total'], [q1, q2, q3, q4, total]):
+        if len(cells) == 8:
+            ot = cells[6].get_text(strip=True)
+            total = cells[7].get_text(strip=True)
+        else:
+            ot = None
+            total = cells[6].get_text(strip=True)
+
+        for label, val in zip(['Q1', 'Q2', 'Q3', 'Q4'], [q1, q2, q3, q4]):
             if not val.isdigit():
-                raise ValueError(f"[!] {label} value '{val}' for team '{team_name_raw}' is not a digit in linescore table.")
+                raise ValueError(f"[!] {label} value '{val}' for team '{team_name_raw}' is not a digit.")
 
-        data.append({
+        if ot is not None and not ot.isdigit():
+            raise ValueError(f"[!] OT value '{ot}' for team '{team_name_raw}' is not a digit.")
+
+        if not total.isdigit():
+            raise ValueError(f"[!] Total value '{total}' for team '{team_name_raw}' is not a digit.")
+
+        row_data = {
             'team_id': team_name,
             'points_q1': int(q1),
             'points_q2': int(q2),
             'points_q3': int(q3),
             'points_q4': int(q4),
             'points_total': int(total)
-        })
+        }
+
+        if ot is not None:
+            row_data['points_ot'] = int(ot)
+
+        data.append(row_data)
 
     return pd.DataFrame(data)
 
@@ -153,31 +174,37 @@ def parse_game_info_table(soup):
             if i < len(meta_divs):
                 game_info[label] = meta_divs[i].get_text(strip=True)
 
-
-    # Extract home and away team IDs from linescore table
+    # Extract home and away team IDs and check for OT
     linescore_table = soup.find('table', class_=LINESCORE_TABLE_CLASSID)
     if linescore_table:
         rows = linescore_table.find('tbody').find_all('tr')
         if len(rows) >= 2:
-            away_team_raw = rows[0].find_all('td')[1].get_text(strip=True)
-            home_team_raw = rows[1].find_all('td')[1].get_text(strip=True)
+            away_row = rows[0].find_all('td')
+            home_row = rows[1].find_all('td')
+
+            away_team_raw = away_row[1].get_text(strip=True)
+            home_team_raw = home_row[1].get_text(strip=True)
             away_team = TEAMNAME_TO_TEAMID_MAP[away_team_raw]
             home_team = TEAMNAME_TO_TEAMID_MAP[home_team_raw]
             game_info['away_team_id'] = away_team
             game_info['home_team_id'] = home_team
 
-            # Get points_total for each team
-            away_points = int(rows[0].find_all('td')[6].get_text(strip=True))
-            home_points = int(rows[1].find_all('td')[6].get_text(strip=True))
+            # Determine winner
+            away_points = int(away_row[-1].get_text(strip=True))
+            home_points = int(home_row[-1].get_text(strip=True))
             if home_points > away_points:
                 game_info['winning_team_id'] = home_team
             elif away_points > home_points:
                 game_info['winning_team_id'] = away_team
             else:
-                game_info['winning_team_id'] = None 
+                game_info['winning_team_id'] = None
+
+            # Determine overtime
+            game_info['overtime'] = len(away_row) == 8
 
     df_game_info = pd.DataFrame([game_info])
     return df_game_info
+
 
 
 def create_game_id(df: pd.DataFrame, season, week) -> pd.DataFrame:
