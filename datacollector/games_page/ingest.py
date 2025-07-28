@@ -11,8 +11,17 @@ GAME_LINK_CLASSID = 'right gamelink'
 GAME_SUMMARIES_COMPRESSED_CLASSID = 'game_summaries compressed'
 SCOREBOX_META_CLASSID = 'scorebox_meta'
 
-GENERAL_PLAYER_STATS_ID = 'player_offense'
-PASSING_ADVANCED_STATS_ID = 'passing_advanced'
+GENERAL_OFFENSIVE_STATS_TABLE_ID = 'player_offense'
+GENERAL_DEFENSIVE_STATS_TABLE_ID = 'player_defense'
+RETURN_STATS_TABLE_ID = 'returns'
+KICKING_STATS_TABLE_ID = 'kicking'
+PASSING_ADVANCED_TABLE_ID = 'passing_advanced'
+RUSHING_ADVANCED_TABLE_ID = 'rushing_advanced'
+RECEIVING_ADVANCED_TABLE_ID = 'receiving_advanced'
+DEFENSIVE_ADVANCED_TABLE_ID = 'defense_advanced'
+
+PLAYER_STATS_TABLE_IDS_LIST = ['player_offense', 'player_defense', 'returns', 'kicking', 'passing_advanced', 
+                              'rushing_advanced', 'receiving_advanced', 'defense_advanced']
 
 def get_urls_by_week_and_year(week, year) -> list[str]:
     url = f'https://www.pro-football-reference.com/years/{year}/week_{week}.htm'
@@ -63,12 +72,33 @@ class GameScraper:
     
     
     def get_game_player_stats(self) -> pd.DataFrame:
-        self._parse_general_player_stats()
+        self._parse_general_offensive_stats()
+        self._parse_general_defensive_stats()
         self._parse_advanced_passing_player_stats()
+        self._parse_advanced_rushing_player_stats()
+        self._parse_advanced_defensive_player_stats()
+        self.game_player_stats_df['game_id'] = self.game_info_df['game_id']
         return self.game_player_stats_df
     
     
     def _scrape_comments_for_table(self, table_id: str) -> Tag:    
+        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
+        for c in comments:
+            if 'table' in c and table_id in c:
+                table = BeautifulSoup(c, 'html.parser').find('table', id=table_id)
+                if table:
+                    break
+        else:
+            raise ValueError(f'[!] Table with id: ({table_id}) not found in comments.')
+        return table
+    
+    
+    def _extract_table(self, table_id: str) -> Tag:    
+        table = self.soup.find('table', id=table_id)
+        if table:
+            return table
+        
+        # Table might be concealed in comments
         comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
         for c in comments:
             if 'table' in c and table_id in c:
@@ -244,7 +274,7 @@ class GameScraper:
                 )    
     
     
-    def _parse_player_table(self, table: Tag) -> None:
+    def _parse_player_stats_table(self, table: Tag) -> None:
         rows = table.find_all('tr')
         if not rows:
             raise ValueError('[!] Malformed PlayerStats table: No rows found')
@@ -252,7 +282,7 @@ class GameScraper:
         for row in rows:
             player_cell = row.find('th')
             player_id = player_cell.get('data-append-csv')
-            if not player_id:
+            if not player_id: # Likely a header row
                 continue
 
             stats = row.find_all('td')
@@ -262,13 +292,37 @@ class GameScraper:
                 self._validate_and_insert_player_stat(player_id, stat_name, stat_value)
 
     
-    def _parse_general_player_stats(self) -> None:
-        table = self.soup.find('table', id=GENERAL_PLAYER_STATS_ID)
-        if not table:
-            raise ValueError(f'[!] GeneralPlayerStats table with id: ({GENERAL_PLAYER_STATS_ID}) not found.')
-        self._parse_player_table(table)
+    def _parse_general_offensive_stats(self) -> None:
+        table = self._extract_table(GENERAL_OFFENSIVE_STATS_TABLE_ID)
+        self._parse_player_stats_table(table)
         
-        
+    def _parse_general_defensive_stats(self) -> None:
+        table = self._extract_table(GENERAL_DEFENSIVE_STATS_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
+    def _parse_return_stats(self) -> None:
+        table = self._extract_table(RETURN_STATS_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
+    def _parse_kicking_stats(self) -> None:
+        table = self._extract_table(KICKING_STATS_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
     def _parse_advanced_passing_player_stats(self) -> None:
-        table = self._scrape_comments_for_table(PASSING_ADVANCED_STATS_ID)
-        self._parse_player_table(table)
+        table = self._extract_table(PASSING_ADVANCED_TABLE_ID)
+        self._parse_player_stats_table(table)
+        
+    def _parse_advanced_rushing_player_stats(self) -> None:
+        table = self._extract_table(RUSHING_ADVANCED_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
+    def _parse_advanced_receiving_player_stats(self) -> None:
+        table = self._extract_table(RECEIVING_ADVANCED_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
+    def _parse_advanced_defensive_player_stats(self) -> None:
+        table = self._extract_table(DEFENSIVE_ADVANCED_TABLE_ID)
+        self._parse_player_stats_table(table)
+    
+        
+    

@@ -72,6 +72,10 @@ def transform_game_info_table(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def transform_game_player_stats_table(df: pd.DataFrame) -> pd.DataFrame:
+    df = modify_game_player_stats_features(df)
+    return df
+
 def column_mapping(df: pd.DataFrame, col_map: dict) -> pd.DataFrame:
     for col in col_map:
         if col not in df.columns:
@@ -151,4 +155,32 @@ def modify_game_info_features(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df['attendance'] = None
         
+    return df
+
+
+def modify_game_player_stats_features(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.convert_dtypes()
+    
+    for col in df.columns:
+        if df[col].dtype == object or df[col].dtype.name == 'string':
+            # Remove % if present, then convert to float
+            if df[col].astype(str).str.contains('%').any():
+                df[col] = (
+                    df[col]
+                    .astype(str)
+                    .str.replace('%', '', regex=False)
+                    .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
+                    .astype(float)
+                )
+            else:
+                # For regular numeric columns stored as string
+                df[col] = (
+                    df[col]
+                    .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
+                )
+                try:
+                    df[col] = df[col].astype(float)
+                except Exception:
+                    pass 
+                
     return df

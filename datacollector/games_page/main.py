@@ -1,8 +1,8 @@
 from .ingest import get_urls_by_week_and_year, GameScraper
 from utils import polite_sleep
 from config import SEASONS_TEST, WEEKS_TEST
-from .transform import transform_game_info_table, transform_game_stats_table
-from .load import insert_game_info_df, insert_game_stats_df
+from .transform import transform_game_info_table, transform_game_stats_table, transform_game_player_stats_table
+from .load import insert_game_info_df, insert_game_stats_df, insert_game_player_stats_df
 
 def scrape_tables(url, year , week):
     scraper = GameScraper(url)
@@ -17,14 +17,14 @@ def run(start_week, end_week):
             game_urls = get_urls_by_week_and_year(week, year)
             for url in game_urls:
                 print('Scraping for:', url)
-                df_game_info, df_game_stats, df_game_player_stats = scrape_tables(url, year, week)
+                df_game_info, df_game_stats, df_game_player_stats = scrape_tables(url, year, week) 
+                
                 df_game_info = transform_game_info_table(df_game_info)
                 df_game_stats = transform_game_stats_table(df_game_stats)
-            
-                print(f'PlayerStats columns: {df_game_player_stats.columns}')
-                print(df_game_player_stats)
+                df_game_player_stats = transform_game_player_stats_table(df_game_player_stats)
                 
                 print('Inserting for:', url)
                 insert_game_info_df(df_game_info)
                 insert_game_stats_df(df_game_stats)
+                insert_game_player_stats_df(df_game_player_stats) 
                 polite_sleep(7, 8)
