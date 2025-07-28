@@ -30,10 +30,13 @@ public class Game {
     @Column(name = "season_week")
     private Integer seasonWeek;
 
+    // 4. OverTime
+    @Column(name = "overtime")
+    private Boolean overtime;
 
     // --- Getters and Setters ---
 
-    
+
     // 1. GameId
     public String getGameId() { return gameId; }
     public void setGameId(String gameId) { this.gameId = gameId; }
@@ -53,4 +56,8 @@ public class Game {
     public void setSeasonYear(Integer seasonYear) { this.seasonYear = seasonYear; }
     public Integer getSeasonWeek() { return seasonWeek; }
     public void setSeasonWeek(Integer seasonWeek) { this.seasonWeek = seasonWeek; }
+
+    // 4. OverTime
+    public Boolean getOvertime() { return overtime; }
+    public void setOvertime(Boolean overtime) { this.overtime = overtime; }
 }

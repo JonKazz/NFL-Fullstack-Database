@@ -37,6 +37,37 @@ function GameSummary() {
   const homeName = TEAM_MAP[homeStats.id.teamId]?.name;
   const awayName = TEAM_MAP[awayStats.id.teamId]?.name;
 
+  const hasOvertime = !!gameInfo.overtime;
+
+  // Proportional bar calculations
+  const statBarData = [
+    {
+      label: 'Total Yards',
+      home: homeStats.totalYards,
+      away: awayStats.totalYards,
+    },
+    {
+      label: 'Passing Yards',
+      home: homeStats.passingYards,
+      away: awayStats.passingYards,
+    },
+    {
+      label: 'Rushing Yards',
+      home: homeStats.rushingYards,
+      away: awayStats.rushingYards,
+    },
+    {
+      label: 'First Downs',
+      home: homeStats.firstDownsTotal,
+      away: awayStats.firstDownsTotal,
+    },
+    {
+      label: 'Touchdowns',
+      home: (homeStats.passingTouchdowns || 0) + (homeStats.rushingTouchdowns || 0),
+      away: (awayStats.passingTouchdowns || 0) + (awayStats.rushingTouchdowns || 0),
+    },
+  ];
+
   return (
     <div className={styles.pageBackground}>
       <div className={styles.container}>
@@ -73,6 +104,7 @@ function GameSummary() {
                 <th>Q2</th>
                 <th>Q3</th>
                 <th>Q4</th>
+                {hasOvertime && <th>OT</th>}
                 <th>Final</th>
               </tr>
             </thead>
@@ -83,6 +115,7 @@ function GameSummary() {
                 <td>{homeStats.pointsQ2}</td>
                 <td>{homeStats.pointsQ3}</td>
                 <td>{homeStats.pointsQ4}</td>
+                {hasOvertime && <td>{homeStats.pointsOvertime}</td>}
                 <td><strong>{homeStats.pointsTotal}</strong></td>
               </tr>
               <tr>
@@ -91,6 +124,7 @@ function GameSummary() {
                 <td>{awayStats.pointsQ2}</td>
                 <td>{awayStats.pointsQ3}</td>
                 <td>{awayStats.pointsQ4}</td>
+                {hasOvertime && <td>{awayStats.pointsOvertime}</td>}
                 <td><strong>{awayStats.pointsTotal}</strong></td>
               </tr>
             </tbody>
@@ -102,51 +136,32 @@ function GameSummary() {
           <div className={styles['visual-comparison']}>
             <h3>Key Stats Comparison</h3>
             <div className={styles['chart-container']}>
-              <div className={styles['stat-comparison']}>
-                <div className={styles['stat-name']}>Total Yards</div>
-                <div className={styles['stat-bars']}>
-                  <div className={styles['bar-row']}>
-                    <div className={`${styles.bar} ${styles['kc-bar']}`}>{homeStats.id.teamId}: {homeStats.totalYards}</div>
-                    <div className={`${styles.bar} ${styles['lac-bar']}`}>{awayStats.id.teamId}: {awayStats.totalYards}</div>
+              {statBarData.map(({ label, home, away }, idx) => {
+                const total = (home || 0) + (away || 0);
+                const homePct = total ? (home / total) * 100 : 50;
+                const awayPct = total ? (away / total) * 100 : 50;
+                return (
+                  <div className={styles['stat-comparison']} key={label}>
+                    <div className={styles['stat-name']}>{label}</div>
+                    <div className={styles['stat-bars']}>
+                      <div className={styles['bar-row']}>
+                        <div
+                          className={`${styles.bar} ${styles['kc-bar']}`}
+                          style={{ width: `${homePct}%` }}
+                        >
+                          {homeStats.id.teamId}: {home}
+                        </div>
+                        <div
+                          className={`${styles.bar} ${styles['lac-bar']}`}
+                          style={{ width: `${awayPct}%` }}
+                        >
+                          {awayStats.id.teamId}: {away}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className={styles['stat-comparison']}>
-                <div className={styles['stat-name']}>Passing Yards</div>
-                <div className={styles['stat-bars']}>
-                  <div className={styles['bar-row']}>
-                    <div className={`${styles.bar} ${styles['kc-bar']}`}>{homeStats.id.teamId}: {homeStats.passingYards}</div>
-                    <div className={`${styles.bar} ${styles['lac-bar']}`}>{awayStats.id.teamId}: {awayStats.passingYards}</div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles['stat-comparison']}>
-                <div className={styles['stat-name']}>Rushing Yards</div>
-                <div className={styles['stat-bars']}>
-                  <div className={styles['bar-row']}>
-                    <div className={`${styles.bar} ${styles['kc-bar']}`}>{homeStats.id.teamId}: {homeStats.rushingYards}</div>
-                    <div className={`${styles.bar} ${styles['lac-bar']}`}>{awayStats.id.teamId}: {awayStats.rushingYards}</div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles['stat-comparison']}>
-                <div className={styles['stat-name']}>First Downs</div>
-                <div className={styles['stat-bars']}>
-                  <div className={styles['bar-row']}>
-                    <div className={`${styles.bar} ${styles['kc-bar']}`}>{homeStats.id.teamId}: {homeStats.firstDownsTotal}</div>
-                    <div className={`${styles.bar} ${styles['lac-bar']}`}>{awayStats.id.teamId}: {awayStats.firstDownsTotal}</div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles['stat-comparison']}>
-                <div className={styles['stat-name']}>Touchdowns</div>
-                <div className={styles['stat-bars']}>
-                  <div className={styles['bar-row']}> 
-                    <div className={`${styles.bar} ${styles['kc-bar']}`}>{homeStats.id.teamId}: {homeStats.passingTouchdowns + homeStats.rushingTouchdowns}</div>
-                    <div className={`${styles.bar} ${styles['lac-bar']}`}>{awayStats.id.teamId}: {awayStats.passingTouchdowns + awayStats.rushingTouchdowns}</div>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
           <div className={styles['stats-grid']}>

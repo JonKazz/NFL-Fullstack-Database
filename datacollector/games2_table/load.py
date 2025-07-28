@@ -65,6 +65,7 @@ def create_game_stats_table():
         if connection is not None:
             connection.close()
 
+
 def create_game_info_table():
     create_game_info_table_query = '''
     DROP TABLE IF EXISTS game_info;

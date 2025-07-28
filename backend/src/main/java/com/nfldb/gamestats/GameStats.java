@@ -22,10 +22,16 @@ public class GameStats {
     private Integer pointsQ3;
     @Column(name = "points_q4")
     private Integer pointsQ4;
+    @Column(name = "points_overtime")
+    private Integer pointsOvertime;
     @Column(name = "points_total")
     private Integer pointsTotal;
 
-    // 3. Rushing
+    // 3. Total Yards
+    @Column(name = "total_yards")
+    private Integer totalYards;
+
+    // 4. Rushing
     @Column(name = "rushing_attempts")
     private Integer rushingAttempts;
     @Column(name = "rushing_yards")
@@ -33,7 +39,7 @@ public class GameStats {
     @Column(name = "rushing_touchdowns")
     private Integer rushingTouchdowns;
 
-    // 4. Passing
+    // 5. Passing
     @Column(name = "passing_attempts")
     private Integer passingAttempts;
     @Column(name = "passing_completions")
@@ -45,25 +51,25 @@ public class GameStats {
     @Column(name = "passing_interceptions")
     private Integer passingInterceptions;
 
-    // 5. Sacks
+    // 6. Sacks
     @Column(name = "sacks_total")
     private Integer sacksTotal;
     @Column(name = "sack_yards")
     private Integer sackYards;
 
-    // 6. Fumbles
+    // 7. Fumbles
     @Column(name = "fumbles_total")
     private Integer fumblesTotal;
     @Column(name = "fumbles_lost")
     private Integer fumblesLost;
 
-    // 7. Penalties
+    // 8. Penalties
     @Column(name = "penalties_total")
     private Integer penaltiesTotal;
     @Column(name = "penalty_yards")
     private Integer penaltyYards;
 
-    // 8. Conversions and First Downs
+    // 9. Conversions and First Downs
     @Column(name = "third_down_attempts")
     private Integer thirdDownAttempts;
     @Column(name = "third_down_conversions")
@@ -92,10 +98,16 @@ public class GameStats {
     public void setPointsQ3(Integer pointsQ3) { this.pointsQ3 = pointsQ3; }
     public Integer getPointsQ4() { return pointsQ4; }
     public void setPointsQ4(Integer pointsQ4) { this.pointsQ4 = pointsQ4; }
+    public Integer getPointsOvertime() { return pointsOvertime; }
+    public void setPointsOvertime(Integer pointsOvertime) { this.pointsOvertime = pointsOvertime; }
     public Integer getPointsTotal() { return pointsTotal; }
     public void setPointsTotal(Integer pointsTotal) { this.pointsTotal = pointsTotal; }
 
-    // 3. Rushing
+    // 3. Total Yards
+    public Integer getTotalYards() { return totalYards; }
+    public void setTotalYards(Integer totalYards) { this.totalYards = totalYards; }
+
+    // 4. Rushing
     public Integer getRushingAttempts() { return rushingAttempts; }
     public void setRushingAttempts(Integer rushingAttempts) { this.rushingAttempts = rushingAttempts; }
     public Integer getRushingYards() { return rushingYards; }
@@ -103,7 +115,7 @@ public class GameStats {
     public Integer getRushingTouchdowns() { return rushingTouchdowns; }
     public void setRushingTouchdowns(Integer rushingTouchdowns) { this.rushingTouchdowns = rushingTouchdowns; }
 
-    // 4. Passing
+    // 5. Passing
     public Integer getPassingAttempts() { return passingAttempts; }
     public void setPassingAttempts(Integer passingAttempts) { this.passingAttempts = passingAttempts; }
     public Integer getPassingCompletions() { return passingCompletions; }
@@ -115,25 +127,25 @@ public class GameStats {
     public Integer getPassingInterceptions() { return passingInterceptions; }
     public void setPassingInterceptions(Integer passingInterceptions) { this.passingInterceptions = passingInterceptions; }
 
-    // 5. Sacks
+    // 6. Sacks
     public Integer getSacksTotal() { return sacksTotal; }
     public void setSacksTotal(Integer sacksTotal) { this.sacksTotal = sacksTotal; }
     public Integer getSackYards() { return sackYards; }
     public void setSackYards(Integer sackYards) { this.sackYards = sackYards; }
 
-    // 6. Fumbles
+    // 7. Fumbles
     public Integer getFumblesTotal() { return fumblesTotal; }
     public void setFumblesTotal(Integer fumblesTotal) { this.fumblesTotal = fumblesTotal; }
     public Integer getFumblesLost() { return fumblesLost; }
     public void setFumblesLost(Integer fumblesLost) { this.fumblesLost = fumblesLost; }
 
-    // 7. Penalties
+    // 8. Penalties
     public Integer getPenaltiesTotal() { return penaltiesTotal; }
     public void setPenaltiesTotal(Integer penaltiesTotal) { this.penaltiesTotal = penaltiesTotal; }
     public Integer getPenaltyYards() { return penaltyYards; }
     public void setPenaltyYards(Integer penaltyYards) { this.penaltyYards = penaltyYards; }
 
-    // 8. Conversions and First Downs
+    // 9. Conversions and First Downs
     public Integer getThirdDownAttempts() { return thirdDownAttempts; }
     public void setThirdDownAttempts(Integer thirdDownAttempts) { this.thirdDownAttempts = thirdDownAttempts; }
     public Integer getThirdDownConversions() { return thirdDownConversions; }
