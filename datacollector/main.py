@@ -1,3 +1,8 @@
+import warnings
+from pandas.errors import PerformanceWarning
+
+warnings.simplefilter(action='ignore', category=PerformanceWarning)
+
 from games_page.main import run as games_page
 
 if __name__ == "__main__":

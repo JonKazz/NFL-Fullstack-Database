@@ -293,7 +293,185 @@ function GameSummary() {
               </table>
             </div>
           </div>
-          {/* You can add player stats and other sections as needed, using homeStats and awayStats */}
+        </div>
+          <div className={styles['player-stats']}>
+            <div className={styles['section-title']}>Individual Player Stats</div>
+            
+            <h3>Passing</h3>
+            <table className={styles['player-table']}>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Comp/Att</th>
+                        <th>Yards</th>
+                        <th>TD</th>
+                        <th>INT</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Patrick Mahomes</td>
+                        <td>KC</td>
+                        <td>24/35</td>
+                        <td>298</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>118.4</td>
+                    </tr>
+                    <tr>
+                        <td>Justin Herbert</td>
+                        <td>LAC</td>
+                        <td>21/32</td>
+                        <td>235</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>89.2</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Rushing</h3>
+            <table className={styles['player-table']}>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Carries</th>
+                        <th>Yards</th>
+                        <th>TD</th>
+                        <th>Long</th>
+                        <th>YPC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Isiah Pacheco</td>
+                        <td>KC</td>
+                        <td>18</td>
+                        <td>89</td>
+                        <td>1</td>
+                        <td>24</td>
+                        <td>4.9</td>
+                    </tr>
+                    <tr>
+                        <td>Austin Ekeler</td>
+                        <td>LAC</td>
+                        <td>15</td>
+                        <td>52</td>
+                        <td>0</td>
+                        <td>12</td>
+                        <td>3.5</td>
+                    </tr>
+                    <tr>
+                        <td>Clyde Edwards-Helaire</td>
+                        <td>KC</td>
+                        <td>8</td>
+                        <td>38</td>
+                        <td>0</td>
+                        <td>15</td>
+                        <td>4.8</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Receiving</h3>
+            <table className={styles['player-table']}>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Rec</th>
+                        <th>Yards</th>
+                        <th>TD</th>
+                        <th>Long</th>
+                        <th>YPR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Travis Kelce</td>
+                        <td>KC</td>
+                        <td>8</td>
+                        <td>108</td>
+                        <td>2</td>
+                        <td>32</td>
+                        <td>13.5</td>
+                    </tr>
+                    <tr>
+                        <td>Tyreek Hill</td>
+                        <td>KC</td>
+                        <td>6</td>
+                        <td>102</td>
+                        <td>1</td>
+                        <td>45</td>
+                        <td>17.0</td>
+                    </tr>
+                    <tr>
+                        <td>Keenan Allen</td>
+                        <td>LAC</td>
+                        <td>7</td>
+                        <td>89</td>
+                        <td>1</td>
+                        <td>28</td>
+                        <td>12.7</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Defense</h3>
+            <table className={styles['player-table']}>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Tackles</th>
+                        <th>Sacks</th>
+                        <th>INT</th>
+                        <th>PD</th>
+                        <th>FF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chris Jones</td>
+                        <td>KC</td>
+                        <td>6</td>
+                        <td>2.0</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Nick Bolton</td>
+                        <td>KC</td>
+                        <td>8</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Khalil Mack</td>
+                        <td>LAC</td>
+                        <td>5</td>
+                        <td>1.5</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Derwin James</td>
+                        <td>LAC</td>
+                        <td>9</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>3</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
       </div>
     </div>

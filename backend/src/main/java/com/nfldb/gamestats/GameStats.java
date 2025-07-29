@@ -4,7 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "game_stats")
 public class GameStats {
@@ -80,81 +84,5 @@ public class GameStats {
     private Integer fourthDownConversions;
     @Column(name = "first_downs_total")
     private Integer firstDownsTotal;
-
-    
-    // --- Getters and Setters ---
-
-
-    // 1. Composite Key
-    public GameStatsId getId() { return id; }
-    public void setId(GameStatsId id) { this.id = id; }
-
-    // 2. Points
-    public Integer getPointsQ1() { return pointsQ1; }
-    public void setPointsQ1(Integer pointsQ1) { this.pointsQ1 = pointsQ1; }
-    public Integer getPointsQ2() { return pointsQ2; }
-    public void setPointsQ2(Integer pointsQ2) { this.pointsQ2 = pointsQ2; }
-    public Integer getPointsQ3() { return pointsQ3; }
-    public void setPointsQ3(Integer pointsQ3) { this.pointsQ3 = pointsQ3; }
-    public Integer getPointsQ4() { return pointsQ4; }
-    public void setPointsQ4(Integer pointsQ4) { this.pointsQ4 = pointsQ4; }
-    public Integer getPointsOvertime() { return pointsOvertime; }
-    public void setPointsOvertime(Integer pointsOvertime) { this.pointsOvertime = pointsOvertime; }
-    public Integer getPointsTotal() { return pointsTotal; }
-    public void setPointsTotal(Integer pointsTotal) { this.pointsTotal = pointsTotal; }
-
-    // 3. Total Yards
-    public Integer getTotalYards() { return totalYards; }
-    public void setTotalYards(Integer totalYards) { this.totalYards = totalYards; }
-
-    // 4. Rushing
-    public Integer getRushingAttempts() { return rushingAttempts; }
-    public void setRushingAttempts(Integer rushingAttempts) { this.rushingAttempts = rushingAttempts; }
-    public Integer getRushingYards() { return rushingYards; }
-    public void setRushingYards(Integer rushingYards) { this.rushingYards = rushingYards; }
-    public Integer getRushingTouchdowns() { return rushingTouchdowns; }
-    public void setRushingTouchdowns(Integer rushingTouchdowns) { this.rushingTouchdowns = rushingTouchdowns; }
-
-    // 5. Passing
-    public Integer getPassingAttempts() { return passingAttempts; }
-    public void setPassingAttempts(Integer passingAttempts) { this.passingAttempts = passingAttempts; }
-    public Integer getPassingCompletions() { return passingCompletions; }
-    public void setPassingCompletions(Integer passingCompletions) { this.passingCompletions = passingCompletions; }
-    public Integer getPassingYards() { return passingYards; }
-    public void setPassingYards(Integer passingYards) { this.passingYards = passingYards; }
-    public Integer getPassingTouchdowns() { return passingTouchdowns; }
-    public void setPassingTouchdowns(Integer passingTouchdowns) { this.passingTouchdowns = passingTouchdowns; }
-    public Integer getPassingInterceptions() { return passingInterceptions; }
-    public void setPassingInterceptions(Integer passingInterceptions) { this.passingInterceptions = passingInterceptions; }
-
-    // 6. Sacks
-    public Integer getSacksTotal() { return sacksTotal; }
-    public void setSacksTotal(Integer sacksTotal) { this.sacksTotal = sacksTotal; }
-    public Integer getSackYards() { return sackYards; }
-    public void setSackYards(Integer sackYards) { this.sackYards = sackYards; }
-
-    // 7. Fumbles
-    public Integer getFumblesTotal() { return fumblesTotal; }
-    public void setFumblesTotal(Integer fumblesTotal) { this.fumblesTotal = fumblesTotal; }
-    public Integer getFumblesLost() { return fumblesLost; }
-    public void setFumblesLost(Integer fumblesLost) { this.fumblesLost = fumblesLost; }
-
-    // 8. Penalties
-    public Integer getPenaltiesTotal() { return penaltiesTotal; }
-    public void setPenaltiesTotal(Integer penaltiesTotal) { this.penaltiesTotal = penaltiesTotal; }
-    public Integer getPenaltyYards() { return penaltyYards; }
-    public void setPenaltyYards(Integer penaltyYards) { this.penaltyYards = penaltyYards; }
-
-    // 9. Conversions and First Downs
-    public Integer getThirdDownAttempts() { return thirdDownAttempts; }
-    public void setThirdDownAttempts(Integer thirdDownAttempts) { this.thirdDownAttempts = thirdDownAttempts; }
-    public Integer getThirdDownConversions() { return thirdDownConversions; }
-    public void setThirdDownConversions(Integer thirdDownConversions) { this.thirdDownConversions = thirdDownConversions; }
-    public Integer getFourthDownAttempts() { return fourthDownAttempts; }
-    public void setFourthDownAttempts(Integer fourthDownAttempts) { this.fourthDownAttempts = fourthDownAttempts; }
-    public Integer getFourthDownConversions() { return fourthDownConversions; }
-    public void setFourthDownConversions(Integer fourthDownConversions) { this.fourthDownConversions = fourthDownConversions; }
-    public Integer getFirstDownsTotal() { return firstDownsTotal; }
-    public void setFirstDownsTotal(Integer firstDownsTotal) { this.firstDownsTotal = firstDownsTotal; }
 }
 

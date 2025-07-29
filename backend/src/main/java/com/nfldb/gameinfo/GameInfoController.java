@@ -1,3 +1,4 @@
+package com.nfldb.gameinfo;
 // package com.nfldb.game;
 
 // import org.springframework.web.bind.annotation.*;

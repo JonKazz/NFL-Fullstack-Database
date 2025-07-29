@@ -19,9 +19,12 @@ PASSING_ADVANCED_TABLE_ID = 'passing_advanced'
 RUSHING_ADVANCED_TABLE_ID = 'rushing_advanced'
 RECEIVING_ADVANCED_TABLE_ID = 'receiving_advanced'
 DEFENSIVE_ADVANCED_TABLE_ID = 'defense_advanced'
+SNAPCOUNT_HOME_TEAM_TABLE_ID = 'home_snap_counts'
+SNAPCOUNT_VISITING_TEAM_TABLE_ID = 'vis_snap_counts'
 
-PLAYER_STATS_TABLE_IDS_LIST = ['player_offense', 'player_defense', 'returns', 'kicking', 'passing_advanced', 
-                              'rushing_advanced', 'receiving_advanced', 'defense_advanced']
+PLAYER_STATS_TABLE_IDS_LIST = [GENERAL_OFFENSIVE_STATS_TABLE_ID, GENERAL_DEFENSIVE_STATS_TABLE_ID, RETURN_STATS_TABLE_ID, 
+                               KICKING_STATS_TABLE_ID, PASSING_ADVANCED_TABLE_ID, RUSHING_ADVANCED_TABLE_ID, RECEIVING_ADVANCED_TABLE_ID, 
+                               DEFENSIVE_ADVANCED_TABLE_ID, SNAPCOUNT_HOME_TEAM_TABLE_ID, SNAPCOUNT_VISITING_TEAM_TABLE_ID]
 
 def get_urls_by_week_and_year(week, year) -> list[str]:
     url = f'https://www.pro-football-reference.com/years/{year}/week_{week}.htm'
@@ -48,14 +51,13 @@ def get_urls_by_week_and_year(week, year) -> list[str]:
     
 class GameScraper:
     def __init__(self, url: str):
-        self.url = url
-        self.html = requests.get(url)
-        self.soup = BeautifulSoup(self.html.text, 'html.parser')
+        html = requests.get(url)
+        self.soup = BeautifulSoup(html.text, 'html.parser')
         self.game_stats_df = pd.DataFrame()
-        self.game_info_df = dict()
+        self.game_info_df = {'url': url}
         self.game_player_stats_df = pd.DataFrame()
         
-        
+    
     def get_game_info(self, season, week) -> pd.DataFrame:
         self._parse_game_info_table()
         self._parse_scorebox()
@@ -72,43 +74,37 @@ class GameScraper:
     
     
     def get_game_player_stats(self) -> pd.DataFrame:
-        self._parse_general_offensive_stats()
-        self._parse_general_defensive_stats()
-        self._parse_advanced_passing_player_stats()
-        self._parse_advanced_rushing_player_stats()
-        self._parse_advanced_defensive_player_stats()
+        self._parse_offensive_stats() 
         self.game_player_stats_df['game_id'] = self.game_info_df['game_id']
         return self.game_player_stats_df
     
     
-    def _scrape_comments_for_table(self, table_id: str) -> Tag:    
-        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
-        for c in comments:
-            if 'table' in c and table_id in c:
-                table = BeautifulSoup(c, 'html.parser').find('table', id=table_id)
-                if table:
-                    break
-        else:
-            raise ValueError(f'[!] Table with id: ({table_id}) not found in comments.')
-        return table
     
-    
-    def _extract_table(self, table_id: str) -> Tag:    
-        table = self.soup.find('table', id=table_id)
+    # ---------------------------------------------
+    # Helper Methods
+    # ---------------------------------------------
+    def _extract_table(self, table_id_or_class: str) -> Tag:
+        table = self.soup.find('table', id=table_id_or_class) # Searching for table_id
         if table:
             return table
-        
-        # Table might be concealed in comments
-        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
-        for c in comments:
-            if 'table' in c and table_id in c:
-                table = BeautifulSoup(c, 'html.parser').find('table', id=table_id)
-                if table:
-                    break
-        else:
-            raise ValueError(f'[!] Table with id: ({table_id}) not found in comments.')
-        return table
 
+        table = self.soup.find('table', class_=table_id_or_class) # Searching for table class
+        if table:
+            return table
+
+        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment)) # Check inside comments
+        for c in comments:
+            if 'table' in c and table_id_or_class in c:
+                parsed = BeautifulSoup(c, 'html.parser')
+                table = parsed.find('table', id=table_id_or_class)
+                if table:
+                    return table
+                table = parsed.find('table', class_=table_id_or_class)
+                if table:
+                    return table
+
+        raise ValueError(f'[!] Table with id/class: ({table_id_or_class}) not found, even in comments.')
+        
 
     def _create_game_id(self, season, week) -> None:
         self.game_info_df['season_year'] = season
@@ -119,65 +115,14 @@ class GameScraper:
             self.game_info_df['away_team_id'] + "_" +
             str(self.game_info_df['season_week'])
         )
-        
-        
-    def _parse_team_stats_table(self) -> None:
-        table = self._scrape_comments_for_table(TEAM_STATS_TABLE_ID)
-        rows = table.find_all('tr')
-        if not rows:
-            raise ValueError('[!] Malformed TeamStats table: No rows found')
-        
-        headers = rows[0].find_all('th')
-        team_ids = [
-            TEAMABR_TO_TEAMID_MAP[th.get_text(strip=True)]
-            for th in headers[1:3]
-        ]
-        
-        self.game_stats_df = pd.DataFrame({'team_id': team_ids})
-
-        for idx, team_id in enumerate(team_ids):
-            for row in rows[1:]:
-                stat_name = row.find('th', {'data-stat': 'stat'}).get_text(strip=True)
-                stat_val = row.find_all('td')[idx].get_text(strip=True)
-                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, stat_name] = stat_val
-
-
-    def _parse_linescore_stats(self) -> None:
-        table = self.soup.find('table', class_=LINESCORE_TABLE_CLASSID)
-        if table is None:
-            raise ValueError(f'[!] Linescore table with id: ({LINESCORE_TABLE_CLASSID}) not found.')
-            
-        rows = table.find('tbody').find_all('tr')
-        if len(rows) != 2:
-            raise ValueError(f'[!] Malformed linescore table: {len(rows)} rows found.')
-        
-        for i, row in enumerate(rows):
-            cells = row.find_all('td')
-            if len(cells) not in [7, 8]:
-                raise ValueError(f'[!] Malformed linescore table: {len(cells)} cells found at row {i}.')
-
-            team_name_raw = cells[1].get_text(strip=True)
-            team_id = TEAMNAME_TO_TEAMID_MAP.get(team_name_raw)
-            if not team_id:
-                raise ValueError(f"[!] Malformed linescore table: Unknown team: {team_name_raw}")
-
-            scores = [cells[i].get_text(strip=True) for i in range(2, len(cells))]
-            scores = [int(val) if val.isdigit() else None for val in scores]
-
-            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q1'] = scores[0]
-            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q2'] = scores[1]
-            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q3'] = scores[2]
-            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q4'] = scores[3]
-            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_total'] = scores[-1]
-
-            if len(scores) == 6: # Only triggers if linescore table shows overtime
-                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_overtime'] = scores[4]
-            else:
-                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_overtime'] = 0
-
-
+    
+    
+    
+    # ---------------------------------------------
+    # GameInfo Methods
+    # ---------------------------------------------
     def _parse_game_info_table(self) -> None:
-        table = self._scrape_comments_for_table(GAME_INFO_TABLE_ID)
+        table = self._extract_table(GAME_INFO_TABLE_ID)
         
         rows = table.find_all('tr')
         if not rows:
@@ -211,9 +156,7 @@ class GameScraper:
     
     
     def _parse_linescore_general_info(self) -> None:
-        table = self.soup.find('table', class_=LINESCORE_TABLE_CLASSID)
-        if table is None:
-            raise ValueError(f'[!] Linescore table with id: ({LINESCORE_TABLE_CLASSID}) not found.')
+        table = self._extract_table(LINESCORE_TABLE_CLASSID)
         
         rows = table.find('tbody').find_all('tr')
         if len(rows) != 2:
@@ -241,8 +184,69 @@ class GameScraper:
             home_team_id if int(home_points) > int(away_points) else away_team_id
         )
         self.game_info_df['overtime'] = len(away_team_row) == 8
+        
+        
+    
+    # ---------------------------------------------
+    # GameTeamStats Methods
+    # ---------------------------------------------    
+    def _parse_team_stats_table(self) -> None:
+        table = self._extract_table(TEAM_STATS_TABLE_ID)
+        rows = table.find_all('tr')
+        if not rows:
+            raise ValueError('[!] Malformed TeamStats table: No rows found')
+        
+        headers = rows[0].find_all('th')
+        team_ids = [
+            TEAMABR_TO_TEAMID_MAP[th.get_text(strip=True)]
+            for th in headers[1:3]
+        ]
+        
+        self.game_stats_df = pd.DataFrame({'team_id': team_ids})
+
+        for idx, team_id in enumerate(team_ids):
+            for row in rows[1:]:
+                stat_name = row.find('th', {'data-stat': 'stat'}).get_text(strip=True)
+                stat_val = row.find_all('td')[idx].get_text(strip=True)
+                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, stat_name] = stat_val
+
+
+    def _parse_linescore_stats(self) -> None:
+        table = self._extract_table(LINESCORE_TABLE_CLASSID)
+            
+        rows = table.find('tbody').find_all('tr')
+        if len(rows) != 2:
+            raise ValueError(f'[!] Malformed linescore table: {len(rows)} rows found.')
+        
+        for i, row in enumerate(rows):
+            cells = row.find_all('td')
+            if len(cells) not in [7, 8]:
+                raise ValueError(f'[!] Malformed linescore table: {len(cells)} cells found at row {i}.')
+
+            team_name_raw = cells[1].get_text(strip=True)
+            team_id = TEAMNAME_TO_TEAMID_MAP.get(team_name_raw)
+            if not team_id:
+                raise ValueError(f"[!] Malformed linescore table: Unknown team: {team_name_raw}")
+
+            scores = [cells[i].get_text(strip=True) for i in range(2, len(cells))]
+            scores = [int(val) if val.isdigit() else None for val in scores]
+
+            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q1'] = scores[0]
+            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q2'] = scores[1]
+            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q3'] = scores[2]
+            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_q4'] = scores[3]
+            self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_total'] = scores[-1]
+
+            if len(scores) == 6: # Only triggers if linescore table shows overtime
+                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_overtime'] = scores[4]
+            else:
+                self.game_stats_df.loc[self.game_stats_df['team_id'] == team_id, 'points_overtime'] = 0
     
     
+    
+    # ---------------------------------------------
+    # GamePlayerStats Methods
+    # ---------------------------------------------
     def _validate_and_insert_player_stat(self, player_id: str, stat_name: str, stat_value: str) -> None:
         # If player_id doesn't exist, add a new row with player_id
         if ('player_id' not in self.game_player_stats_df.columns or 
@@ -274,10 +278,10 @@ class GameScraper:
                 )    
     
     
-    def _parse_player_stats_table(self, table: Tag) -> None:
+    def _parse_player_stats_table(self, table: Tag, table_id: str) -> None:
         rows = table.find_all('tr')
         if not rows:
-            raise ValueError('[!] Malformed PlayerStats table: No rows found')
+            raise ValueError(f'[!] Malformed table with id={table_id}: No rows found')
 
         for row in rows:
             player_cell = row.find('th')
@@ -292,37 +296,40 @@ class GameScraper:
                 self._validate_and_insert_player_stat(player_id, stat_name, stat_value)
 
     
-    def _parse_general_offensive_stats(self) -> None:
-        table = self._extract_table(GENERAL_OFFENSIVE_STATS_TABLE_ID)
-        self._parse_player_stats_table(table)
+    def _parse_offensive_stats(self) -> None:
+        for table_id in PLAYER_STATS_TABLE_IDS_LIST:
+            table = self._extract_table(table_id)
+            self._parse_player_stats_table(table, table_id)
+    
+    
+    
+    # ---------------------------------------------
+    # Player Methods
+    # ---------------------------------------------
+    def extract_player_ids(self) -> list[str]:
+        player_ids = set()
         
-    def _parse_general_defensive_stats(self) -> None:
-        table = self._extract_table(GENERAL_DEFENSIVE_STATS_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
-    def _parse_return_stats(self) -> None:
-        table = self._extract_table(RETURN_STATS_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
-    def _parse_kicking_stats(self) -> None:
-        table = self._extract_table(KICKING_STATS_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
-    def _parse_advanced_passing_player_stats(self) -> None:
-        table = self._extract_table(PASSING_ADVANCED_TABLE_ID)
-        self._parse_player_stats_table(table)
+        def _get_player_ids_from_table(table: Tag, table_id) -> list[str]:
+            ids = set()
+            rows = table.find_all('tr')
+            if not rows:
+                raise ValueError(f'[!] Malformed table with id={table_id}: No rows found')
+            
+            for row in rows:
+                player_cell = row.find('th')
+                if not player_cell:
+                    raise ValueError(f'[!] Malformed table with id={table_id}: No table header cells found')
+                
+                player_id = player_cell.get('data-append-csv')
+                if not player_id: # Likely a header row
+                    continue
+                ids.add(player_id)
+            return list(ids)
+            
+        home_team_table = self._extract_table(SNAPCOUNT_HOME_TEAM_TABLE_ID)
+        away_team_table = self._extract_table(SNAPCOUNT_VISITING_TEAM_TABLE_ID)
         
-    def _parse_advanced_rushing_player_stats(self) -> None:
-        table = self._extract_table(RUSHING_ADVANCED_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
-    def _parse_advanced_receiving_player_stats(self) -> None:
-        table = self._extract_table(RECEIVING_ADVANCED_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
-    def _parse_advanced_defensive_player_stats(self) -> None:
-        table = self._extract_table(DEFENSIVE_ADVANCED_TABLE_ID)
-        self._parse_player_stats_table(table)
-    
+        player_ids.update(_get_player_ids_from_table(home_team_table, SNAPCOUNT_HOME_TEAM_TABLE_ID))
+        player_ids.update(_get_player_ids_from_table(away_team_table, SNAPCOUNT_VISITING_TEAM_TABLE_ID))
         
-    
+        return list(player_ids)

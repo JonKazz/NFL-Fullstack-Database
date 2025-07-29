@@ -233,6 +233,7 @@
 
 .player-stats {
   margin-top: 30px;
+  padding: 30px 40px;
 }
 
 .player-table {
@@ -383,12 +384,12 @@
   }
   
   .scoreboard {
-      flex-direction: column;
+      flex-direction: row;
       gap: 20px;
   }
 
   .vs {
-      margin: 10px 0;
+      margin: 0 10px;
   }
 
   .stats-grid {

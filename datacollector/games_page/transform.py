@@ -40,6 +40,7 @@ GAME_STATS_COL_MAP = {
 # Column mapping for game_info_table
 GAME_INFO_COL_MAP = {
     'game_id': 'game_id',
+    'url': 'url',
     'Won Toss': 'won_toss',
     'Roof': 'roof_type',
     'Surface': 'surface_type',
@@ -158,29 +159,27 @@ def modify_game_info_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def modify_game_player_stats_features(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.convert_dtypes()
-    
+def modify_game_player_stats_features(df: pd.DataFrame) -> pd.DataFrame:    
     for col in df.columns:
-        if df[col].dtype == object or df[col].dtype.name == 'string':
-            # Remove % if present, then convert to float
-            if df[col].astype(str).str.contains('%').any():
-                df[col] = (
-                    df[col]
-                    .astype(str)
-                    .str.replace('%', '', regex=False)
-                    .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
-                    .astype(float)
-                )
-            else:
-                # For regular numeric columns stored as string
-                df[col] = (
-                    df[col]
-                    .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
-                )
-                try:
-                    df[col] = df[col].astype(float)
-                except Exception:
-                    pass 
-                
+        # Remove % if present, then convert to float
+        if df[col].astype(str).str.contains('%').any():
+            df[col] = (
+                df[col]
+                .astype(str)
+                .str.replace('%', '', regex=False)
+                .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
+                .astype(float)
+            )
+        else:
+            df[col] = (
+                df[col]
+                .replace({'': np.nan})
+            )
+            try:
+                df[col] = df[col].astype(float)
+            except Exception:
+                pass 
+    
+    df = df.convert_dtypes()
+     
     return df

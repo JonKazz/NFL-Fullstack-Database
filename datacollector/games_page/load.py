@@ -4,6 +4,7 @@ import sqlalchemy
 from config import HOSTNAME, DATABASE, USERNAME, PASSWORD, PORT
 from sqlalchemy.dialects.postgresql import insert
 
+
 # ---------------------------------------------
 # DB Utility
 # ---------------------------------------------
@@ -15,6 +16,19 @@ def get_db_connection():
         password=PASSWORD,
         port=PORT
     )
+
+
+def get_all_db_game_urls() -> list[str]:
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT url FROM game_info WHERE url IS NOT NULL;")
+                rows = cur.fetchall()
+                return [row[0] for row in rows]
+    except Exception as e:
+        print("Error fetching URLs from game_info:", e)
+        return []
+
 
 
 # ---------------------------------------------
@@ -76,6 +90,7 @@ def create_game_info_table():
     DROP TABLE IF EXISTS game_info;
     CREATE TABLE game_info (
         game_id VARCHAR(50),
+        url VARCHAR(200),
         won_toss VARCHAR(100),
         roof_type VARCHAR(100),
         surface_type VARCHAR(100),
@@ -141,6 +156,24 @@ def create_game_player_stats_table():
         fumbles_rec_yds REAL,
         fumbles_rec_td REAL,
         fumbles_forced REAL,
+        kick_ret REAL,
+        kick_ret_yds REAL,
+        kick_ret_yds_per_ret REAL,
+        kick_ret_td REAL,
+        kick_ret_long REAL,
+        punt_ret REAL,
+        punt_ret_yds REAL,
+        punt_ret_yds_per_ret REAL,
+        punt_ret_td REAL,
+        punt_ret_long REAL,
+        xpm REAL,
+        xpa REAL,
+        fgm REAL,
+        fga REAL,
+        punt REAL,
+        punt_yds REAL,
+        punt_yds_per_punt REAL,
+        punt_long REAL,
         pass_first_down REAL,
         pass_first_down_pct REAL,
         pass_target_yds REAL,
@@ -168,6 +201,18 @@ def create_game_player_stats_table():
         rush_yac_per_rush REAL,
         rush_broken_tackles REAL,
         rush_broken_tackles_per_rush REAL,
+        rec_first_down REAL,
+        rec_air_yds REAL,
+        rec_air_yds_per_rec REAL,
+        rec_yac REAL,
+        rec_yac_per_rec REAL,
+        rec_adot REAL,
+        rec_broken_tackles REAL,
+        rec_broken_tackles_per_rec REAL,
+        rec_drops REAL,
+        rec_drop_pct REAL,
+        rec_target_int REAL,
+        rec_pass_rating REAL,
         def_targets REAL,
         def_cmp REAL,
         def_cmp_perc REAL,
@@ -185,16 +230,24 @@ def create_game_player_stats_table():
         pressures REAL,
         tackles_missed REAL,
         tackles_missed_pct REAL,
+        pos VARCHAR(10),
+        offense REAL,
+        off_pct REAL,
+        defense REAL,
+        def_pct REAL,
+        special_teams REAL,
+        st_pct REAL,
         PRIMARY KEY (game_id, player_id)
     );
     '''
     create_table(query, 'game_player_stats')
     
     
+    
 # ---------------------------------------------
 # Insert Helpers
 # ---------------------------------------------
-def insert_df_with_conflict_handling(df, table_name, conflict_cols):
+def insert_df_with_conflict_handling(df, table_name):
     engine = sqlalchemy.create_engine(f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}')
 
     with engine.begin() as conn:
@@ -202,13 +255,20 @@ def insert_df_with_conflict_handling(df, table_name, conflict_cols):
         table = sqlalchemy.Table(table_name, meta, autoload_with=engine)
         for _, row in df.iterrows():
             stmt = insert(table).values(**row.to_dict())
-            stmt = stmt.on_conflict_do_nothing(index_elements=conflict_cols)
+            if table_name == 'game_stats':
+                stmt = stmt.on_conflict_do_nothing(index_elements=['game_id', 'team_id'])
+            elif table_name == 'game_info':
+                stmt = stmt.on_conflict_do_nothing(index_elements=['game_id'])
+            elif table_name == 'game_player_stats':
+                stmt = stmt.on_conflict_do_nothing(index_elements=['game_id', 'player_id'])
+
             result = conn.execute(stmt)
+
             if table_name == 'game_info':
                 if result.rowcount == 0:
-                    print(f"Skipped duplicate for {conflict_cols}={tuple(row[col] for col in conflict_cols)}")
+                    print(f"Skipped duplicate for game_id={row['game_id']}")
                 else:
-                    print(f"Inserted row for {conflict_cols}={tuple(row[col] for col in conflict_cols)}")
+                    print(f"Inserted row for game_id={row['game_id']}")
 
 
 
@@ -216,10 +276,10 @@ def insert_df_with_conflict_handling(df, table_name, conflict_cols):
 # Specific Insert Functions
 # ---------------------------------------------
 def insert_game_stats_df(df):
-    insert_df_with_conflict_handling(df, 'game_stats', ['game_id', 'team_id'])
+    insert_df_with_conflict_handling(df, 'game_stats')
 
 def insert_game_player_stats_df(df):
-    insert_df_with_conflict_handling(df, 'game_player_stats', ['game_id', 'player_id'])
+    insert_df_with_conflict_handling(df, 'game_player_stats')
     
 def insert_game_info_df(df):
-    insert_df_with_conflict_handling(df, 'game_info', ['game_id'])
+    insert_df_with_conflict_handling(df, 'game_info')
