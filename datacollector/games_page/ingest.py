@@ -1,7 +1,10 @@
 import pandas as pd
 import requests
+import re
 from config import TEAMNAME_TO_TEAMID_MAP, TEAMABR_TO_TEAMID_MAP
 from bs4 import BeautifulSoup, Comment, Tag
+
+SEASON_WEEK_SCORES_DIV_ID = 'div_other_scores'
 
 LINESCORE_TABLE_CLASSID = 'linescore nohover stats_table no_freeze'
 GAME_INFO_TABLE_ID = 'game_info'
@@ -49,6 +52,8 @@ def get_urls_by_week_and_year(week, year) -> list[str]:
     return links
     
     
+    
+    
 class GameScraper:
     def __init__(self, url: str):
         html = requests.get(url)
@@ -56,26 +61,27 @@ class GameScraper:
         self.game_stats_df = pd.DataFrame()
         self.game_info_df = {'url': url}
         self.game_player_stats_df = pd.DataFrame()
+        self.game_id = self._create_game_id()
         
     
-    def get_game_info(self, season, week) -> pd.DataFrame:
+    def get_game_info(self) -> pd.DataFrame:
         self._parse_game_info_table()
         self._parse_scorebox()
         self._parse_linescore_general_info()
-        self._create_game_id(season, week) 
+        self.game_info_df['game_id'] = self.game_id
         return pd.DataFrame([self.game_info_df])
 
 
     def get_game_stats(self) -> pd.DataFrame:
         self._parse_team_stats_table()
         self._parse_linescore_stats()
-        self.game_stats_df['game_id'] = self.game_info_df['game_id']
+        self.game_stats_df['game_id'] = self.game_id
         return self.game_stats_df
     
     
     def get_game_player_stats(self) -> pd.DataFrame:
         self._parse_offensive_stats() 
-        self.game_player_stats_df['game_id'] = self.game_info_df['game_id']
+        self.game_player_stats_df['game_id'] = self.game_id
         return self.game_player_stats_df
     
     
@@ -92,7 +98,8 @@ class GameScraper:
         if table:
             return table
 
-        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment)) # Check inside comments
+        # If not found, look through HTML comments
+        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
         for c in comments:
             if 'table' in c and table_id_or_class in c:
                 parsed = BeautifulSoup(c, 'html.parser')
@@ -106,17 +113,68 @@ class GameScraper:
         raise ValueError(f'[!] Table with id/class: ({table_id_or_class}) not found, even in comments.')
         
 
-    def _create_game_id(self, season, week) -> None:
-        self.game_info_df['season_year'] = season
-        self.game_info_df['season_week'] = week
-        self.game_info_df['game_id'] = (
-            str(self.game_info_df['season_year']) + "_" +
-            self.game_info_df['home_team_id'] + "_" +
-            self.game_info_df['away_team_id'] + "_" +
-            str(self.game_info_df['season_week'])
-        )
+    def _extract_div(self, div_id: str) -> Tag:
+        div = self.soup.find('div', id=div_id)
+        if div:
+            return div
+
+        # If not found, look through HTML comments
+        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
+        for c in comments:
+            if div_id in c:
+                comment_soup = BeautifulSoup(c, 'html.parser')
+                div = comment_soup.find('div', id=div_id)
+                if div:
+                    return div
+
+        raise ValueError(f'div with id={div_id} not found')
     
     
+    def _create_game_id(self) -> str:
+        home_team_id, away_team_id = self._extract_team_ids()
+        season_week, season_year = self._extract_season_week_and_year()
+        game_id = str(season_year) + '_' + home_team_id + '_' + away_team_id + '_' + str(season_week)
+        return game_id
+            
+    
+    def _extract_season_week_and_year(self) -> pd.DataFrame:
+        div = self._extract_div(SEASON_WEEK_SCORES_DIV_ID)
+        
+        h2 = div.find('h2')
+        if not h2:
+            raise ValueError(f'No <h2> found inside the div id={SEASON_WEEK_SCORES_DIV_ID}')
+        
+        a_tag = h2.find('a')
+        if not a_tag or not a_tag.has_attr('href'):
+            raise ValueError("No <a> tag with href found inside <h2>")
+        
+        href = a_tag['href'] # e.g., "/years/2022/week_15.htm"
+        match = re.search(r'/years/(\d{4})/week_(\d+)\.htm', href)
+        if not match:
+            raise ValueError(f"Unexpected href format: {href} for season_week_scores div")
+
+        year = int(match.group(1))
+        week = int(match.group(2))
+        return week, year
+    
+    
+    def _extract_team_ids(self) -> pd.DataFrame:
+        table = self._extract_table(LINESCORE_TABLE_CLASSID)
+        
+        rows = table.find('tbody').find_all('tr')
+        if len(rows) != 2:
+            raise ValueError(f'[!] Malformed linescore table: {len(rows)} rows found.')
+        
+        away_team_row = rows[0].find_all('td')
+        home_team_row = rows[1].find_all('td')
+        away_team_name = away_team_row[1].get_text(strip=True)
+        home_team_name = home_team_row[1].get_text(strip=True)
+        away_team_id = TEAMNAME_TO_TEAMID_MAP.get(away_team_name)
+        home_team_id = TEAMNAME_TO_TEAMID_MAP.get(home_team_name)
+        
+        return home_team_id, away_team_id
+        
+        
     
     # ---------------------------------------------
     # GameInfo Methods
@@ -184,6 +242,11 @@ class GameScraper:
             home_team_id if int(home_points) > int(away_points) else away_team_id
         )
         self.game_info_df['overtime'] = len(away_team_row) == 8
+        
+        parsed_game_id = self.game_id.split("_")
+        self.game_info_df['season_week'] = parsed_game_id[3]
+        self.game_info_df['season_year'] = parsed_game_id[0]
+        
         
         
     

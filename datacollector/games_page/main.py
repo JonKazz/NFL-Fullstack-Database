@@ -17,7 +17,7 @@ def run(start_week, end_week):
                 
                 print('Scraping for:', url)
                 scraper = GameScraper(url)
-                df_game_info = scraper.get_game_info(year, week)
+                df_game_info = scraper.get_game_info()
                 df_game_stats = scraper.get_game_stats()
                 df_game_player_stats = scraper.get_game_player_stats()
                 
@@ -30,3 +30,26 @@ def run(start_week, end_week):
                 insert_game_stats_df(df_game_stats)
                 insert_game_player_stats_df(df_game_player_stats) 
                 polite_sleep(7, 8)
+
+
+def run(url):
+    logged_urls = get_all_db_game_urls()
+    if url in logged_urls:
+        print(f'{url} already logged. Skipping')
+        return
+
+    print('Scraping for:', url)
+    scraper = GameScraper(url)
+    df_game_info = scraper.get_game_info()
+    df_game_stats = scraper.get_game_stats()
+    df_game_player_stats = scraper.get_game_player_stats()
+    
+    df_game_info = transform_game_info_table(df_game_info)
+    df_game_stats = transform_game_stats_table(df_game_stats)
+    df_game_player_stats = transform_game_player_stats_table(df_game_player_stats)
+    
+    print('Inserting for:', url)
+    insert_game_info_df(df_game_info)
+    insert_game_stats_df(df_game_stats)
+    insert_game_player_stats_df(df_game_player_stats) 
+    polite_sleep(7, 8)
