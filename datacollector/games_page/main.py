@@ -1,8 +1,10 @@
-from .ingest import get_urls_by_week_and_year, GameScraper
+from .ingest import get_urls_by_week_and_year, GamePageScraper
+from .transform import GamePageTransformer
+from .load import insert_game_info_df, insert_game_stats_df, insert_game_player_stats_df, insert_player_profile_df, get_all_db_game_urls
+from player_page.ingest import PlayerPageScraper 
 from utils import polite_sleep
 from config import SEASONS_TEST, WEEKS_TEST
-from .transform import transform_game_info_table, transform_game_stats_table, transform_game_player_stats_table
-from .load import insert_game_info_df, insert_game_stats_df, insert_game_player_stats_df, get_all_db_game_urls
+
 
 
 def run(start_week, end_week):
@@ -11,45 +13,38 @@ def run(start_week, end_week):
         for week in WEEKS_TEST[start_week - 1 : end_week]:
             game_urls = get_urls_by_week_and_year(week, year)
             for url in game_urls:
-                if url in logged_urls:
+                if url not in logged_urls:
+                    ETL_game_page(url)
+                else:    
                     print(f'{url} already logged. Skipping')
-                    continue
-                
-                print('Scraping for:', url)
-                scraper = GameScraper(url)
-                df_game_info = scraper.get_game_info()
-                df_game_stats = scraper.get_game_stats()
-                df_game_player_stats = scraper.get_game_player_stats()
-                
-                df_game_info = transform_game_info_table(df_game_info)
-                df_game_stats = transform_game_stats_table(df_game_stats)
-                df_game_player_stats = transform_game_player_stats_table(df_game_player_stats)
-                
-                print('Inserting for:', url)
-                insert_game_info_df(df_game_info)
-                insert_game_stats_df(df_game_stats)
-                insert_game_player_stats_df(df_game_player_stats) 
-                polite_sleep(7, 8)
 
 
-def run(url):
-    logged_urls = get_all_db_game_urls()
-    if url in logged_urls:
-        print(f'{url} already logged. Skipping')
-        return
-
+def ETL_game_page(url):
     print('Scraping for:', url)
-    scraper = GameScraper(url)
+    scraper = GamePageScraper(url)
     df_game_info = scraper.get_game_info()
     df_game_stats = scraper.get_game_stats()
     df_game_player_stats = scraper.get_game_player_stats()
     
-    df_game_info = transform_game_info_table(df_game_info)
-    df_game_stats = transform_game_stats_table(df_game_stats)
-    df_game_player_stats = transform_game_player_stats_table(df_game_player_stats)
+    transformer = GamePageTransformer(df_game_info, df_game_stats, df_game_player_stats)
+    df_game_info = transformer.transform_game_info_df()
+    df_game_stats = transformer.transform_game_stats_df()
+    df_game_player_stats = transformer.transform_player_stats_df()
     
     print('Inserting for:', url)
     insert_game_info_df(df_game_info)
     insert_game_stats_df(df_game_stats)
     insert_game_player_stats_df(df_game_player_stats) 
+    
+    player_ids = scraper.extract_player_ids()
+    for player_id in player_ids:
+        url = f'https://www.pro-football-reference.com/players/{player_id[0]}/{player_id}.htm'
+        print('Scraping for:', url)
+        player_scraper = PlayerPageScraper(player_id)
+        df_player_profile = player_scraper.get_player_profile()
+        insert_player_profile_df(df_player_profile)
+        polite_sleep(7, 8)
+        
     polite_sleep(7, 8)
+    
+    
