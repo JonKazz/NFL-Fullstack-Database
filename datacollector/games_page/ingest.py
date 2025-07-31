@@ -392,10 +392,11 @@ class GamePageScraper:
             self._parse_player_stats_table(table, table_id)
     
     
+    
     # ---------------------------------------------
     # Player Methods
     # ---------------------------------------------
-    def extract_player_ids(self) -> list[str]:
+    def extract_player_ids_from_game_page(self) -> list[str]:
         player_ids = set()
         
         def _get_player_ids_from_table(table: Tag, table_id) -> list[str]:

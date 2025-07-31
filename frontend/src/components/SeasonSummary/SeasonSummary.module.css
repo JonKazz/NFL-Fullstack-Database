@@ -117,34 +117,40 @@
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 2px solid var(--game-result-color);
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
   position: relative;
   overflow: hidden;
-  cursor: 'pointer'
-}
-
-.game-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .game-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
-  border-color: #3b82f6;
+  border-color: var(--game-result-color);
 }
 
-.game-card:hover::before {
-  opacity: 1;
+.game-card.win {
+  --game-result-color: #10b981;
+}
+
+.game-card.loss {
+  --game-result-color: #ef4444;
+}
+
+.game-card.playoff {
+  --game-result-color: #8b5cf6;
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.week.playoff {
+  background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.8rem;
 }
 
 .game-header {
@@ -314,6 +320,136 @@
   color: #3b82f6;
   font-weight: 500;
   font-size: 0.9rem;
+}
+
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.stats-category {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  width: 100%;
+}
+
+.stats-category-title {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: #1e293b;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.stats-grid-detailed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 12px;
+  border: 2px solid var(--rank-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-color: var(--rank-color);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item:hover .stat-rank {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px var(--rank-shadow);
+}
+
+.stat-rank {
+  background: var(--rank-color);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 50%;
+  min-width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px var(--rank-shadow);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.stat-rank::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: var(--rank-color);
+  opacity: 0.2;
+  z-index: -1;
+  transform: scale(0);
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover .stat-rank::after {
+  transform: scale(1.2);
+}
+
+.stat-details {
+  flex-grow: 1;
+}
+
+.stat-name {
+  font-size: 0.95rem;
+  color: #475569;
+  margin-bottom: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value-detailed {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #1e293b;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Solid ranking color variables */
+.stat-item.rank-elite {
+  --rank-color: #10b981;
+  --rank-shadow: rgba(16, 185, 129, 0.4);
+}
+
+.stat-item.rank-great {
+  --rank-color: #3b82f6;
+  --rank-shadow: rgba(59, 130, 246, 0.4);
+}
+
+.stat-item.rank-good {
+  --rank-color: #f59e0b;
+  --rank-shadow: rgba(245, 158, 11, 0.4);
+}
+
+.stat-item.rank-average {
+  --rank-color: #ef4444;
+  --rank-shadow: rgba(239, 68, 68, 0.4);
 }
 
 @media (max-width: 768px) {

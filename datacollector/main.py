@@ -3,7 +3,10 @@ from pandas.errors import PerformanceWarning
 
 warnings.simplefilter(action='ignore', category=PerformanceWarning)
 
-from games_page.main import run as run_games_page
+from games_page.main import ETL_games_season_year 
+from load import DatabaseLoader
 
 if __name__ == "__main__":
-    run_games_page(start_week=1, end_week=18)
+    loader = DatabaseLoader()
+    for year in [2024]:
+        ETL_games_season_year(year, loader)

@@ -3,7 +3,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
-class PlayerPageScraper():
+class PlayerProfilePageScraper():
     def __init__(self, player_id: str):
         url = f'https://www.pro-football-reference.com/players/{player_id[0]}/{player_id}.htm'
         html = requests.get(url)
