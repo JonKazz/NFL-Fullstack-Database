@@ -18,4 +18,12 @@ public class GamePlayerStatsService {
     public List<GamePlayerStats> getPlayers(String gameId) {
         return repository.findByIdGameId(gameId);
     }
+
+    public List<GamePlayerStats> getTeamSeasonStats(String teamId, String year) {
+        return repository.findByTeamIdAndIdGameIdStartingWith(teamId, year);
+    }
+
+    public List<Object> getTeamSeasonAggregatedStats(String teamId, String year) {
+        return repository.findAggregatedStatsByTeamAndYear(teamId, year);
+    }
 }

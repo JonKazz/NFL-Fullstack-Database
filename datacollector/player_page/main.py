@@ -1,4 +1,8 @@
-from .ingest import GameScraper
+from .ingest import PlayerProfilePageScraper
 
-def run(url):
-    scraper = GameScraper(url)
+def ETL_player_profile(url, loader):
+    scraper = PlayerProfilePageScraper()
+    scraper.load_page(url)
+    player_profile_df = scraper.get_player_profile()
+    loader.insert_player_profile_df(player_profile_df)
+

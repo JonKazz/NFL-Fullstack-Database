@@ -6,6 +6,14 @@ from utils import polite_sleep
 from config import SEASONS_TEST, WEEKS_TEST
 
 
+def extract_player_urls_from_game_page(url):
+    scraper = GamePageScraper()
+    scraper.load_page(url)
+    player_ids = scraper.extract_player_ids_from_game_page()
+    urls = [f'https://www.pro-football-reference.com/players/{player_id[0]}/{player_id}.htm' for player_id in player_ids]
+    return urls
+
+
 def ETL_games_season_year(year: int, loader):
     logged_urls = get_all_db_game_urls()
     for week in WEEKS_TEST:
@@ -17,7 +25,6 @@ def ETL_games_season_year(year: int, loader):
                 print(f'{url} already logged. Skipping')
 
 
-
 def ETL_games_season_year_and_week(year: int, week: int, loader):
     logged_urls = get_all_db_game_urls()
     game_urls = get_urls_by_week_and_year(week, year)
@@ -26,19 +33,6 @@ def ETL_games_season_year_and_week(year: int, week: int, loader):
             ETL_game_page(url, loader)
         else:
             print(f'{url} already logged. Skipping')
-
-
-
-def ETL_players_from_game_page(url, loader):
-    game_page = GamePageScraper(url)
-    player_ids = game_page.extract_player_ids_from_game_page
-    logged_player_urls = get_all_db_player_urls()
-    for player_id in player_ids:
-        url = f'https://www.pro-football-reference.com/players/{player_id[0]}/{player_id}.htm'
-        if url in logged_player_urls:
-            print(f'{url} already logged. Skipping')
-        ETL_player_profile(url, loader)
-
 
 
 def ETL_game_page(url, loader):
@@ -55,17 +49,7 @@ def ETL_game_page(url, loader):
     
     loader.insert_game_info_df(df_game_info)
     loader.insert_game_stats_df(df_team_stats)
-    loader.insert_game_player_stats_df(df_player_stats) 
+    loader.insert_game_player_stats_df(df_player_stats)     
     
-    polite_sleep(7, 8)
-    
-    
-    
-def ETL_player_profile(url, loader):
-    print('Scraping and inserting for:', url)
-    player_scraper = PlayerProfilePageScraper(url)
-    df_player_profile = player_scraper.get_player_profile()
-    loader.insert_player_profile_df(df_player_profile)
-    
-    polite_sleep(7, 8)
+
     

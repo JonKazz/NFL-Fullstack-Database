@@ -1,8 +1,8 @@
 import pandas as pd
 import requests
 import re
-from config import TEAMABR_TO_TEAMID_MAP
 from bs4 import BeautifulSoup, Comment, Tag
+from scraper import PageScraper
 
 SEASON_WEEK_SCORES_DIV_ID = 'div_other_scores'
 SCOREBOX_DIV_ID = 'scorebox_meta'
@@ -24,10 +24,9 @@ DEFENSIVE_ADVANCED_TABLE_ID = 'defense_advanced'
 SNAPCOUNT_HOME_TEAM_TABLE_ID = 'home_snap_counts'
 SNAPCOUNT_VISITING_TEAM_TABLE_ID = 'vis_snap_counts'
 
-PLAYER_GENERAL_STATS_TABLE_IDS_LIST = [GENERAL_OFFENSIVE_STATS_TABLE_ID, GENERAL_DEFENSIVE_STATS_TABLE_ID, RETURN_STATS_TABLE_ID, 
-                                       KICKING_STATS_TABLE_ID]
+PLAYER_GENERAL_STATS_TABLE_IDS_LIST = [GENERAL_OFFENSIVE_STATS_TABLE_ID, GENERAL_DEFENSIVE_STATS_TABLE_ID, KICKING_STATS_TABLE_ID]
 
-PLAYER_ADVANCED_STATS_TABLE_IDS_LIST = [PASSING_ADVANCED_TABLE_ID, RUSHING_ADVANCED_TABLE_ID, RECEIVING_ADVANCED_TABLE_ID, 
+PLAYER_ADVANCED_STATS_TABLE_IDS_LIST = [RETURN_STATS_TABLE_ID, PASSING_ADVANCED_TABLE_ID, RUSHING_ADVANCED_TABLE_ID, RECEIVING_ADVANCED_TABLE_ID, 
                                         DEFENSIVE_ADVANCED_TABLE_ID, SNAPCOUNT_HOME_TEAM_TABLE_ID, SNAPCOUNT_VISITING_TEAM_TABLE_ID]
 
 def get_urls_by_week_and_year(week, year) -> list[str]:
@@ -55,15 +54,20 @@ def get_urls_by_week_and_year(week, year) -> list[str]:
     
     
     
-class GamePageScraper:
-    def __init__(self, url: str):
-        html = requests.get(url)
-        self.soup = BeautifulSoup(html.text, 'html.parser')
+class GamePageScraper(PageScraper):
+    def __init__(self):
+        super().__init__()
         self.game_stats_df = pd.DataFrame()
-        self.game_info_df = {'url': url}
+        self.game_info_df = {}
         self.game_player_stats_df = pd.DataFrame()
+        self.game_id = None
+
+    
+    def load_page(self, url: str) -> None:
+        super().load_page(url)
+        self.game_info_df['url'] = url
         self.game_id = self._create_game_id()
-        
+ 
     
     def get_game_info(self) -> pd.DataFrame:
         self._parse_game_info_table()
@@ -90,56 +94,6 @@ class GamePageScraper:
     # ---------------------------------------------
     # Helper Methods
     # ---------------------------------------------
-    def _extract_table(self, table_id_or_class: str) -> Tag:
-        table = self.soup.find('table', id=table_id_or_class) # Searching for table_id
-        if table:
-            return table
-
-        table = self.soup.find('table', class_=table_id_or_class) # Searching for table class
-        if table:
-            return table
-
-        # If not found, look through HTML comments
-        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
-        for c in comments:
-            if 'table' in c and table_id_or_class in c:
-                parsed = BeautifulSoup(c, 'html.parser')
-                table = parsed.find('table', id=table_id_or_class)
-                if table:
-                    return table
-                table = parsed.find('table', class_=table_id_or_class)
-                if table:
-                    return table
-
-        return None
-        
-
-    def _extract_div(self, div_id: str) -> Tag:
-        div = self.soup.find('div', id=div_id)
-        if div:
-            return div
-
-        div = self.soup.find('div', class_=div_id)
-        if div:
-            return div
-        
-        # If not found, look through HTML comments
-        comments = self.soup.find_all(string=lambda text: isinstance(text, Comment))
-        for c in comments:
-            if div_id in c:
-                comment_soup = BeautifulSoup(c, 'html.parser')
-                
-                div = comment_soup.find('div', id=div_id)
-                if div:
-                    return div
-                
-                div = comment_soup.find('div', class_=div_id)
-                if div:
-                    return div
-
-        raise ValueError(f'[!] div with id/class = ({div_id}) not found')
-    
-    
     def _create_game_id(self) -> str:
         home_team_id, away_team_id = self._extract_team_ids()
         season_week, season_year = self._extract_season_week_and_year()

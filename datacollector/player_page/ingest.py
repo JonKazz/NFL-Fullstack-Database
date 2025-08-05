@@ -1,15 +1,17 @@
 import pandas as pd
-import requests
 import re
-from bs4 import BeautifulSoup
+from scraper import PageScraper
 
-class PlayerProfilePageScraper():
-    def __init__(self, player_id: str):
-        url = f'https://www.pro-football-reference.com/players/{player_id[0]}/{player_id}.htm'
-        html = requests.get(url)
-        self.soup = BeautifulSoup(html.text, 'html.parser')
-        self.player_df = {'player_id': player_id, 'url': url}
+class PlayerProfilePageScraper(PageScraper):
+    def __init__(self):
+        super().__init__()
+        self.player_df = {}
     
+    def load_page(self, url: str) -> None:
+        super().load_page(url)
+        self.player_df['url'] = url
+        player_id = url.split('/')[-1].split('.')[0]
+        self.player_df['player_id'] = player_id
 
     def get_player_profile(self) -> pd.DataFrame:
         self._parse_player_metadata()
@@ -17,7 +19,7 @@ class PlayerProfilePageScraper():
 
     
     def _parse_player_metadata(self) -> pd.DataFrame:
-        meta = self.soup.find('div', id='meta')
+        meta = self._extract_div('meta')
         if not meta:
             raise ValueError("[!] Could not find metadata div")
         

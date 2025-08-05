@@ -32,3 +32,40 @@ export const TEAM_MAP = {
     'oti': { name: 'Tennessee Titans', city: 'Tennessee' },
     'was': { name: 'Washington Commanders', city: 'Washington' }
 };
+
+
+// Format numbers for display
+export function formatNumber(num) {
+  if (num === null || num === undefined) return '0';
+  return num.toLocaleString();
+}
+
+// Calculate yards per carry
+export function calculateYPC(rushYds, rushAtt) {
+  if (!rushAtt || rushAtt === 0) return '0.0';
+  return (rushYds / rushAtt).toFixed(1);
+}
+
+// Calculate yards per catch
+export function calculateYPCatch(recYds, rec) {
+  if (!rec || rec === 0) return '0.0';
+  return (recYds / rec).toFixed(1);
+}
+
+// Calculate field goal percentage
+export function calculateFGPercentage(fgm, fga) {
+  if (!fga || fga === 0) return '0.0%';
+  return ((fgm / fga) * 100).toFixed(1) + '%';
+}
+
+// Calculate extra point percentage
+export function calculateXPPercentage(xpm, xpa) {
+  if (!xpa || xpa === 0) return '0.0%';
+  return ((xpm / xpa) * 100).toFixed(1) + '%';
+}
+
+// Calculate punt average
+export function calculatePuntAverage(puntYds, punt) {
+  if (!punt || punt === 0) return '0.0';
+  return (puntYds / punt).toFixed(1);
+}

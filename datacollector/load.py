@@ -65,6 +65,34 @@ class DatabaseLoader:
         except Exception as e:
             print(f"Error creating {table_name} table:", e)
     
+    def create_season_team_info_table(self):
+        query = '''
+        DROP TABLE IF EXISTS season_team_info;
+        CREATE TABLE season_team_info (
+            id VARCHAR(50) PRIMARY KEY NOT NULL,
+            team_id VARCHAR(50) NOT NULL,
+            year INT NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            city VARCHAR(100) NOT NULL,
+            stadium VARCHAR(500),
+            wins INT,
+            losses INT,
+            ties INT,
+            division_rank INT,
+            division VARCHAR(100),
+            playoffs VARCHAR(100),
+            points_for INT NOT NULL,
+            points_against INT NOT NULL,
+            coach VARCHAR(100),
+            off_coordinator VARCHAR(500),
+            def_coordinator VARCHAR(500),
+            off_scheme VARCHAR(500),
+            def_alignment VARCHAR(500),
+            logo VARCHAR(300) NOT NULL
+        );
+        '''
+        self.create_table(query, 'season_team_info')
+    
     
     def create_game_info_table(self):
         query = '''
@@ -303,6 +331,8 @@ class DatabaseLoader:
                     stmt = stmt.on_conflict_do_nothing(index_elements=['game_id', 'player_id'])
                 elif table_name == 'player_profiles':
                     stmt = stmt.on_conflict_do_nothing(index_elements=['player_id'])
+                elif table_name == 'season_team_info':
+                    stmt = stmt.on_conflict_do_nothing(index_elements=['id'])
                 else:
                     raise ValueError(f'Invalid table name: {table_name}')
                 
@@ -314,6 +344,18 @@ class DatabaseLoader:
                         print(f"Skipped duplicate for game_id={row['game_id']}")
                     else:
                         print(f"Inserted row for game_id={row['game_id']}")
+                
+                if table_name == 'season_team_info':
+                    if result.rowcount == 0:
+                        print(f"Skipped duplicate for id={row['id']}")
+                    else:
+                        print(f"Inserted row for id={row['id']}")
+
+                if table_name == 'player_profiles':
+                    if result.rowcount == 0:
+                        print(f"Skipped duplicate for player_id={row['player_id']}")
+                    else:
+                        print(f"Inserted row for player_id={row['player_id']}")
     
     def insert_game_stats_df(self, df):
         self.insert_df(df, 'game_stats')
@@ -327,12 +369,16 @@ class DatabaseLoader:
     def insert_player_profile_df(self, df):
         self.insert_df(df, 'player_profiles')
     
+    def insert_season_team_info_df(self, df):
+        self.insert_df(df, 'season_team_info')
+    
     def create_all_tables(self):
         print("Creating all database tables...")
         self.create_game_info_table()
         self.create_game_stats_table()
         self.create_game_player_stats_table()
         self.create_player_profiles_table()
+        self.create_season_team_info_table()
         print("All tables created successfully!")
 
 
