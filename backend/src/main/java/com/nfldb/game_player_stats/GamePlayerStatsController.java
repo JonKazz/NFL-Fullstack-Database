@@ -21,14 +21,4 @@ public class GamePlayerStatsController {
     public List<GamePlayerStats> getPlayers(@RequestParam String gameId) {
         return gamePlayerStatsService.getPlayers(gameId);
     }
-
-    @GetMapping("/team-season")
-    public List<GamePlayerStats> getTeamSeasonStats(@RequestParam String teamId, @RequestParam String year) {
-        return gamePlayerStatsService.getTeamSeasonStats(teamId, year);
-    }
-
-    @GetMapping("/team-season-aggregated")
-    public List<Object> getTeamSeasonAggregatedStats(@RequestParam String teamId, @RequestParam String year) {
-        return gamePlayerStatsService.getTeamSeasonAggregatedStats(teamId, year);
-    }
 }

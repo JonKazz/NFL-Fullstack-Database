@@ -1,5 +1,5 @@
 import pandas as pd
-from scraper import PageScraper
+from scrapers.scraper import PageScraper
 
 class TeamPageScraper(PageScraper):
     def __init__(self):

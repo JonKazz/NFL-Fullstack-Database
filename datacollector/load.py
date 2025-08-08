@@ -1,34 +1,27 @@
 import psycopg2
 import sqlalchemy
-#from datacollector.config import HOSTNAME, DATABASE, USERNAME, PASSWORD, PORT
-from config import HOSTNAME, DATABASE, USERNAME, PASSWORD, PORT
 from sqlalchemy.dialects.postgresql import insert
-
+from nfl_datacollector.config import DatabaseConfig
 
 class DatabaseLoader:
-    def __init__(self):
-        self.hostname = HOSTNAME
-        self.database = DATABASE
-        self.username = USERNAME
-        self.password = PASSWORD
-        self.port = PORT
+    def __init__(self, config: DatabaseConfig = None):
+        if config is None:
+            config = DatabaseConfig.from_env()
+        self.config = config
         self.engine = None
-    
-    
+
     def get_connection(self):
         return psycopg2.connect(
-            host=self.hostname,
-            dbname=self.database,
-            user=self.username,
-            password=self.password,
-            port=self.port
+            host=self.config.hostname,
+            dbname=self.config.database,
+            user=self.config.username,
+            password=self.config.password,
+            port=self.config.port
         )
-    
+
     def get_engine(self):
         if self.engine is None:
-            self.engine = sqlalchemy.create_engine(
-                f'postgresql+psycopg2://{self.username}:{self.password}@{self.hostname}:{self.port}/{self.database}'
-            )
+            self.engine = sqlalchemy.create_engine(self.config.get_connection_string())
         return self.engine
     
     
@@ -172,7 +165,7 @@ class DatabaseLoader:
         CREATE TABLE game_player_stats (
             game_id VARCHAR(50) NOT NULL,
             player_id VARCHAR(50) NOT NULL,
-            team VARCHAR(50),
+            team_id VARCHAR(50) NOT NULL,
             position VARCHAR(10),
             pass_completions REAL,
             pass_attempts REAL,

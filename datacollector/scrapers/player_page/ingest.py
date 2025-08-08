@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from scraper import PageScraper
+from scrapers.scraper import PageScraper
 
 class PlayerProfilePageScraper(PageScraper):
     def __init__(self):

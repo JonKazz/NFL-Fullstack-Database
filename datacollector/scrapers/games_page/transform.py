@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from nfl_datacollector.utils import TEAM_ABR_TO_TEAM_ID_MAP
 
 GAME_INFO_COL_MAP = {
     'game_id': 'game_id',
@@ -70,7 +71,7 @@ PLAYER_STATS_COL_MAP = {
     # Identifiers
     'game_id': 'game_id',
     'player_id': 'player_id',
-    'team': 'team',
+    'team': 'team_id',
     'pos': 'position',
 
     # Passing Stats
@@ -322,23 +323,27 @@ class GamePageTransformer():
 
     def _modify_player_stats_features(self) -> None:    
         for col in self.player_stats_df.columns:
-            # Remove % if present, then convert to float
-            if self.player_stats_df[col].astype(str).str.contains('%').any():
-                self.player_stats_df[col] = (
-                    self.player_stats_df[col]
-                    .astype(str)
-                    .str.replace('%', '', regex=False)
-                    .replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
-                    .astype(float)
-                )
-            else:
-                self.player_stats_df[col] = (
-                    self.player_stats_df[col]
-                    .replace({'': np.nan})
-                )
-                try:
-                    self.player_stats_df[col] = self.player_stats_df[col].astype(float)
-                except Exception:
-                    pass 
+            col_data = self.player_stats_df[col]
+
+            if col_data.dtype == object or pd.api.types.is_string_dtype(col_data):
+                col_str = col_data.astype(str)
+
+                if col_str.str.contains('%').any():
+                    col_str = col_str.str.replace('%', '', regex=False)
+
+                col_str = col_str.replace({'': np.nan, '<NA>': np.nan, 'nan': np.nan})
+
+                self.player_stats_df[col] = col_str.infer_objects(copy=False)
+
+            try:
+                self.player_stats_df[col] = self.player_stats_df[col].astype(float)
+            except (ValueError, TypeError):
+                pass
+
+                
+        self.player_stats_df.dropna(subset=['team_id'], inplace=True)
+        self.player_stats_df['team_id'] = self.player_stats_df['team_id'].apply(
+            lambda x: TEAM_ABR_TO_TEAM_ID_MAP.get(x, x) if x not in TEAM_ABR_TO_TEAM_ID_MAP.values() else x
+        )
         
         self.player_stats_df = self.player_stats_df.convert_dtypes()

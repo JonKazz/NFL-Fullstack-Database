@@ -1,4 +1,5 @@
 import requests
+from nfl_datacollector.utils import polite_sleep
 from bs4 import BeautifulSoup, Comment, Tag
 
 class PageScraper:
@@ -11,7 +12,7 @@ class PageScraper:
         self.url = url
         html = requests.get(url)
         self.soup = BeautifulSoup(html.text, 'html.parser')
-        
+        polite_sleep(6, 8)
         
     def _extract_table(self, table_id_or_class: str) -> Tag:
         if self.soup is None:

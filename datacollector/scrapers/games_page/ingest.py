@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import re
 from bs4 import BeautifulSoup, Comment, Tag
-from scraper import PageScraper
+from scrapers.scraper import PageScraper
 
 SEASON_WEEK_SCORES_DIV_ID = 'div_other_scores'
 SCOREBOX_DIV_ID = 'scorebox_meta'
@@ -60,6 +60,11 @@ class GamePageScraper(PageScraper):
         self.game_stats_df = pd.DataFrame()
         self.game_info_df = {}
         self.game_player_stats_df = pd.DataFrame()
+        
+        self.home_team_id = None
+        self.away_team_id = None
+        self.season_week = None
+        self.season_year = None
         self.game_id = None
 
     
@@ -86,6 +91,7 @@ class GamePageScraper(PageScraper):
     
     def get_game_player_stats(self) -> pd.DataFrame:
         self._parse_player_stats() 
+        self._assign_player_team_ids()
         self.game_player_stats_df['game_id'] = self.game_id
         return self.game_player_stats_df
     
@@ -95,13 +101,13 @@ class GamePageScraper(PageScraper):
     # Helper Methods
     # ---------------------------------------------
     def _create_game_id(self) -> str:
-        home_team_id, away_team_id = self._extract_team_ids()
-        season_week, season_year = self._extract_season_week_and_year()
-        game_id = str(season_year) + '_' + home_team_id + '_' + away_team_id + '_' + str(season_week)
+        self._extract_season_week_and_year()
+        self._extract_team_ids()
+        game_id = str(self.season_year) + '_' + self.home_team_id + '_' + self.away_team_id + '_' + str(self.season_week)
         return game_id
             
     
-    def _extract_season_week_and_year(self) -> tuple[int, int]:
+    def _extract_season_week_and_year(self) -> None:
         div = self._extract_div(SEASON_WEEK_SCORES_DIV_ID)
         
         h2 = div.find('h2')
@@ -120,10 +126,11 @@ class GamePageScraper(PageScraper):
         year = int(match.group(1))
         week = int(match.group(2))
         
-        return week, year
+        self.season_week = week
+        self.season_year = year
     
     
-    def _extract_team_ids(self) -> tuple[str, str]:
+    def _extract_team_ids(self) -> None:
         table = self._extract_table(LINESCORE_TABLE_CLASSID)
         if table is None:
             return
@@ -150,7 +157,8 @@ class GamePageScraper(PageScraper):
         if not away_team_id or not home_team_id:
             raise ValueError(f"[!] Could not extract team IDs from hrefs: away='{away_team_href}', home='{home_team_href}'")
         
-        return home_team_id, away_team_id
+        self.home_team_id = home_team_id
+        self.away_team_id = away_team_id
         
         
     
@@ -208,21 +216,17 @@ class GamePageScraper(PageScraper):
         self.game_info_df['away_points'] = away_points
         self.game_info_df['home_points'] = home_points
 
-        home_team_id = self.game_id.split('_')[1]
-        away_team_id = self.game_id.split('_')[2]
-        self.game_info_df['away_team_id'] = away_team_id
-        self.game_info_df['home_team_id'] = home_team_id
+        self.game_info_df['away_team_id'] = self.away_team_id
+        self.game_info_df['home_team_id'] = self.home_team_id
         
         self.game_info_df['winning_team_id'] = (
-            home_team_id if int(home_points) > int(away_points) else away_team_id
+            self.home_team_id if int(home_points) > int(away_points) else self.away_team_id
         )
         self.game_info_df['overtime'] = len(away_team_row) == 8
         
-        parsed_game_id = self.game_id.split("_")
-        self.game_info_df['season_week'] = parsed_game_id[3]
-        self.game_info_df['season_year'] = parsed_game_id[0]
-        
-        
+        self.game_info_df['season_week'] = self.season_week
+        self.game_info_df['season_year'] = self.season_year
+            
         
     
     # ---------------------------------------------
@@ -237,7 +241,7 @@ class GamePageScraper(PageScraper):
         if not rows:
             raise ValueError('[!] Malformed TeamStats table: No rows found')
         
-        team_ids = self.game_id.split('_')[1:3]
+        team_ids = [self.home_team_id, self.away_team_id]
         
         self.game_stats_df = pd.DataFrame({'team_id': team_ids})
 
@@ -284,6 +288,10 @@ class GamePageScraper(PageScraper):
     # PlayerStats Methods
     # ---------------------------------------------
     def _validate_and_insert_player_stat(self, player_id: str, stat_name: str, stat_value: str) -> None:
+        # Convert empty strings to null values
+        if stat_value == '':
+            stat_value = pd.NA
+        
         # If player_id doesn't exist, add a new row with player_id
         if ('player_id' not in self.game_player_stats_df.columns or 
              player_id not in self.game_player_stats_df['player_id'].values):
@@ -332,6 +340,27 @@ class GamePageScraper(PageScraper):
                 self._validate_and_insert_player_stat(player_id, stat_name, stat_value)
 
     
+    def _assign_player_team_ids(self) -> None:
+        home_team_table = self._extract_table(SNAPCOUNT_HOME_TEAM_TABLE_ID)
+        away_team_table = self._extract_table(SNAPCOUNT_VISITING_TEAM_TABLE_ID)
+        if home_team_table is None or away_team_table is None:
+            return
+
+        for team_table, team_id in [(home_team_table, self.home_team_id), (away_team_table, self.away_team_id)]:
+            rows = team_table.find("tbody").find_all("tr")
+            player_ids = []
+            
+            for row in rows:
+                th = row.find("th", {"data-append-csv": True})
+                if th:
+                    player_ids.append(th["data-append-csv"])
+            
+            self.game_player_stats_df.loc[
+                self.game_player_stats_df['player_id'].isin(player_ids),
+                'team'
+            ] = team_id
+        
+        
     def _parse_player_stats(self) -> None:
         for table_id in PLAYER_GENERAL_STATS_TABLE_IDS_LIST:
             table = self._extract_table(table_id)
