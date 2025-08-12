@@ -17,4 +17,7 @@ public class RegSeasonPlayerStatsId implements Serializable {
     
     @Column(name = "season_year")
     private Integer seasonYear;
+
+    @Column(name = "team_id")
+    private String teamId;
 }

@@ -1,582 +1,478 @@
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchTeamsBySeason, fetchPlayoffGames } from '../../api/fetches';
 import styles from './SeasonSummary.module.css';
-import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats } from '../../api/fetches';
-import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName } from '../../utils';
 
-function SeasonSummaryVisualization() {
-  const [searchParams] = useSearchParams();
+function SeasonSummary() {
+  const { year } = useParams();
   const navigate = useNavigate();
-  const teamId = searchParams.get('teamId');
-  const year = searchParams.get('year');
-  const [teamInfo, setTeamInfo] = useState(null);
-  const [games, setGames] = useState(null);
-  const [playerStats, setPlayerStats] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [teams, setTeams] = useState([]);
+  const [playoffs, setPlayoffs] = useState([]);
+  const [awards, setAwards] = useState([]);
+  const [statLeaders, setStatLeaders] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+
 
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
+    const fetchData = async () => {
       try {
-        const [teamInfoResult, gamesResult, playerStatsResult] = await Promise.allSettled([
-          fetchTeamInfo(teamId, year),
-          fetchFullSeason(teamId, year),
-          fetchTeamPlayerStats(teamId, year)
-        ]);
+        setLoading(true);
+        
+                // Fetch teams from backend
+        const teamsData = await fetchTeamsBySeason(year);
+        setTeams(teamsData);
+        
+        // Fetch playoff games from backend
+        const playoffGamesData = await fetchPlayoffGames(year);
+        setPlayoffs(playoffGamesData);
 
-        if (teamInfoResult.status === 'fulfilled') {
-          setTeamInfo(teamInfoResult.value);
-        } else {
-          setError('Failed to fetch team info');
-        }
+      setAwards([
+        { award: 'MVP', winner: 'Patrick Mahomes', team: 'Kansas City Chiefs' },
+        { award: 'Offensive Player of the Year', winner: 'Tyreek Hill', team: 'Miami Dolphins' },
+        { award: 'Defensive Player of the Year', winner: 'Myles Garrett', team: 'Cleveland Browns' },
+        { award: 'Offensive Rookie of the Year', winner: 'C.J. Stroud', team: 'Houston Texans' },
+        { award: 'Defensive Rookie of the Year', winner: 'Will Anderson Jr.', team: 'Houston Texans' },
+        { award: 'Coach of the Year', winner: 'Dan Campbell', team: 'Detroit Lions' }
+      ]);
 
-        if (gamesResult.status === 'fulfilled') {
-          setGames(gamesResult.value);
-        } else {
-          setError('Failed to fetch game info');
-        }
-
-        if (playerStatsResult.status === 'fulfilled') {
-          setPlayerStats(playerStatsResult.value);
-        } else {
-          console.warn('Failed to fetch player stats, using fallback data');
-        }
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (teamId && year) {
-      fetchData();
+      setStatLeaders({
+        passing: { leader: 'Patrick Mahomes', team: 'Kansas City Chiefs', yards: 4183, tds: 31 },
+        rushing: { leader: 'Christian McCaffrey', team: 'San Francisco 49ers', yards: 1459, tds: 14 },
+        receiving: { leader: 'Tyreek Hill', team: 'Miami Dolphins', yards: 1799, tds: 13 },
+        sacks: { leader: 'T.J. Watt', team: 'Pittsburgh Steelers', sacks: 19 },
+        interceptions: { leader: 'DaRon Bland', team: 'Dallas Cowboys', ints: 9 }
+      });
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
     }
-  }, [teamId, year]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className={styles['season-summary-error']}>{error}</p>;
-  if (!teamInfo || !games) return <p>No data available</p>;
-
-  const { logo, wins, losses, division, divisionRank, playoffs, coach, offCoordinator,
-          defCoordinator } = teamInfo;
-  const teamName = TEAM_MAP[teamId]?.name;
-
-  // Process player stats
-  const processedPlayerStats = processPlayerStats(playerStats);
-
-  const handleGameClick = (gameId) => {
-    navigate(`/game?gameId=${gameId}`);
   };
   
+  fetchData();
+}, [year]);
+
+  const handleTeamSelect = (teamId) => {
+    if (teamId) {
+      navigate(`/team-season/${year}/${teamId}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.pageBackground}>
+        <div className={styles.container}>
+          <div className={styles.loading}>Loading {year} Season Data...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.pageBackground}>
       <div className={styles.container}>
-        {/* Header Section */}
+        {/* Header */}
         <div className={styles.header}>
-          <div className={styles['header-background']}>
-            <div className={styles['team-logo-bg']}>
-              {logo ? (
-                <img src={logo} alt={teamName} className={styles['team-logo-background']} />
-              ) : (
-                <div className={styles['team-logo-placeholder']}>{teamName?.slice(0,2)}</div>
-              )}
-            </div>
-          </div>
-          <div className={styles['header-content']}>
-            <div className={styles['team-info']}>
-              <div className={styles['team-details']}>
-                <h1>{year} {teamName}</h1>
-                <div className={styles['team-stats']}>
-                  <div className={styles['stat-item-header']}>
-                    <div className={styles['stat-value-header']}>{wins}-{losses}</div>
-                    <div className={styles['stat-label-header']}>Record</div>
-                  </div>
-                  <div className={styles['stat-item-header']}>
-                    <div className={styles['stat-value-header']}>{divisionRank || '-'}</div>
-                    <div className={styles['stat-label-header']}>{division || 'Division'}</div>
-                  </div>
-                  <div className={styles['stat-item-header']}>
-                    <div className={`${styles['stat-value-header']} ${styles['playoffs-value-header']}`}>{playoffs || '-'}</div>
-                    <div className={styles['stat-label-header']}>Playoffs</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <button onClick={() => navigate('/')} className={styles.backButton}>
+            ← Back to Home
+          </button>
+          <h1>{year} NFL Season</h1>
+          <p>League Overview, Standings, and Statistics</p>
         </div>
 
-        {/* Coaching Staff Section */}
+        {/* Team Selection */}
         <div className={styles.section}>
-              <div className={styles['coach-info']}>
-                  <div className={styles['coaching-staff']}>
-                      <div className={styles['coach-card']}>
-                          <div className={styles['coach-name']}>{coach}</div>
-                          <div className={styles['coach-title']}>Head Coach</div>
-                      </div>
-                      <div className={styles['coach-card']}>
-                          <div className={styles['coach-name']}>{offCoordinator}</div>
-                          <div className={styles['coach-title']}>Offensive Coordinator</div>
-                      </div>
-                      <div className={styles['coach-card']}>
-                          <div className={styles['coach-name']}>{defCoordinator}</div>
-                          <div className={styles['coach-title']}>Defensive Coordinator</div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-        {/* Games Section */}
-        <div className={styles.section}>
-          <h2 className={styles['section-title']}>Season Schedule & Results</h2>
-          <div className={styles['games-grid']}>
-            {games.map((game, idx) => {
-              const { gameInfo, gameStats } = game;
-              const myStats = gameStats.find(gs => gs.id.teamId === teamId);
-              const oppStats = gameStats.find(gs => gs.id.teamId !== teamId);
-              const isHome = gameInfo.homeTeamId === teamId;
-              const isWin = myStats.pointsTotal > oppStats.pointsTotal;
-              const isPlayoff = gameInfo.seasonWeek === 'WC' || gameInfo.seasonWeek === 'DIV' || 
-                               gameInfo.seasonWeek === 'CONF' || gameInfo.seasonWeek === 'SB';
-
-              let gameCardClass = styles['game-card'];
-              if (isPlayoff) {
-                gameCardClass += ` ${styles.playoff}`;
-              } else {
-                gameCardClass += isWin ? ` ${styles.win}` : ` ${styles.loss}`;
-              }
-
-              return (
+          <h2 className={styles['section-title']}>Explore Team Season</h2>
+          <div className={styles['team-selection']}>
+            <label className={styles.label}>Select a team to view detailed season analysis:</label>
+            <div className={styles['team-grid']}>
+              {teams.map((team) => (
                 <div
-                  className={gameCardClass}
-                  onClick={() => handleGameClick(gameInfo.gameId)}
-                  key={gameInfo.gameId || idx}
+                  key={team.teamId}
+                  className={`${styles['team-logo-item']} ${selectedTeam === team.teamId ? styles.selected : ''}`}
+                  onClick={() => setSelectedTeam(team.teamId)}
                 >
-                  {/* Game Header */}
-                  <div className={styles['game-header']}>
-                    <div className={styles['game-meta']}>
-                      <div className={styles['week-date-row']}>
-                        <div className={`${styles.week} ${isPlayoff ? styles.playoff : ''}`}>
-                          {isPlayoff ? gameInfo.seasonWeek : `Week ${gameInfo.seasonWeek}`}
-                        </div>
-                    <div className={styles['game-date']}>{gameInfo.date}</div>
-                      </div>
-                    </div>
-                    <div className={styles['game-result']}>
-                      {isWin ? 'W' : 'L'}
-                    </div>
-                  </div>
-
-                  {/* Game Matchup */}
-                  <div className={styles['game-matchup']}>
-                    {/* My Team */}
-                    <div className={styles['team-section']}>
-                      <div className={styles['team-info']}>
-                        <div className={`${styles['team-name']} ${isWin ? styles['winner-text'] : ''}`}>
-                          {TEAM_MAP[myStats.id.teamId]?.city}
-                        </div>
-                        <div className={styles['team-record']}>
-                          {/* Could add team record here if available */}
-                        </div>
-                      </div>
-                      <div className={`${styles['team-score']} ${isWin ? styles['winner-score'] : ''}`}>
-                        {myStats.pointsTotal}
-                      </div>
-                    </div>
-
-                    {/* Game Status */}
-                    <div className={styles['game-status']}>
-                      <div className={styles['vs-indicator']}>{isHome ? 'vs' : '@'}</div>
-                    </div>
-
-                    {/* Opponent Team */}
-                    <div className={styles['team-section']}>
-                      <div className={styles['team-info']}>
-                        <div className={`${styles['team-name']} ${!isWin ? styles['winner-text'] : ''}`}>
-                          {TEAM_MAP[oppStats.id.teamId]?.city}
-                        </div>
-                        <div className={styles['team-record']}>
-                          {/* Could add team record here if available */}
-                        </div>
-                      </div>
-                      <div className={`${styles['team-score']} ${!isWin ? styles['winner-score'] : ''}`}>
-                        {oppStats.pointsTotal}
-                      </div>
+                  <div className={styles['team-logo-container']}>
+                    <img 
+                      src={team.logo} 
+                      alt={`${team.name} logo`}
+                      className={styles['team-logo']}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className={styles['team-logo-fallback']}>
+                      {team.city ? team.city.slice(0, 2).toUpperCase() : 'TM'}
                     </div>
                   </div>
+                  <div className={styles['team-name']}>{team.city || team.name}</div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+            {selectedTeam && (
+              <button 
+                onClick={() => handleTeamSelect(selectedTeam)}
+                className={styles.exploreButton}
+              >
+                Explore {teams.find(t => t.teamId === selectedTeam)?.name || 'Team'} Season
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Team Statistics Section */}
+        {/* Standings */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Team Statistics</h2>
-          <div className={styles['stats-section']}>
-            
-            {/* Offensive Statistics */}
-            <div className={styles['stats-category']}>
-              <h3 className={styles['stats-category-title']}>Offensive Statistics</h3>
+          <h2 className={styles['section-title']}>Season Standings</h2>
+          <div className={styles['standings-container']}>
+            {/* AFC Divisions */}
+            <div className={styles['conference']}>
+              <h3>AFC</h3>
               
-              {/* Main Stats - Prominent Display */}
-              <div className={styles['main-stats-grid']}>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#5</div>
-                    <div className={styles['main-stat-name']}>Total Offense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>389.2 YPG</div>
-                </div>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#12</div>
-                    <div className={styles['main-stat-name']}>Passing Offense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>244.4 YPG</div>
-                </div>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#3</div>
-                    <div className={styles['main-stat-name']}>Rushing Offense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>144.8 YPG</div>
+              {/* AFC East */}
+              <div className={styles['division']}>
+                <h4>AFC East</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'AFC East')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Miscellaneous Stats - Table Format */}
-              <div className={styles['misc-stats-section']}>
-                <table className={styles['misc-stats-table']}>
-                  <tbody>
-                    <tr>
-                      <td className={styles['rank-cell']}>#1</td>
-                      <td className={styles['stat-name-cell']}>Red Zone Efficiency</td>
-                      <td className={styles['stat-value-cell']}>73.5%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#7</td>
-                      <td className={styles['stat-name-cell']}>3rd Down Conversion</td>
-                      <td className={styles['stat-value-cell']}>44.2%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#4</td>
-                      <td className={styles['stat-name-cell']}>Time of Possession</td>
-                      <td className={styles['stat-value-cell']}>31:42</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#6</td>
-                      <td className={styles['stat-name-cell']}>Points Per Game</td>
-                      <td className={styles['stat-value-cell']}>28.9</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#5</td>
-                      <td className={styles['stat-name-cell']}>Touchdowns</td>
-                      <td className={styles['stat-value-cell']}>48</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#8</td>
-                      <td className={styles['stat-name-cell']}>Field Goals</td>
-                      <td className={styles['stat-value-cell']}>28</td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* AFC North */}
+              <div className={styles['division']}>
+                <h4>AFC North</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'AFC North')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AFC South */}
+              <div className={styles['division']}>
+                <h4>AFC South</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'AFC South')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AFC West */}
+              <div className={styles['division']}>
+                <h4>AFC West</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'AFC West')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Defensive Statistics */}
-            <div className={styles['stats-category']}>
-              <h3 className={styles['stats-category-title']}>Defensive Statistics</h3>
+            {/* NFC Divisions */}
+            <div className={styles['conference']}>
+              <h3>NFC</h3>
               
-              {/* Main Stats - Prominent Display */}
-              <div className={styles['main-stats-grid']}>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#3</div>
-                    <div className={styles['main-stat-name']}>Total Defense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>298.4 YPG</div>
-                </div>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#8</div>
-                    <div className={styles['main-stat-name']}>Passing Defense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>210.6 YPG</div>
-                </div>
-                <div className={styles['main-stat-item']}>
-                  <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#1</div>
-                    <div className={styles['main-stat-name']}>Rushing Defense</div>
-                  </div>
-                  <div className={styles['main-stat-value']}>87.8 YPG</div>
+              {/* NFC East */}
+              <div className={styles['division']}>
+                <h4>NFC East</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'NFC East')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Miscellaneous Stats - Table Format */}
-              <div className={styles['misc-stats-section']}>
-                <table className={styles['misc-stats-table']}>
-                  <tbody>
-                    <tr>
-                      <td className={styles['rank-cell']}>#2</td>
-                      <td className={styles['stat-name-cell']}>Red Zone Defense</td>
-                      <td className={styles['stat-value-cell']}>47.1%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#6</td>
-                      <td className={styles['stat-name-cell']}>3rd Down Defense</td>
-                      <td className={styles['stat-value-cell']}>35.8%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#5</td>
-                      <td className={styles['stat-name-cell']}>Sacks</td>
-                      <td className={styles['stat-value-cell']}>48</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#4</td>
-                      <td className={styles['stat-name-cell']}>Interceptions</td>
-                      <td className={styles['stat-value-cell']}>18</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#7</td>
-                      <td className={styles['stat-name-cell']}>Fumble Recoveries</td>
-                      <td className={styles['stat-value-cell']}>8</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#3</td>
-                      <td className={styles['stat-name-cell']}>Points Allowed</td>
-                      <td className={styles['stat-value-cell']}>17.2 PPG</td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* NFC North */}
+              <div className={styles['division']}>
+                <h4>NFC North</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'NFC North')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* NFC South */}
+              <div className={styles['division']}>
+                <h4>NFC South</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'NFC South')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* NFC West */}
+              <div className={styles['division']}>
+                <h4>NFC West</h4>
+                <div className={styles['standings-table']}>
+                  {teams
+                    .filter(team => team.division === 'NFC West')
+                    .sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses) || b.wins - a.wins)
+                    .map((team, index) => (
+                    <div key={team.teamId} className={styles['standings-row']}>
+                      <div className={styles['team-info']}>
+                        <span className={styles['rank']}>{index + 1}</span>
+                        <img 
+                          src={team.logo || ''} 
+                          alt="" 
+                          className={styles['team-logo-small']}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <span>{team.name || team.teamId}</span>
+                      </div>
+                      <div className={styles['team-record']}>
+                        {team.wins}-{team.losses}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Team Roster Section */}
+        {/* Playoffs */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Team Roster</h2>
-          <div className={styles['players-section']}>
-            
-            {/* Quarterbacks */}
-            {processedPlayerStats.quarterbacks.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Quarterbacks</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>Pass YDS</th>
-                      <th className={styles['table-header']}>TD</th>
-                      <th className={styles['table-header']}>INT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.quarterbacks.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.passYds)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.passTd)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.passInt)}</td>
-                      </tr>
+          <h2 className={styles['section-title']}>Playoff Results</h2>
+          <div className={styles['playoffs-container']}>
+            {(() => {
+              // Group playoff games by week
+              const playoffRounds = {
+                19: { name: 'Wild Card', games: [] },
+                20: { name: 'Divisional', games: [] },
+                21: { name: 'Conference Championship', games: [] },
+                22: { name: 'Super Bowl', games: [] }
+              };
+              
+              // Group games by week
+              playoffs.forEach(game => {
+                if (playoffRounds[game.seasonWeek]) {
+                  playoffRounds[game.seasonWeek].games.push(game);
+                }
+              });
+              
+              // Filter out empty rounds and render
+              const roundsWithGames = Object.entries(playoffRounds)
+                .filter(([week, round]) => round.games.length > 0);
+              
+              if (roundsWithGames.length === 0) {
+                return <p style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)' }}>
+                  No playoff games found for this season.
+                </p>;
+              }
+              
+              return roundsWithGames.map(([week, round]) => (
+                <div key={week} className={styles['playoff-round']}>
+                  <h3>{round.name}</h3>
+                  <div className={styles['playoff-games']}>
+                    {round.games.map((game, gameIndex) => (
+                      <div key={gameIndex} className={styles['playoff-game']}>
+                        <div className={styles['team']}>
+                          <img 
+                            src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                            alt="" 
+                            className={styles['team-logo-small']}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <span>{teams.find(t => t.teamId === game.homeTeamId)?.name || game.homeTeamId}</span>
+                          <span className={styles['score']}>{game.homePoints}</span>
+                        </div>
+                        <div className={styles['team']}>
+                          <img 
+                            src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                            alt="" 
+                            className={styles['team-logo-small']}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <span>{teams.find(t => t.teamId === game.awayTeamId)?.name || game.awayTeamId}</span>
+                          <span className={styles['score']}>{game.awayPoints}</span>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
 
-            {/* Running Backs */}
-            {processedPlayerStats.runningBacks.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Running Backs</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>Rush YDS</th>
-                      <th className={styles['table-header']}>Rush TD</th>
-                      <th className={styles['table-header']}>REC</th>
-                      <th className={styles['table-header']}>Rec YDS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.runningBacks.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.rushYds)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.rushTd)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.rec)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.recYds)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* Awards */}
+        <div className={styles.section}>
+          <h2 className={styles['section-title']}>Award Winners</h2>
+          <div className={styles['awards-grid']}>
+            {awards.map((award, index) => (
+              <div key={index} className={styles['award-card']}>
+                <h3>{award.award}</h3>
+                <div className={styles['award-winner']}>{award.winner}</div>
+                <div className={styles['award-team']}>{award.team}</div>
               </div>
-            )}
+            ))}
+          </div>
+        </div>
 
-            {/* Wide Receivers */}
-            {processedPlayerStats.wideReceivers.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Wide Receivers</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>REC</th>
-                      <th className={styles['table-header']}>YDS</th>
-                      <th className={styles['table-header']}>TD</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.wideReceivers.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.rec)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.recYds)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.recTd)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* Stat Leaders */}
+        <div className={styles.section}>
+          <h2 className={styles['section-title']}>Stat Leaders</h2>
+          <div className={styles['stats-grid']}>
+            {Object.entries(statLeaders).map(([category, leader]) => (
+              <div key={category} className={styles['stat-card']}>
+                <h3>{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+                <div className={styles['stat-leader']}>{leader.leader}</div>
+                <div className={styles['stat-team']}>{leader.team}</div>
+                <div className={styles['stat-value']}>
+                  {category === 'passing' && `${leader.yards} yards, ${leader.tds} TDs`}
+                  {category === 'rushing' && `${leader.yards} yards, ${leader.tds} TDs`}
+                  {category === 'receiving' && `${leader.yards} yards, ${leader.tds} TDs`}
+                  {category === 'sacks' && `${leader.sacks} sacks`}
+                  {category === 'interceptions' && `${leader.ints} INTs`}
+                </div>
               </div>
-            )}
-
-            {/* Tight Ends */}
-            {processedPlayerStats.tightEnds.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Tight Ends</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>REC</th>
-                      <th className={styles['table-header']}>YDS</th>
-                      <th className={styles['table-header']}>TD</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.tightEnds.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.rec)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.recYds)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.recTd)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Defensive Line */}
-            {processedPlayerStats.defensiveLine.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Defensive Line</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>Sacks</th>
-                      <th className={styles['table-header']}>Tackles</th>
-                      <th className={styles['table-header']}>TFL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.defensiveLine.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.sacks)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.tackles)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.tacklesLoss || 0)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Linebackers */}
-            {processedPlayerStats.linebackers.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Linebackers</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>Tackles</th>
-                      <th className={styles['table-header']}>Sacks</th>
-                      <th className={styles['table-header']}>INT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.linebackers.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.tackles)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.sacks)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.defInt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Defensive Backs */}
-            {processedPlayerStats.defensiveBacks.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Defensive Backs</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>INT</th>
-                      <th className={styles['table-header']}>PD</th>
-                      <th className={styles['table-header']}>Tackles</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.defensiveBacks.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.defInt)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.passDefended)}</td>
-                        <td className={styles['stat-cell']}>{formatNumber(player.tackles)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Special Teams */}
-            {processedPlayerStats.specialTeams.length > 0 && (
-              <div className={styles['position-group']}>
-                <h3 className={styles['position-title']}>Special Teams</h3>
-                <table className={styles['position-table']}>
-                  <thead>
-                    <tr>
-                      <th className={styles['table-header']}>Player</th>
-                      <th className={styles['table-header']}>Position</th>
-                      <th className={styles['table-header']}>Stats</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {processedPlayerStats.specialTeams.map((player, index) => (
-                      <tr key={player.playerId || index} className={styles['table-row']}>
-                        <td className={styles['player-name-cell']}>{getPlayerName(player.playerId)}</td>
-                        <td className={styles['stat-cell']}>{player.position || 'Specialist'}</td>
-                        <td className={styles['stat-cell']}>
-                          {player.fgm > 0 ? `${player.fgm}/${player.fga} FG` : 
-                           player.punt > 0 ? `${formatNumber(player.puntYds / player.punt)} YDS Avg` : 
-                           'Specialist'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            ))}
           </div>
         </div>
       </div>
@@ -584,4 +480,4 @@ function SeasonSummaryVisualization() {
   );
 }
 
-export default SeasonSummaryVisualization;
+export default SeasonSummary;

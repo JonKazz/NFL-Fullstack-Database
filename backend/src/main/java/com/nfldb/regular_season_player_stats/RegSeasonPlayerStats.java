@@ -16,9 +16,8 @@ public class RegSeasonPlayerStats {
     @EmbeddedId
     private RegSeasonPlayerStatsId id;
 
-    @Column(name = "team_id")
-    private String teamId;
-
+    @Column(name = "position")
+    private String position;
     @Column(name = "games_played")
     private Integer gamesPlayed;
 
@@ -69,6 +68,8 @@ public class RegSeasonPlayerStats {
     private Integer defensiveSacks;
     @Column(name = "defensive_tackles_combined")
     private Integer defensiveTacklesCombined;
+    @Column(name = "defensive_tackles_loss")
+    private Integer defensiveTacklesLoss;
     @Column(name = "defensive_qb_hits")
     private Integer defensiveQbHits;
     @Column(name = "defensive_pressures")

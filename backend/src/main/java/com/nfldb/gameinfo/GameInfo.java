@@ -26,6 +26,12 @@ public class GameInfo {
     @Column(name = "winning_team_id")
     private String winningTeamId;
 
+    // 3. Score Info
+    @Column(name = "away_points")
+    private Integer awayPoints;
+    @Column(name = "home_points")
+    private Integer homePoints;
+
     // 3. Date Info
     @Column(name = "date")
     private String date;

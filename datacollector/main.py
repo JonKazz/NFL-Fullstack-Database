@@ -8,13 +8,9 @@ warnings.simplefilter(action='ignore', category=PerformanceWarning)
 
 from nfl_datacollector.config import DatabaseConfig
 from scrapers.main import ETL_games_season_year
-from load import DatabaseLoader, get_all_db_game_urls
+from load import DatabaseLoader
 
 if __name__ == "__main__":
     config = DatabaseConfig.from_env()
     loader = DatabaseLoader(config)
-    
-    ETL_games_season_year(2024, loader)
-    
-        
-    
+    ETL_games_season_year(2022, loader)

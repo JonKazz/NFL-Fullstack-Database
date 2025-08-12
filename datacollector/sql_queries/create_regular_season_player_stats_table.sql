@@ -4,6 +4,7 @@ CREATE TABLE regular_season_player_stats (
     player_id VARCHAR(50) NOT NULL,
     season_year INTEGER NOT NULL,
     team_id VARCHAR(10) NOT NULL,
+    position VARCHAR(10) NOT NULL,
     games_played INTEGER NOT NULL,
 
     -- Passing stats
@@ -34,8 +35,10 @@ CREATE TABLE regular_season_player_stats (
     defensive_passes_defended INTEGER DEFAULT 0,
     defensive_sacks INTEGER DEFAULT 0,
     defensive_tackles_combined INTEGER DEFAULT 0,
+    defensive_tackles_loss INTEGER DEFAULT 0,
     defensive_qb_hits INTEGER DEFAULT 0,
     defensive_pressures INTEGER DEFAULT 0,
+
 
     -- Kicking stats
     extra_points_made INTEGER DEFAULT 0,
@@ -53,7 +56,7 @@ CREATE TABLE regular_season_player_stats (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     -- Composite primary key
-    PRIMARY KEY (player_id, season_year)
+    PRIMARY KEY (player_id, season_year, team_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_regular_season_player_stats_team 

@@ -18,4 +18,8 @@ public class GameInfoService {
     public List<GameInfo> getGamesByYear(String teamId, Integer seasonYear) {
         return repository.findByTeamAndSeasonYear(teamId, seasonYear);
     }
+
+    public List<GameInfo> getPlayoffGamesBySeason(Integer seasonYear) {
+        return repository.findPlayoffGamesBySeason(seasonYear);
+    }
 }

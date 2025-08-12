@@ -69,3 +69,150 @@ export function calculatePuntAverage(puntYds, punt) {
   if (!punt || punt === 0) return '0.0';
   return (puntYds / punt).toFixed(1);
 }
+
+// Process player stats for display in SeasonSummary
+export function processPlayerStats(playerStats) {
+  if (!playerStats || !Array.isArray(playerStats)) {
+    return {
+      quarterbacks: [],
+      runningBacks: [],
+      receivers: [],
+      defensiveLine: [],
+      linebackers: [],
+      defensiveBacks: [],
+      specialTeams: []
+    };
+  }
+
+  const processed = {
+    quarterbacks: [],
+    runningBacks: [],
+    receivers: [],
+    defensiveLine: [],
+    linebackers: [],
+    defensiveBacks: [],
+    specialTeams: []
+  };
+
+  playerStats.forEach(player => {
+    // Map the backend field names to the expected format
+    const mappedPlayer = {
+      playerId: player.id?.playerId || player.playerId,
+      position: player.position,
+      // Passing stats
+      passYds: player.passingYards || 0,
+      passTd: player.passingTouchdowns || 0,
+      passInt: player.passingInterceptions || 0,
+      passAtt: player.passingAttempts || 0,
+      passCmp: player.passingCompletions || 0,
+      // Rushing stats
+      rushYds: player.rushingYards || 0,
+      rushTd: player.rushingTouchdowns || 0,
+      rushAtt: player.rushingAttempts || 0,
+      // Receiving stats
+      rec: player.receivingReceptions || 0,
+      recYds: player.receivingYards || 0,
+      recTd: player.receivingTouchdowns || 0,
+      targets: player.receivingTargets || 0,
+      // Defensive stats
+      sacks: player.defensiveSacks || 0,
+      tacklesTotal: player.defensiveTacklesCombined || 0,
+      tacklesLoss: player.defensiveTacklesLoss || 0,
+      defInt: player.defensiveInterceptions || 0,
+      passDefended: player.defensivePassesDefended || 0,
+      // Kicking stats
+      fgm: player.fieldGoalsMade || 0,
+      fga: player.fieldGoalsAttempted || 0,
+      xpm: player.extraPointsMade || 0,
+      xpa: player.extraPointsAttempted || 0,
+      // Punting stats
+      punt: player.punts || 0,
+      puntYds: player.puntYards || 0
+    };
+
+    // Categorize players by exact position values from database
+    const position = player.position;
+    
+    switch (position) {
+      case 'QB':
+        processed.quarterbacks.push(mappedPlayer);
+        break;
+      case 'RB':
+      case 'FB':
+        processed.runningBacks.push(mappedPlayer);
+        break;
+      case 'WR':
+      case 'TE':
+        processed.receivers.push(mappedPlayer);
+        break;
+      case 'DE':
+      case 'DT':
+      case 'NT':
+        processed.defensiveLine.push(mappedPlayer);
+        break;
+      case 'LB':
+        processed.linebackers.push(mappedPlayer);
+        break;
+      case 'CB':
+      case 'DB':
+      case 'FS':
+      case 'SS':
+        processed.defensiveBacks.push(mappedPlayer);
+        break;
+      case 'K':
+      case 'P':
+      case 'LS':
+        processed.specialTeams.push(mappedPlayer);
+        break;
+      case 'C':
+      case 'G':
+      case 'T':
+        // Offensive linemen - could add a separate category if needed
+        // For now, skip them as they don't typically have stats
+        break;
+      default:
+        // Unknown position - skip
+        break;
+    }
+  });
+
+  return processed;
+}
+
+// Cache for player names to avoid repeated API calls
+const playerNameCache = new Map();
+
+// Get player name from player ID using the player_profiles API
+export async function getPlayerName(playerId) {
+  if (!playerId) return 'Unknown Player';
+  
+  // Check cache first
+  if (playerNameCache.has(playerId)) {
+    return playerNameCache.get(playerId);
+  }
+  
+  try {
+    const response = await fetch(`http://localhost:8080/api/player-profiles/player?playerId=${playerId}`);
+    
+    if (response.ok) {
+      const playerProfile = await response.json();
+      if (playerProfile && playerProfile.name) {
+        // Cache the name
+        playerNameCache.set(playerId, playerProfile.name);
+        return playerProfile.name;
+      }
+    }
+    
+    // Fallback if API fails or player not found
+    const fallbackName = playerId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    playerNameCache.set(playerId, fallbackName);
+    return fallbackName;
+    
+  } catch (error) {
+    console.warn(`Failed to fetch player name for ${playerId}:`, error);
+    // Fallback to formatted player ID
+    const fallbackName = playerId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    playerNameCache.set(playerId, fallbackName);
+    return fallbackName;
+  }
+}

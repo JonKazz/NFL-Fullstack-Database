@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './GameSummary.module.css';
 import { fetchGame } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 
 function GameSummary() {
-  const [searchParams] = useSearchParams();
-  const gameId = searchParams.get('gameId');
+  const { gameId } = useParams();
   const [gameData, setGameData] = useState(null);
   const [error, setError] = useState(null);
 

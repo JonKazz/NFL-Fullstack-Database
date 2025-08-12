@@ -1,11 +1,13 @@
 from .games_page.ingest import get_urls_by_week_and_year, GamePageScraper
 from .games_page.transform import GamePageTransformer
-from load import get_all_db_game_urls
+from load import get_all_db_game_urls, get_all_db_player_urls
 
 from .team_page.ingest import TeamPageScraper
 from .team_page.transform import transform_teams_table
 
 from .player_page.ingest import PlayerProfilePageScraper
+
+from .season_page.ingest import SeasonPageScraper
 
 
 def extract_player_urls_from_game_page(url):
@@ -16,9 +18,23 @@ def extract_player_urls_from_game_page(url):
     return urls
 
 
+def extract_game_links_from_team_page(url):
+    team_page = TeamPageScraper()
+    team_page.load_page(url)
+    game_links = team_page.extract_game_pages_urls()
+    return game_links
+
+
+def extract_team_links_from_season_page(url):
+    season_page = SeasonPageScraper()
+    season_page.load_page(url)
+    team_links = season_page.extract_team_links_from_season_page()
+    return team_links
+    
+    
 def ETL_games_season_year(year: int, loader):
     logged_urls = get_all_db_game_urls()
-    for week in [str(x) for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]:
+    for week in [str(x) for x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]]:
         game_urls = get_urls_by_week_and_year(week, year)
         for url in game_urls:
             if url not in logged_urls:
@@ -64,13 +80,6 @@ def ETL_season_team_info(url, loader):
     season_team_info_df = team_page.scrape_team_summary()
     season_team_info_df = transform_teams_table(season_team_info_df)    
     loader.insert_season_team_info_df(season_team_info_df)
-
-
-def extract_game_links(url):
-    team_page = TeamPageScraper()
-    team_page.load_page(url)
-    game_links = team_page.extract_game_pages_urls()
-    return game_links
 
 
 def ETL_player_profile(url, loader):

@@ -8,6 +8,24 @@ export async function fetchTeamInfo(teamId, year) {
   return response.json();
 }
 
+// Fetch all teams for a specific season
+export async function fetchTeamsBySeason(year) {
+  const response = await fetch(`http://localhost:8080/api/teams/season/${year}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch teams by season (api)');
+  }
+  return response.json();
+}
+
+// Fetch playoff games for a specific season
+export async function fetchPlayoffGames(year) {
+  const response = await fetch(`http://localhost:8080/api/game-info/playoffs/${year}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch playoff games (api)');
+  }
+  return response.json();
+}
+
 
 export async function fetchGame(gameId) {
   const params = new URLSearchParams({ gameId });
@@ -27,10 +45,10 @@ export async function fetchFullSeason(teamId, year) {
   return response.json();
 }
 
-// Fetch player statistics for a team in a season (using new SeasonPlayerStats)
+// Fetch player statistics for a team in a season (using new regular_season_player_stats)
 export async function fetchTeamPlayerStats(teamId, year) {
   const params = new URLSearchParams({ teamId, seasonYear: year });
-  const response = await fetch(`http://localhost:8080/api/season-player-stats/team-season?${params}`);
+  const response = await fetch(`http://localhost:8080/api/season-stats/team?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player stats (api)');
   }

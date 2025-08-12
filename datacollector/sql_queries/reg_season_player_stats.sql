@@ -1,13 +1,8 @@
--- FUNCTION: public.populate_all_season_stats()
-
--- DROP FUNCTION IF EXISTS public.populate_all_season_stats();
-
-CREATE OR REPLACE FUNCTION public.populate_all_season_stats(
-	)
-    RETURNS void
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
+CREATE OR REPLACE FUNCTION public.populate_all_season_stats()
+RETURNS void
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
 AS $BODY$
 BEGIN
     DELETE FROM regular_season_player_stats;
@@ -16,6 +11,7 @@ BEGIN
         player_id,
         season_year,
         team_id,
+        position,
         games_played,
         passing_attempts,
         passing_completions,
@@ -36,6 +32,7 @@ BEGIN
         defensive_passes_defended,
         defensive_sacks,
         defensive_tackles_combined,
+        defensive_tackles_loss,
         defensive_qb_hits,
         defensive_pressures,
         punts,
@@ -45,10 +42,8 @@ BEGIN
     SELECT 
         gps.player_id,
         gi.season_year,
-        CASE 
-            WHEN COUNT(DISTINCT gps.team_id) = 1 THEN MAX(gps.team_id)
-            ELSE CONCAT(COUNT(DISTINCT gps.team_id), 'TM')
-        END AS team_id,
+        gps.team_id,
+        MAX(gps.position), -- choose a representative position for the season
         COUNT(DISTINCT gps.game_id),
         COALESCE(SUM(gps.pass_attempts), 0),
         COALESCE(SUM(gps.pass_completions), 0),
@@ -77,6 +72,7 @@ BEGIN
         COALESCE(SUM(gps.defensive_passes_defended), 0),
         COALESCE(SUM(gps.defensive_sacks), 0),
         COALESCE(SUM(gps.defensive_tackles_combined), 0),
+        COALESCE(SUM(gps.defensive_tackles_loss), 0),
         COALESCE(SUM(gps.defensive_qb_hits), 0),
         COALESCE(SUM(gps.defensive_pressures), 0),
         COALESCE(SUM(gps.punts), 0),
@@ -89,7 +85,7 @@ BEGIN
     FROM game_player_stats gps
     JOIN game_info gi ON gps.game_id = gi.game_id
     WHERE gi.season_week <= 18
-    GROUP BY gps.player_id, gi.season_year;
+    GROUP BY gps.player_id, gi.season_year, gps.team_id;
 END;
 $BODY$;
 

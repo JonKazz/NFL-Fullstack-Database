@@ -1,26 +1,30 @@
 package com.nfldb.gameinfo;
-// package com.nfldb.game;
 
-// import org.springframework.web.bind.annotation.*;
-// import java.util.List;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-// @RestController
-// @RequestMapping("/api/games")
-// public class GameController {
+@RestController
+@RequestMapping("/api/game-info")
+public class GameInfoController {
 
-//     private final GameService gameService;
+    private final GameInfoService gameInfoService;
 
-//     public GameController(GameService gameService) {
-//         this.gameService = gameService;
-//     }
+    public GameInfoController(GameInfoService gameInfoService) {
+        this.gameInfoService = gameInfoService;
+    }
 
-//     @GetMapping("/game")
-//     public Game getGame(@RequestParam String gameId) {
-//         return gameService.getGame(gameId);
-//     }
+    @GetMapping("/game")
+    public GameInfo getGame(@RequestParam String gameId) {
+        return gameInfoService.getGame(gameId);
+    }
 
-//     @GetMapping("/fullseason")
-//     public List<Game> getFullYearGames(@RequestParam String teamId, @RequestParam Integer seasonYear) {
-//         return gameService.getGamesByYear(teamId, seasonYear);
-//     }
-// }
+    @GetMapping("/fullseason")
+    public List<GameInfo> getFullYearGames(@RequestParam String teamId, @RequestParam Integer seasonYear) {
+        return gameInfoService.getGamesByYear(teamId, seasonYear);
+    }
+
+    @GetMapping("/playoffs/{seasonYear}")
+    public List<GameInfo> getPlayoffGames(@PathVariable Integer seasonYear) {
+        return gameInfoService.getPlayoffGamesBySeason(seasonYear);
+    }
+}
