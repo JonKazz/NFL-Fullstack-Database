@@ -166,20 +166,17 @@
 }
 
 .team-logo-fallback {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: none;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border-radius: 50%;
-  display: none;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
+  background: #dc2626;
   color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
 }
 
 .team-name {
@@ -494,4 +491,264 @@
   .team-info {
     justify-content: center;
   }
+}
+
+/* Playoff Bracket */
+.playoff-bracket {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.bracket-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 500px;
+  position: relative;
+}
+
+.bracket-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.conference-side {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  position: relative;
+}
+
+.bracket-matchups {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  position: relative;
+}
+
+.bracket-matchup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  position: relative;
+  min-width: 110px;
+  min-height: 110px;
+  justify-content: space-between;
+}
+
+/* Team section containing logo and score */
+.team-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* VS divider between teams - REMOVED */
+.vs-divider {
+  display: none;
+}
+
+/* Team scores */
+.team-score {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  background: white;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  min-width: 25px;
+  text-align: center;
+}
+
+/* Round titles */
+.round-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  white-space: nowrap;
+}
+
+/* Playoff bracket specific team logo styles - more specific to avoid conflicts */
+.playoff-bracket .team-logo {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.playoff-bracket .team-logo:hover {
+  transform: scale(1.1);
+}
+
+.playoff-bracket .team-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.playoff-bracket .team-logo-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+}
+
+.playoff-bracket .team-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  text-align: center;
+}
+
+/* Super Bowl section - Center between AFC and NFC */
+.super-bowl {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #dee2e6;
+  min-width: 200px;
+  align-items: center;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.super-bowl-matchup {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  justify-content: center;
+}
+
+.super-bowl-matchup .team-logo {
+  width: 55px;
+  height: 55px;
+}
+
+.super-bowl-matchup .team-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.vs {
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+  padding: 0 10px;
+}
+
+.champion {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 15px;
+  border: 3px solid #ffc107;
+  align-items: center;
+}
+
+.champion-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 6px;
+  border: 2px solid #ffc107;
+}
+
+.champion-logo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  border: 3px solid #ffc107;
+  box-shadow: 0 6px 18px rgba(255, 193, 7, 0.3);
+  overflow: hidden;
+}
+
+.champion-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.no-playoffs {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.no-playoffs p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  margin: 0;
+}
+
+.champion-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
 }

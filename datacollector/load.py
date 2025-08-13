@@ -98,6 +98,8 @@ class DatabaseLoader:
             away_team_id VARCHAR(10) NOT NULL,
             home_team_id VARCHAR(10) NOT NULL,
             winning_team_id VARCHAR(10) NOT NULL,
+            home_team_record VARCHAR(10) NOT NULL,
+            away_team_record VARCHAR(10) NOT NULL,
             away_points INT NOT NULL,
             home_points INT NOT NULL,
             overtime BOOLEAN NOT NULL,

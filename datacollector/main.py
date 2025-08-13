@@ -8,7 +8,7 @@ warnings.simplefilter(action='ignore', category=PerformanceWarning)
 
 from nfl_datacollector.config import DatabaseConfig
 from scrapers.main import ETL_games_season_year
-from load import DatabaseLoader
+from load import DatabaseLoader, create_game_info_table
 
 if __name__ == "__main__":
     config = DatabaseConfig.from_env()

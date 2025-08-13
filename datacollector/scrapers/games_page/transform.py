@@ -20,6 +20,8 @@ GAME_INFO_COL_MAP = {
     'home_team_id': 'home_team_id',
     'away_team_id': 'away_team_id',
     'winning_team_id': 'winning_team_id',
+    'home_team_record': 'home_team_record',
+    'away_team_record': 'away_team_record',
     'home_points': 'home_points',
     'away_points': 'away_points',
     'season_week': 'season_week',

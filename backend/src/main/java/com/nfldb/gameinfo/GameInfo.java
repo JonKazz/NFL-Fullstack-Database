@@ -32,7 +32,13 @@ public class GameInfo {
     @Column(name = "home_points")
     private Integer homePoints;
 
-    // 3. Date Info
+    // 3. Team Records
+    @Column(name = "away_team_record")
+    private String awayTeamRecord;
+    @Column(name = "home_team_record")
+    private String homeTeamRecord;
+
+    // 4. Date Info
     @Column(name = "date")
     private String date;
     @Column(name = "season_year")
@@ -40,7 +46,7 @@ public class GameInfo {
     @Column(name = "season_week")
     private Integer seasonWeek;
 
-    // 4. OverTime
+    // 5. OverTime
     @Column(name = "overtime")
     private Boolean overtime;
 }

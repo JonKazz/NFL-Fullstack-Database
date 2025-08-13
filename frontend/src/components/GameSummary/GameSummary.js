@@ -1,42 +1,154 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameSummary.module.css';
-import { fetchGame } from '../../api/fetches';
-import { TEAM_MAP } from '../../utils';
+import { fetchTeamsBySeason } from '../../api/fetches';
 
 function GameSummary() {
   const { gameId } = useParams();
-  const [gameData, setGameData] = useState(null);
+  const [gameInfo, setGameInfo] = useState(null);
+  const [gameStats, setGameStats] = useState([]);
+  const [gamePlayerStats, setGamePlayerStats] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function getGameData() {
+    async function getData() {
       try {
-        const result = await fetchGame(gameId);
-        setGameData(result);
+        // Fetch data from individual tables
+        const [gameInfoResult, gameStatsResult, gamePlayerStatsResult] = await Promise.all([
+          fetch(`http://localhost:8080/api/game-info/game?gameId=${gameId}`),
+          fetch(`http://localhost:8080/api/gamestats/game-all?gameId=${gameId}`),
+          fetch(`http://localhost:8080/api/game-player-stats/players?gameId=${gameId}`)
+        ]);
+
+        if (!gameInfoResult.ok || !gameStatsResult.ok || !gamePlayerStatsResult.ok) {
+          throw new Error('Failed to fetch game data');
+        }
+
+        const gameInfoData = await gameInfoResult.json();
+        const gameStatsData = await gameStatsResult.json();
+        const gamePlayerStatsData = await gamePlayerStatsResult.json();
+
+        setGameInfo(gameInfoData);
+        setGameStats(gameStatsData);
+        setGamePlayerStats(gamePlayerStatsData);
+        
+        // Extract season year from game info to fetch teams
+        if (gameInfoData?.seasonYear) {
+          const teamsData = await fetchTeamsBySeason(gameInfoData.seasonYear);
+          setTeams(teamsData);
+        }
       } catch (err) {
+        console.error('Error fetching game data:', err);
         setError('Failed to fetch game info');
       }
     }
     if (gameId) {
-      getGameData();
+      getData();
     }
   }, [gameId]);
 
   if (error) return <div className={styles['game-summary-container']}>{error}</div>;
-  if (!gameData) return <div className={styles['game-summary-container']}>Loading...</div>;
+  if (!gameInfo || !gameStats.length) return <div className={styles['game-summary-container']}>Loading...</div>;
 
-  const { gameInfo, gameStats } = gameData;
   const { homeTeamId, awayTeamId } = gameInfo;
   const homeStats = gameStats.find(gs => gs.id.teamId === homeTeamId);
   const awayStats = gameStats.find(gs => gs.id.teamId === awayTeamId);
 
   if (!homeStats || !awayStats) return <div className={styles['game-summary-container']}>Stats not found for this game.</div>;
 
-  const homeName = TEAM_MAP[homeStats.id.teamId]?.name;
-  const awayName = TEAM_MAP[awayStats.id.teamId]?.name;
-
+  const homeTeam = teams.find(t => t.teamId === homeStats.id.teamId);
+  const awayTeam = teams.find(t => t.teamId === awayStats.id.teamId);
+  const homeName = homeTeam?.name || homeStats.id.teamId;
+  const awayName = awayTeam?.name || awayStats.id.teamId;
+  
   const hasOvertime = !!gameInfo.overtime;
+
+  // Process player stats by position
+  const processPlayerStats = (players) => {
+    const quarterbacks = [];
+    const runningBacks = [];
+    const receivers = [];
+    const defensiveLine = [];
+    const linebackers = [];
+    const defensiveBacks = [];
+    const specialTeams = [];
+
+    players.forEach(player => {
+      // Map the backend field names to the expected format
+      const mappedPlayer = {
+        playerId: player.id?.playerId || player.playerId,
+        position: player.position, // Use the position field from the updated entity
+        teamId: player.teamId,
+        // Passing stats
+        passYds: player.passYards || 0,
+        passTd: player.passTouchdowns || 0,
+        passInt: player.passInterceptions || 0,
+        passAtt: player.passAttempts || 0,
+        passCmp: player.passCompletions || 0,
+        passRating: player.passRating || 0,
+        // Rushing stats
+        rushYds: player.rushYards || 0,
+        rushTd: player.rushTouchdowns || 0,
+        rushAtt: player.rushAttempts || 0,
+        rushLong: player.rushLong || 0,
+        // Receiving stats
+        rec: player.receivingReceptions || 0,
+        recYds: player.receivingYards || 0,
+        recTd: player.receivingTouchdowns || 0,
+        targets: player.receivingTargets || 0,
+        recLong: player.receivingLong || 0,
+        // Defensive stats
+        sacks: player.defensiveSacks || 0,
+        tacklesTotal: player.defensiveTacklesCombined || 0,
+        soloTackles: player.defensiveTacklesSolo || 0,
+        defInt: player.defensiveInterceptions || 0,
+        passDefended: player.defensivePassesDefended || 0,
+        tacklesLoss: player.defensiveTacklesLoss || 0,
+        qbHits: player.defensiveQbHits || 0,
+        fumblesForced: player.fumblesForced || 0,
+        // Kicking stats
+        fgm: player.fieldGoalsMade || 0,
+        fga: player.fieldGoalsAttempted || 0,
+        xpm: player.extraPointsMade || 0,
+        xpa: player.extraPointsAttempted || 0,
+        // Punting stats
+        punt: player.punts || 0,
+        puntYds: player.puntYards || 0,
+        puntLong: player.puntLong || 0
+      };
+
+      const position = mappedPlayer.position;
+      if (position === 'QB') {
+        quarterbacks.push(mappedPlayer);
+      } else if (position === 'RB' || position === 'FB') {
+        runningBacks.push(mappedPlayer);
+      } else if (position === 'WR' || position === 'TE') {
+        receivers.push(mappedPlayer);
+      } else if (position === 'DT' || position === 'DE' || position === 'NT') {
+        defensiveLine.push(mappedPlayer);
+      } else if (position === 'LB' || position === 'OLB' || position === 'ILB' || position === 'MLB') {
+        linebackers.push(mappedPlayer);
+      } else if (position === 'CB' || position === 'S' || position === 'FS' || position === 'SS') {
+        defensiveBacks.push(mappedPlayer);
+      } else if (position === 'K' || position === 'P' || position === 'LS') {
+        specialTeams.push(mappedPlayer);
+      }
+    });
+
+    return {
+      quarterbacks,
+      runningBacks,
+      receivers,
+      defensiveLine,
+      linebackers,
+      defensiveBacks,
+      specialTeams
+    };
+  };
+
+  // Process the player stats
+  const playerStats = processPlayerStats(gamePlayerStats);
 
   // Proportional bar calculations
   const statBarData = [
@@ -67,6 +179,12 @@ function GameSummary() {
     },
   ];
 
+  // Get team names for display
+  const getTeamName = (teamId) => {
+    const team = teams.find(t => t.teamId === teamId);
+    return team?.name || teamId.toUpperCase();
+  };
+
   return (
     <div className={styles.pageBackground}>
       <div className={styles.container}>
@@ -79,52 +197,87 @@ function GameSummary() {
 
         <div className={styles.scoreboard}>
           <div className={styles.team}>
-            <div className={styles['team-logo']}>{homeStats.id.teamId}</div>
+            <div className={styles['team-logo']}>
+              {homeTeam?.logo ? (
+                <img 
+                  src={homeTeam.logo} 
+                  alt={`${homeName} logo`}
+                  className={styles['team-logo-img']}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={styles['team-logo-fallback']}>
+                {homeStats.id.teamId.toUpperCase()}
+              </div>
+            </div>
             <div className={styles['team-name']}>{homeName}</div>
-            <div className={styles['team-record']}>(record?)</div>
-            <div className={`${styles.score} ${styles.winner}`}>{homeStats.pointsTotal}</div>
+            <div className={styles['team-record']}>({gameInfo.homeTeamRecord || 'N/A'})</div>
+            <div className={styles.score}>{homeStats.pointsTotal}</div>
           </div>
-          <div className={styles.vs}>vs</div>
+
+          <div className={styles.vs}>
+            <div className={styles['team-record']}>VS</div>
+            {hasOvertime && <div className={styles.overtime}>OT</div>}
+          </div>
+
           <div className={styles.team}>
-            <div className={styles['team-logo']}>{awayStats.id.teamId}</div>
+            <div className={styles['team-logo']}>
+              {awayTeam?.logo ? (
+                <img 
+                  src={awayTeam.logo} 
+                  alt={`${awayName} logo`}
+                  className={styles['team-logo-img']}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={styles['team-logo-fallback']}>
+                {awayStats.id.teamId.toUpperCase()}
+              </div>
+            </div>
             <div className={styles['team-name']}>{awayName}</div>
-            <div className={styles['team-record']}>(record?)</div>
+            <div className={styles['team-record']}>({gameInfo.awayTeamRecord || 'N/A'})</div>
             <div className={styles.score}>{awayStats.pointsTotal}</div>
           </div>
         </div>
 
         <div className={styles['quarter-scores']}>
-          <h3>Quarter by Quarter</h3>
+          <h3>Quarter Scores</h3>
           <table className={styles['quarter-table']}>
             <thead>
               <tr>
                 <th>Team</th>
-                <th>Q1</th>
-                <th>Q2</th>
-                <th>Q3</th>
-                <th>Q4</th>
+                <th>1st</th>
+                <th>2nd</th>
+                <th>3rd</th>
+                <th>4th</th>
                 {hasOvertime && <th>OT</th>}
                 <th>Final</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>{homeStats.id.teamId}</strong></td>
-                <td>{homeStats.pointsQ1}</td>
-                <td>{homeStats.pointsQ2}</td>
-                <td>{homeStats.pointsQ3}</td>
-                <td>{homeStats.pointsQ4}</td>
-                {hasOvertime && <td>{homeStats.pointsOvertime}</td>}
-                <td><strong>{homeStats.pointsTotal}</strong></td>
+                <td>{homeName}</td>
+                <td>{homeStats.pointsQ1 || 0}</td>
+                <td>{homeStats.pointsQ2 || 0}</td>
+                <td>{homeStats.pointsQ3 || 0}</td>
+                <td>{homeStats.pointsQ4 || 0}</td>
+                {hasOvertime && <td>{homeStats.pointsOvertime || 0}</td>}
+                <td className={styles.winner}>{homeStats.pointsTotal}</td>
               </tr>
               <tr>
-                <td><strong>{awayStats.id.teamId}</strong></td>
-                <td>{awayStats.pointsQ1}</td>
-                <td>{awayStats.pointsQ2}</td>
-                <td>{awayStats.pointsQ3}</td>
-                <td>{awayStats.pointsQ4}</td>
-                {hasOvertime && <td>{awayStats.pointsOvertime}</td>}
-                <td><strong>{awayStats.pointsTotal}</strong></td>
+                <td>{awayName}</td>
+                <td>{awayStats.pointsQ1 || 0}</td>
+                <td>{awayStats.pointsQ2 || 0}</td>
+                <td>{awayStats.pointsQ3 || 0}</td>
+                <td>{awayStats.pointsQ4 || 0}</td>
+                {hasOvertime && <td>{awayStats.pointsOvertime || 0}</td>}
+                <td>{awayStats.pointsTotal}</td>
               </tr>
             </tbody>
           </table>
@@ -225,252 +378,250 @@ function GameSummary() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Sacks</strong></td>
-                    <td>{homeStats.sacksTotal}</td>
-                    <td>{awayStats.sacksTotal}</td>
+                    <td><strong>Total Yards</strong></td>
+                    <td>{homeStats.totalYards}</td>
+                    <td>{awayStats.totalYards}</td>
                   </tr>
                   <tr>
-                    <td><strong>Interceptions</strong></td>
-                    <td>{homeStats.passingInterceptions}</td>
-                    <td>{awayStats.passingInterceptions}</td>
+                    <td><strong>Passing Yards</strong></td>
+                    <td>{homeStats.passingYards}</td>
+                    <td>{awayStats.passingYards}</td>
                   </tr>
                   <tr>
-                    <td><strong>Fumbles Lost</strong></td>
-                    <td>{homeStats.fumblesLost}</td>
-                    <td>{awayStats.fumblesLost}</td>
+                    <td><strong>Rushing Yards</strong></td>
+                    <td>{homeStats.rushingYards}</td>
+                    <td>{awayStats.rushingYards}</td>
                   </tr>
                   <tr>
-                    <td><strong>Penalties</strong></td>
-                    <td>{homeStats.penaltiesTotal}-{homeStats.penaltyYards}</td>
-                    <td>{awayStats.penaltiesTotal}-{awayStats.penaltyYards}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className={styles['stat-card']}>
-              <h3>Scoring & Special Teams</h3>
-              <table className={styles['player-table']}>
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th>{homeStats.id.teamId}</th>
-                    <th>{awayStats.id.teamId}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Touchdowns</strong></td>
-                    <td>{homeStats.passingTouchdowns + homeStats.rushingTouchdowns}</td>
-                    <td>{awayStats.passingTouchdowns + awayStats.rushingTouchdowns}</td>
+                    <td><strong>First Downs</strong></td>
+                    <td>{homeStats.firstDownsTotal}</td>
+                    <td>{awayStats.firstDownsTotal}</td>
                   </tr>
                   <tr>
-                    <td><strong>Passing TDs</strong></td>
-                    <td>{homeStats.passingTouchdowns}</td>
-                    <td>{awayStats.passingTouchdowns}</td>
+                    <td><strong>Third Down Efficiency</strong></td>
+                    <td>{homeStats.thirdDownConversions}/{homeStats.thirdDownAttempts}</td>
+                    <td>{awayStats.thirdDownConversions}/{awayStats.thirdDownAttempts}</td>
                   </tr>
                   <tr>
-                    <td><strong>Rushing TDs</strong></td>
-                    <td>{homeStats.rushingTouchdowns}</td>
-                    <td>{awayStats.rushingTouchdowns}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Field Goals Made</strong></td>
+                    <td><strong>Red Zone Efficiency</strong></td>
                     <td>-</td>
                     <td>-</td>
                   </tr>
                   <tr>
-                    <td><strong>Extra Points</strong></td>
-                    <td>-</td>
-                    <td>-</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Penalties</strong></td>
-                    <td>{homeStats.penaltiesTotal}-{homeStats.penaltyYards}</td>
-                    <td>{awayStats.penaltiesTotal}-{awayStats.penaltyYards}</td>
+                    <td><strong>Time of Possession</strong></td>
+                    <td>{homeStats.timeOfPossession}</td>
+                    <td>{awayStats.timeOfPossession}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-          <div className={styles['player-stats']}>
-            <div className={styles['section-title']}>Individual Player Stats</div>
-            
-            <h3>Passing</h3>
-            <table className={styles['player-table']}>
-                <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Comp/Att</th>
-                        <th>Yards</th>
-                        <th>TD</th>
-                        <th>INT</th>
-                        <th>Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Patrick Mahomes</td>
-                        <td>KC</td>
-                        <td>24/35</td>
-                        <td>298</td>
-                        <td>3</td>
-                        <td>0</td>
-                        <td>118.4</td>
-                    </tr>
-                    <tr>
-                        <td>Justin Herbert</td>
-                        <td>LAC</td>
-                        <td>21/32</td>
-                        <td>235</td>
-                        <td>2</td>
-                        <td>1</td>
-                        <td>89.2</td>
-                    </tr>
-                </tbody>
-            </table>
 
-            <h3>Rushing</h3>
-            <table className={styles['player-table']}>
+        <div className={styles['player-stats']}>
+          <h3>Player Statistics</h3>
+          
+          {playerStats.quarterbacks.length > 0 && (
+            <>
+              <h4>Passing</h4>
+              <table className={styles['player-table']}>
                 <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Carries</th>
-                        <th>Yards</th>
-                        <th>TD</th>
-                        <th>Long</th>
-                        <th>YPC</th>
-                    </tr>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Cmp/Att</th>
+                    <th>Yards</th>
+                    <th>TD</th>
+                    <th>INT</th>
+                    <th>Rating</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Isiah Pacheco</td>
-                        <td>KC</td>
-                        <td>18</td>
-                        <td>89</td>
-                        <td>1</td>
-                        <td>24</td>
-                        <td>4.9</td>
+                  {playerStats.quarterbacks.map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.passCmp}/{player.passAtt}</td>
+                      <td>{player.passYds}</td>
+                      <td>{player.passTd}</td>
+                      <td>{player.passInt}</td>
+                      <td>{player.passRating || 'N/A'}</td>
                     </tr>
-                    <tr>
-                        <td>Austin Ekeler</td>
-                        <td>LAC</td>
-                        <td>15</td>
-                        <td>52</td>
-                        <td>0</td>
-                        <td>12</td>
-                        <td>3.5</td>
-                    </tr>
-                    <tr>
-                        <td>Clyde Edwards-Helaire</td>
-                        <td>KC</td>
-                        <td>8</td>
-                        <td>38</td>
-                        <td>0</td>
-                        <td>15</td>
-                        <td>4.8</td>
-                    </tr>
+                  ))}
                 </tbody>
-            </table>
+              </table>
+            </>
+          )}
 
-            <h3>Receiving</h3>
-            <table className={styles['player-table']}>
+          {playerStats.runningBacks.length > 0 && (
+            <>
+              <h4>Rushing</h4>
+              <table className={styles['player-table']}>
                 <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Rec</th>
-                        <th>Yards</th>
-                        <th>TD</th>
-                        <th>Long</th>
-                        <th>YPR</th>
-                    </tr>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Att</th>
+                    <th>Yards</th>
+                    <th>TD</th>
+                    <th>Long</th>
+                    <th>YPC</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Travis Kelce</td>
-                        <td>KC</td>
-                        <td>8</td>
-                        <td>108</td>
-                        <td>2</td>
-                        <td>32</td>
-                        <td>13.5</td>
+                  {playerStats.runningBacks.map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.rushAtt}</td>
+                      <td>{player.rushYds}</td>
+                      <td>{player.rushTd}</td>
+                      <td>{player.rushLong || 'N/A'}</td>
+                      <td>{player.rushAtt > 0 ? (player.rushYds / player.rushAtt).toFixed(1) : '0.0'}</td>
                     </tr>
-                    <tr>
-                        <td>Tyreek Hill</td>
-                        <td>KC</td>
-                        <td>6</td>
-                        <td>102</td>
-                        <td>1</td>
-                        <td>45</td>
-                        <td>17.0</td>
-                    </tr>
-                    <tr>
-                        <td>Keenan Allen</td>
-                        <td>LAC</td>
-                        <td>7</td>
-                        <td>89</td>
-                        <td>1</td>
-                        <td>28</td>
-                        <td>12.7</td>
-                    </tr>
+                  ))}
                 </tbody>
-            </table>
+              </table>
+            </>
+          )}
 
-            <h3>Defense</h3>
-            <table className={styles['player-table']}>
+          {playerStats.receivers.length > 0 && (
+            <>
+              <h4>Receiving</h4>
+              <table className={styles['player-table']}>
                 <thead>
-                    <tr>
-                        <th>Player</th>
-                        <th>Team</th>
-                        <th>Tackles</th>
-                        <th>Sacks</th>
-                        <th>INT</th>
-                        <th>PD</th>
-                        <th>FF</th>
-                    </tr>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Rec</th>
+                    <th>Yards</th>
+                    <th>TD</th>
+                    <th>Long</th>
+                    <th>YPR</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Chris Jones</td>
-                        <td>KC</td>
-                        <td>6</td>
-                        <td>2.0</td>
-                        <td>0</td>
-                        <td>1</td>
-                        <td>0</td>
+                  {playerStats.receivers.map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.rec}</td>
+                      <td>{player.recYds}</td>
+                      <td>{player.recTd}</td>
+                      <td>{player.recLong || 'N/A'}</td>
+                      <td>{player.rec > 0 ? (player.recYds / player.rec).toFixed(1) : '0.0'}</td>
                     </tr>
-                    <tr>
-                        <td>Nick Bolton</td>
-                        <td>KC</td>
-                        <td>8</td>
-                        <td>0</td>
-                        <td>1</td>
-                        <td>2</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>Khalil Mack</td>
-                        <td>LAC</td>
-                        <td>5</td>
-                        <td>1.5</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Derwin James</td>
-                        <td>LAC</td>
-                        <td>9</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>3</td>
-                        <td>0</td>
-                    </tr>
+                  ))}
                 </tbody>
-            </table>
+              </table>
+            </>
+          )}
+
+          {(playerStats.defensiveLine.length > 0 || playerStats.linebackers.length > 0 || playerStats.defensiveBacks.length > 0) && (
+            <>
+              <h4>Defense</h4>
+              <table className={styles['player-table']}>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Tackles</th>
+                    <th>Solo</th>
+                    <th>Sacks</th>
+                    <th>INT</th>
+                    <th>PD</th>
+                    <th>TFL</th>
+                    <th>QB Hits</th>
+                    <th>FF</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...playerStats.defensiveLine, ...playerStats.linebackers, ...playerStats.defensiveBacks].map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.tacklesTotal}</td>
+                      <td>{player.soloTackles || 0}</td>
+                      <td>{player.sacks}</td>
+                      <td>{player.defInt}</td>
+                      <td>{player.passDefended}</td>
+                      <td>{player.tacklesLoss || 0}</td>
+                      <td>{player.qbHits || 0}</td>
+                      <td>{player.fumblesForced}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {playerStats.specialTeams.filter(player => player.position === 'K').length > 0 && (
+            <>
+              <h4>Kicking</h4>
+              <table className={styles['player-table']}>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>FG Made</th>
+                    <th>FG Attempted</th>
+                    <th>FG Percentage</th>
+                    <th>XP Made</th>
+                    <th>XP Attempted</th>
+                    <th>XP Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {playerStats.specialTeams.filter(player => player.position === 'K').map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.fgm}</td>
+                      <td>{player.fga}</td>
+                      <td>{player.fga > 0 ? ((player.fgm / player.fga) * 100).toFixed(1) : '0.0'}%</td>
+                      <td>{player.xpm}</td>
+                      <td>{player.xpa}</td>
+                      <td>{player.xpa > 0 ? ((player.xpm / player.xpa) * 100).toFixed(1) : '0.0'}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {playerStats.specialTeams.filter(player => player.position === 'P').length > 0 && (
+            <>
+              <h4>Punting</h4>
+              <table className={styles['player-table']}>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Punts</th>
+                    <th>Total Yards</th>
+                    <th>Average</th>
+                    <th>Long</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {playerStats.specialTeams.filter(player => player.position === 'P').map((player, index) => (
+                    <tr key={index}>
+                      <td>{player.playerId}</td>
+                      <td>{getTeamName(player.teamId)}</td>
+                      <td>{player.punt}</td>
+                      <td>{player.puntYds}</td>
+                      <td>{player.punt > 0 ? (player.puntYds / player.punt).toFixed(1) : '0.0'}</td>
+                      <td>{player.puntLong || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {Object.values(playerStats).every(array => array.length === 0) && (
+            <p>No player statistics available for this game.</p>
+          )}
         </div>
       </div>
     </div>

@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup, Comment, Tag
 from scrapers.scraper import PageScraper
 
 SEASON_WEEK_SCORES_DIV_ID = 'div_other_scores'
-SCOREBOX_DIV_ID = 'scorebox_meta'
+SCOREBOX_DIV_ID = 'scorebox'
+SCOREBOX_META_DIV_ID = 'scorebox_meta'
 
 LINESCORE_TABLE_CLASSID = 'linescore nohover stats_table no_freeze'
 GAME_INFO_TABLE_ID = 'game_info'
@@ -168,7 +169,7 @@ class GamePageScraper(PageScraper):
     def _parse_game_info_table(self) -> None:
         table = self._extract_table(GAME_INFO_TABLE_ID)
         if table is None:
-            raise ValueError(f'[!] GameInfo table with id/class: ({GAME_INFO_TABLE_ID}) not found')
+            raise ValueError(f'[!] GamePage table with id/class: ({GAME_INFO_TABLE_ID}) not found')
         
         rows = table.find_all('tr')
         if not rows:
@@ -187,9 +188,21 @@ class GamePageScraper(PageScraper):
 
 
     def _parse_scorebox(self) -> None:
-        scorebox_div = self._extract_div(SCOREBOX_DIV_ID)
+        scorebox_div = self._extract_div('scorebox')
+        if scorebox_div is None:
+            raise ValueError(f'[!] GamePage div with id/class: ({SCOREBOX_DIV_ID}) not found')
         
-        meta_divs = scorebox_div.find_all('div')
+        team_divs = scorebox_div.find_all('div', recursive=False)[:2]
+        home_team_record = team_divs[1].find_all('div', recursive=False)[2].get_text(strip=True)
+        away_team_record = team_divs[0].find_all('div', recursive=False)[2].get_text(strip=True)
+        self.game_info_df['home_team_record'] = home_team_record
+        self.game_info_df['away_team_record'] = away_team_record        
+        
+        scorebox_meta_div = self._extract_div(SCOREBOX_META_DIV_ID)
+        if scorebox_meta_div is None:
+            raise ValueError(f'[!] GamePage div with id/class: ({SCOREBOX_META_DIV_ID}) not found')
+        
+        meta_divs = scorebox_meta_div.find_all('div')
         if not meta_divs:
             raise ValueError(f'[!] Malformed scorebox: missing all divs')
         
@@ -226,7 +239,7 @@ class GamePageScraper(PageScraper):
         
         self.game_info_df['season_week'] = self.season_week
         self.game_info_df['season_year'] = self.season_year
-            
+    
         
     
     # ---------------------------------------------

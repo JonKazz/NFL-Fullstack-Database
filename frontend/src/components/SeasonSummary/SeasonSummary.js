@@ -372,73 +372,363 @@ function SeasonSummary() {
           </div>
         </div>
 
-        {/* Playoffs */}
+        {/* Playoff Bracket */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Playoff Results</h2>
-          <div className={styles['playoffs-container']}>
-            {(() => {
-              // Group playoff games by week
-              const playoffRounds = {
-                19: { name: 'Wild Card', games: [] },
-                20: { name: 'Divisional', games: [] },
-                21: { name: 'Conference Championship', games: [] },
-                22: { name: 'Super Bowl', games: [] }
-              };
-              
-              // Group games by week
-              playoffs.forEach(game => {
-                if (playoffRounds[game.seasonWeek]) {
-                  playoffRounds[game.seasonWeek].games.push(game);
-                }
-              });
-              
-              // Filter out empty rounds and render
-              const roundsWithGames = Object.entries(playoffRounds)
-                .filter(([week, round]) => round.games.length > 0);
-              
-              if (roundsWithGames.length === 0) {
-                return <p style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)' }}>
-                  No playoff games found for this season.
-                </p>;
-              }
-              
-              return roundsWithGames.map(([week, round]) => (
-                <div key={week} className={styles['playoff-round']}>
-                  <h3>{round.name}</h3>
-                  <div className={styles['playoff-games']}>
-                    {round.games.map((game, gameIndex) => (
-                      <div key={gameIndex} className={styles['playoff-game']}>
-                        <div className={styles['team']}>
-                          <img 
-                            src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
-                            alt="" 
-                            className={styles['team-logo-small']}
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                          <span>{teams.find(t => t.teamId === game.homeTeamId)?.name || game.homeTeamId}</span>
-                          <span className={styles['score']}>{game.homePoints}</span>
+          <h2 className={styles['section-title']}>Playoff Bracket</h2>
+          
+          {playoffs.length > 0 ? (
+            <div className={styles['playoff-bracket']}>
+              <div className={styles['bracket-container']}>
+                {/* Group playoff games by round and conference */}
+                {(() => {
+                  const wildCardGames = playoffs.filter(game => game.seasonWeek === 19);
+                  const divisionalGames = playoffs.filter(game => game.seasonWeek === 20);
+                  const conferenceGames = playoffs.filter(game => game.seasonWeek === 21);
+                  const superBowlGames = playoffs.filter(game => game.seasonWeek === 22);
+                  
+                  // Filter games by conference using team division
+                  const afcWildCard = wildCardGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('AFC') || awayTeam?.division?.startsWith('AFC');
+                  });
+                  
+                  const nfcWildCard = wildCardGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('NFC') || awayTeam?.division?.startsWith('NFC');
+                  });
+                  
+                  const afcDivisional = divisionalGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('AFC') || awayTeam?.division?.startsWith('AFC');
+                  });
+                  
+                  const nfcDivisional = divisionalGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('NFC') || awayTeam?.division?.startsWith('NFC');
+                  });
+                  
+                  const afcConference = conferenceGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('AFC') || awayTeam?.division?.startsWith('AFC');
+                  });
+                  
+                  const nfcConference = conferenceGames.filter(game => {
+                    const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
+                    const awayTeam = teams.find(t => t.teamId === game.awayTeamId);
+                    return homeTeam?.division?.startsWith('NFC') || awayTeam?.division?.startsWith('NFC');
+                  });
+                  
+                  return (
+                    <>
+                      {/* Top Row: AFC and NFC Sides */}
+                      <div className={styles['bracket-top-row']}>
+                        {/* AFC Side - Left */}
+                        <div className={styles['conference-side']}>
+                          {/* Wild Card Round - Far Left */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Wild Card</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {afcWildCard.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Divisional Round - Closer to Center */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Divisional</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {afcDivisional.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Conference Championship - Center Left */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Conference</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {afcConference.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <div className={styles['team']}>
-                          <img 
-                            src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
-                            alt="" 
-                            className={styles['team-logo-small']}
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                          <span>{teams.find(t => t.teamId === game.awayTeamId)?.name || game.awayTeamId}</span>
-                          <span className={styles['score']}>{game.awayPoints}</span>
+
+                        {/* Super Bowl - Center */}
+                        <div className={styles['super-bowl']}>
+                          <h4 className={styles['round-title']}>Super Bowl</h4>
+                          {superBowlGames.map((game, index) => (
+                            <div key={game.gameId}>
+                              <div className={styles['super-bowl-matchup']}>
+                                <div className={styles['team-section']}>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                      alt={game.homeTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                  </div>
+                                  <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                </div>
+                                <div className={styles['team-section']}>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                      alt={game.awayTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                  </div>
+                                  <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                </div>
+                              </div>
+                              <div className={styles['champion']}>
+                                <div className={styles['champion-logo']}>
+                                  <img 
+                                    src={teams.find(t => t.teamId === game.winningTeamId)?.logo || ''} 
+                                    alt={game.winningTeamId || 'Champion'}
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      e.target.nextSibling.style.display = 'flex';
+                                    }}
+                                  />
+                                  <div className={styles['team-logo-fallback']}>{game.winningTeamId || 'CH'}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* NFC Side - Right */}
+                        <div className={styles['conference-side']}>
+                          {/* Conference Championship - Center Right */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Conference</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {nfcConference.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Divisional Round - Closer to Center */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Divisional</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {nfcDivisional.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Wild Card Round - Far Right */}
+                          <div className={styles['bracket-round']}>
+                            <h4 className={styles['round-title']}>Wild Card</h4>
+                            <div className={styles['bracket-matchups']}>
+                              {nfcWildCard.map((game, index) => (
+                                <div key={game.gameId} className={styles['bracket-matchup']}>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                        alt={game.homeTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                    </div>
+                                  </div>
+                                  <div className={styles['team-section']}>
+                                    <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                    <div className={styles['team-logo']}>
+                                      <img 
+                                        src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                        alt={game.awayTeamId}
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                      <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ));
-            })()}
-          </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          ) : (
+            <div className={styles['no-playoffs']}>
+              <p>No playoff games found for the {year} season.</p>
+            </div>
+          )}
         </div>
 
         {/* Awards */}

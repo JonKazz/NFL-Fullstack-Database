@@ -5,46 +5,37 @@
 }
 
 .pageBackground {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  color: #e5e7eb;
   min-height: 100vh;
+  line-height: 1.6;
   padding: 20px;
-  color: #333;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
-  background: white;
+  background: #2d2d2d;
   border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   overflow: hidden;
+  padding: 20px;
 }
 
 .header {
-  background: linear-gradient(135deg, #013369 0%, #1e3c72 100%);
-  color: white;
-  padding: 30px;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+  border: 1px solid rgba(220, 38, 38, 0.2);
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
-.header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-  animation: drift 20s linear infinite;
-}
 
-@keyframes drift {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-50px, -50px); }
-}
 
 .game-info {
   position: relative;
@@ -67,8 +58,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 40px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 3px solid #dee2e6;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  margin-bottom: 30px;
 }
 
 .team {
@@ -83,10 +77,10 @@
 }
 
 .team-logo {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: #013369;
+  background: transparent;
   margin: 0 auto 15px;
   display: flex;
   align-items: center;
@@ -94,48 +88,81 @@
   font-size: 24px;
   font-weight: bold;
   color: white;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border: 6px solid rgba(128, 128, 128, 0.6);
   transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.team-logo:hover {
-  transform: scale(1.1);
+.team-logo-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  z-index: 2;
 }
+
+.team-logo-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #dc2626;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  z-index: 1;
+}
+
+
 
 .team-name {
   font-size: 24px;
   font-weight: bold;
+  color: #ffffff;
+  text-align: center;
   margin-bottom: 5px;
-  color: #013369;
 }
 
 .team-record {
-  font-size: 14px;
-  color: #666;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
   margin-bottom: 10px;
+  font-weight: normal;
 }
 
 .score {
   font-size: 48px;
   font-weight: bold;
-  color: #013369;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  color: #f59e0b;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .winner {
-  color: #28a745;
+  color: #10b981;
 }
 
 .vs {
   font-size: 24px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 20px;
 }
 
 .quarter-scores {
   padding: 20px 40px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  margin-bottom: 30px;
 }
 
 .quarter-table {
@@ -148,22 +175,88 @@
 .quarter-table td {
   padding: 12px;
   text-align: center;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .quarter-table th {
-  background: #013369;
+  background: #dc2626;
   color: white;
   font-weight: bold;
 }
 
 .quarter-table td {
-  background: white;
+  background: #2d2d2d;
+  color: #e5e7eb;
   font-weight: bold;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .stats-section {
+  margin-top: 30px;
   padding: 30px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.stats-section h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #2d2d2d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.stats-table th {
+  background: #1f1f1f;
+  color: #ffffff;
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table td {
+  padding: 12px 15px;
+  text-align: center;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.stats-table td:nth-child(2) {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.stats-table td:nth-child(3) {
+  color: #3b82f6;
+  font-weight: 600;
 }
 
 .stats-grid {
@@ -173,18 +266,11 @@
   margin-top: 20px;
 }
 
-.stat-card {
-  background: white;
-  border-radius: 10px;
-  padding: 25px;
-  border: 1px solid #dee2e6;
-}
-
 .stat-card h3 {
-  color: #013369;
+  color: #dc2626;
   margin-bottom: 15px;
   font-size: 18px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
 }
 
@@ -193,7 +279,7 @@
   justify-content: space-between;
   margin-bottom: 10px;
   padding: 5px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stat-row:last-child {
@@ -202,18 +288,18 @@
 
 .stat-label {
   font-weight: 600;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .stat-value {
   font-weight: bold;
-  color: #013369;
+  color: #f59e0b;
 }
 
 .section-title {
   font-size: 28px;
   font-weight: bold;
-  color: #013369;
+  color: #ffffff;
   margin-bottom: 20px;
   text-align: center;
   position: relative;
@@ -227,27 +313,46 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #013369, #1e3c72);
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
   border-radius: 2px;
 }
 
 .player-stats {
   margin-top: 30px;
   padding: 30px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.player-stats h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.player-stats h4 {
+  color: #dc2626;
+  margin: 25px 0 15px 0;
+  font-size: 20px;
+  border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+  padding-bottom: 8px;
 }
 
 .player-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
-  background: white;
+  background: #2d2d2d;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .player-table th {
-  background: #013369;
+  background: #dc2626;
   color: white;
   padding: 15px 10px;
   text-align: left;
@@ -256,48 +361,51 @@
 
 .player-table td {
   padding: 12px 10px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
 }
 
 .player-table tr:nth-child(even) {
-  background: #f8f9fa;
+  background: #1a1a1a;
 }
 
 .player-table tr:hover {
-  background: #e3f2fd;
+  background: rgba(220, 38, 38, 0.1);
 }
 
 .game-notes {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  border: 1px solid #ffeaa7;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 20px;
   margin-top: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
 .game-notes h3 {
-  color: #856404;
+  color: #f59e0b;
   margin-bottom: 10px;
 }
 
 .game-notes p {
-  color: #856404;
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
 }
 
 .visual-comparison {
-  background: white;
-  border: 1px solid #dee2e6;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 25px;
   margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
 .visual-comparison h3 {
-  color: #013369;
+  color: #ffffff;
   margin-bottom: 20px;
   font-size: 18px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
 }
 
@@ -315,7 +423,7 @@
 
 .stat-name {
   font-weight: bold;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.9);
   min-width: 120px;
   text-align: right;
 }
@@ -330,9 +438,10 @@
 .bar-row {
   display: flex;
   height: 30px;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   overflow: hidden;
+  background: #2d2d2d;
 }
 
 .bar {
@@ -362,7 +471,7 @@
 
 .team-label {
   font-weight: bold;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.9);
   min-width: 30px;
   font-size: 12px;
 }
