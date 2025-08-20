@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
 import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats } from '../../api/fetches';
-import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName } from '../../utils';
+import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName, getTeamPrimaryColor } from '../../utils';
 
 // Component to handle async player name fetching
 function PlayerNameCell({ playerId }) {
@@ -158,6 +158,9 @@ function SeasonSummaryVisualization() {
 
     if (teamId && year) {
       fetchData();
+      // Set team primary color for the header
+      const teamColor = getTeamPrimaryColor(teamId);
+      document.documentElement.style.setProperty('--team-primary-color', teamColor);
     }
   }, [teamId, year]);
 

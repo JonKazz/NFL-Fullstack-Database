@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameSummary.module.css';
 import { fetchTeamsBySeason } from '../../api/fetches';
+import { getTeamPrimaryColor } from '../../utils';
 
 function GameSummary() {
   const { gameId } = useParams();
@@ -298,14 +299,20 @@ function GameSummary() {
                     <div className={styles['stat-bars']}>
                       <div className={styles['bar-row']}>
                         <div
-                          className={`${styles.bar} ${styles['kc-bar']}`}
-                          style={{ width: `${homePct}%` }}
+                          className={styles.bar}
+                          style={{ 
+                            width: `${homePct}%`,
+                            backgroundColor: getTeamPrimaryColor(homeStats.id.teamId)
+                          }}
                         >
                           {homeStats.id.teamId}: {home}
                         </div>
                         <div
-                          className={`${styles.bar} ${styles['lac-bar']}`}
-                          style={{ width: `${awayPct}%` }}
+                          className={styles.bar}
+                          style={{ 
+                            width: `${awayPct}%`,
+                            backgroundColor: getTeamPrimaryColor(awayStats.id.teamId)
+                          }}
                         >
                           {awayStats.id.teamId}: {away}
                         </div>
@@ -316,6 +323,174 @@ function GameSummary() {
               })}
             </div>
           </div>
+          <div className={`${styles['visual-comparison']} ${styles['third-down-bars']}`}>
+            <h3>Third Down Conversion Rate</h3>
+            <div className={styles['chart-container']}>
+              {(() => {
+                const maxAttempts = Math.max(homeStats.thirdDownAttempts || 0, awayStats.thirdDownAttempts || 0);
+                const homeBarWidth = maxAttempts > 0 ? ((homeStats.thirdDownAttempts || 0) / maxAttempts * 100) : 0;
+                const awayBarWidth = maxAttempts > 0 ? ((awayStats.thirdDownAttempts || 0) / maxAttempts * 100) : 0;
+                
+                return (
+                  <>
+                    <div className={styles['stat-comparison']}>
+                      <div className={styles['stat-name']}>{homeStats.id.teamId}</div>
+                      <div className={styles['stat-bars']}>
+                        <div 
+                          className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
+                          data-team-id={homeStats.id.teamId}
+                          style={{ 
+                            '--team-primary-color': getTeamPrimaryColor(homeStats.id.teamId),
+                            width: `${homeBarWidth}%`
+                          }}
+                        >
+                          <div
+                            className={styles.bar}
+                            style={{ 
+                              width: `${(homeStats.thirdDownAttempts || 0) > 0 ? ((homeStats.thirdDownConversions || 0) / (homeStats.thirdDownAttempts || 0) * 100) : 0}%`
+                            }}
+                            data-team-id={homeStats.id.teamId}
+                          >
+                            {homeStats.thirdDownConversions || 0}/{homeStats.thirdDownAttempts || 0} ({homeStats.thirdDownAttempts > 0 ? Math.round((homeStats.thirdDownConversions / homeStats.thirdDownAttempts * 100)) : 0}%)
+                          </div>
+                          {/* Division lines for each segment based on home team's attempts */}
+                          {Array.from({ length: (homeStats.thirdDownAttempts || 0) - 1 }, (_, index) => (
+                            <div
+                              key={index}
+                              className={styles['division-line']}
+                              style={{
+                                left: `${((index + 1) / (homeStats.thirdDownAttempts || 0)) * 100}%`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className={styles['stat-comparison']}>
+                      <div className={styles['stat-name']}>{awayStats.id.teamId}</div>
+                      <div className={styles['stat-bars']}>
+                        <div 
+                          className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
+                          data-team-id={awayStats.id.teamId}
+                          style={{ 
+                            '--team-primary-color': getTeamPrimaryColor(awayStats.id.teamId),
+                            width: `${awayBarWidth}%`
+                          }}
+                        >
+                          <div
+                            className={styles.bar}
+                            style={{ 
+                              width: `${(awayStats.thirdDownAttempts || 0) > 0 ? ((awayStats.thirdDownConversions || 0) / (awayStats.thirdDownAttempts || 0) * 100) : 0}%`
+                            }}
+                            data-team-id={awayStats.id.teamId}
+                          >
+                            {awayStats.thirdDownConversions || 0}/{awayStats.thirdDownAttempts || 0} ({awayStats.thirdDownAttempts > 0 ? Math.round((awayStats.thirdDownConversions / awayStats.thirdDownAttempts * 100)) : 0}%)
+                          </div>
+                          {/* Division lines for each segment based on away team's attempts */}
+                          {Array.from({ length: (awayStats.thirdDownAttempts || 0) - 1 }, (_, index) => (
+                            <div
+                              key={index}
+                              className={styles['division-line']}
+                              style={{
+                                left: `${((index + 1) / (awayStats.thirdDownAttempts || 0)) * 100}%`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+          <div className={`${styles['visual-comparison']} ${styles['fourth-down-bars']}`}>
+            <h3>Fourth Down Conversion Rate</h3>
+            <div className={styles['chart-container']}>
+              {(() => {
+                const maxAttempts = Math.max(homeStats.fourthDownAttempts || 0, awayStats.fourthDownAttempts || 0);
+                const homeBarWidth = maxAttempts > 0 ? ((homeStats.fourthDownAttempts || 0) / maxAttempts * 100) : 0;
+                const awayBarWidth = maxAttempts > 0 ? ((awayStats.fourthDownAttempts || 0) / maxAttempts * 100) : 0;
+                
+                return (
+                  <>
+                    <div className={styles['stat-comparison']}>
+                      <div className={styles['stat-name']}>{homeStats.id.teamId}</div>
+                      <div className={styles['stat-bars']}>
+                        <div 
+                          className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
+                          data-team-id={homeStats.id.teamId}
+                          style={{ 
+                            '--team-primary-color': getTeamPrimaryColor(homeStats.id.teamId),
+                            width: `${homeBarWidth}%`
+                          }}
+                        >
+                          <div
+                            className={styles.bar}
+                            style={{ 
+                              width: `${(homeStats.fourthDownAttempts || 0) > 0 ? ((homeStats.fourthDownConversions || 0) / (homeStats.fourthDownAttempts || 0) * 100) : 0}%`
+                            }}
+                            data-team-id={homeStats.id.teamId}
+                          >
+                            {homeStats.fourthDownConversions || 0}/{homeStats.fourthDownAttempts || 0} ({homeStats.fourthDownAttempts > 0 ? Math.round((homeStats.fourthDownConversions / homeStats.fourthDownAttempts * 100)) : 0}%)
+                          </div>
+                          {/* Division lines for each segment based on home team's attempts */}
+                          {Array.from({ length: (homeStats.fourthDownAttempts || 0) - 1 }, (_, index) => (
+                            <div
+                              key={index}
+                              className={styles['division-line']}
+                              style={{
+                                left: `${((index + 1) / (homeStats.fourthDownAttempts || 0)) * 100}%`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className={styles['stat-comparison']}>
+                      <div className={styles['stat-name']}>{awayStats.id.teamId}</div>
+                      <div className={styles['stat-bars']}>
+                        <div 
+                          className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
+                          data-team-id={awayStats.id.teamId}
+                          style={{ 
+                            '--team-primary-color': getTeamPrimaryColor(awayStats.id.teamId),
+                            width: `${awayBarWidth}%`
+                          }}
+                        >
+                          <div
+                            className={styles.bar}
+                            style={{ 
+                              width: `${(awayStats.fourthDownAttempts || 0) > 0 ? ((awayStats.fourthDownConversions || 0) / (awayStats.fourthDownAttempts || 0) * 100) : 0}%`
+                            }}
+                            data-team-id={awayStats.id.teamId}
+                          >
+                            {awayStats.fourthDownConversions || 0}/{awayStats.fourthDownAttempts || 0} ({awayStats.fourthDownAttempts > 0 ? Math.round((awayStats.fourthDownConversions / awayStats.fourthDownAttempts * 100)) : 0}%)
+                          </div>
+                          {/* Division lines for each segment based on away team's attempts */}
+                          {Array.from({ length: (awayStats.fourthDownAttempts || 0) - 1 }, (_, index) => (
+                            <div
+                              key={index}
+                              className={styles['division-line']}
+                              style={{
+                                left: `${((index + 1) / (awayStats.fourthDownAttempts || 0)) * 100}%`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+
+
           <div className={styles['stats-grid']}>
             <div className={styles['stat-card']}>
               <h3>Offensive Statistics</h3>
@@ -329,43 +504,41 @@ function GameSummary() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Total Yards</strong></td>
-                    <td>{homeStats.totalYards}</td>
-                    <td>{awayStats.totalYards}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Passing Yards</strong></td>
-                    <td>{homeStats.passingYards}</td>
-                    <td>{awayStats.passingYards}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Rushing Yards</strong></td>
-                    <td>{homeStats.rushingYards}</td>
-                    <td>{awayStats.rushingYards}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>First Downs</strong></td>
-                    <td>{homeStats.firstDownsTotal}</td>
-                    <td>{awayStats.firstDownsTotal}</td>
-                  </tr>
-                  <tr>
                     <td><strong>Third Down Efficiency</strong></td>
-                    <td>{homeStats.thirdDownConversions}/{homeStats.thirdDownAttempts}</td>
-                    <td>{awayStats.thirdDownConversions}/{awayStats.thirdDownAttempts}</td>
+                    <td>{homeStats.thirdDownConversions || 0}/{homeStats.thirdDownAttempts || 0}</td>
+                    <td>{awayStats.thirdDownConversions || 0}/{awayStats.thirdDownAttempts || 0}</td>
                   </tr>
                   <tr>
                     <td><strong>Red Zone Efficiency</strong></td>
-                    <td>-</td>
-                    <td>-</td>
+                    <td>{homeStats.redZoneConversions || 0}/{homeStats.redZoneAttempts || 0}</td>
+                    <td>{awayStats.redZoneConversions || 0}/{awayStats.redZoneAttempts || 0}</td>
                   </tr>
                   <tr>
                     <td><strong>Time of Possession</strong></td>
-                    <td>{homeStats.timeOfPossession}</td>
-                    <td>{awayStats.timeOfPossession}</td>
+                    <td>{homeStats.timeOfPossession || '00:00'}</td>
+                    <td>{awayStats.timeOfPossession || '00:00'}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Passing Touchdowns</strong></td>
+                    <td>{homeStats.passingTouchdowns || 0}</td>
+                    <td>{awayStats.passingTouchdowns || 0}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Rushing Touchdowns</strong></td>
+                    <td>{homeStats.rushingTouchdowns || 0}</td>
+                    <td>{awayStats.rushingTouchdowns || 0}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Field Goals</strong></td>
+                    <td>{homeStats.fieldGoalsMade || 0}/{homeStats.fieldGoalsAttempted || 0}</td>
+                    <td>{awayStats.fieldGoalsMade || 0}/{awayStats.fieldGoalsAttempted || 0}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
+
+          <div className={styles['stats-grid']}>
             <div className={styles['stat-card']}>
               <h3>Defensive Statistics</h3>
               <table className={styles['player-table']}>
@@ -378,39 +551,54 @@ function GameSummary() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Total Yards</strong></td>
-                    <td>{homeStats.totalYards}</td>
-                    <td>{awayStats.totalYards}</td>
+                    <td><strong>Total Yards Allowed</strong></td>
+                    <td>{awayStats.totalYards || 0}</td>
+                    <td>{homeStats.totalYards || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>Passing Yards</strong></td>
-                    <td>{homeStats.passingYards}</td>
-                    <td>{awayStats.passingYards}</td>
+                    <td><strong>Passing Yards Allowed</strong></td>
+                    <td>{awayStats.passingYards || 0}</td>
+                    <td>{homeStats.passingYards || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>Rushing Yards</strong></td>
-                    <td>{homeStats.rushingYards}</td>
-                    <td>{awayStats.rushingYards}</td>
+                    <td><strong>Rushing Yards Allowed</strong></td>
+                    <td>{awayStats.rushingYards || 0}</td>
+                    <td>{homeStats.rushingYards || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>First Downs</strong></td>
-                    <td>{homeStats.firstDownsTotal}</td>
-                    <td>{awayStats.firstDownsTotal}</td>
+                    <td><strong>First Downs Allowed</strong></td>
+                    <td>{awayStats.firstDownsTotal || 0}</td>
+                    <td>{homeStats.firstDownsTotal || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>Third Down Efficiency</strong></td>
-                    <td>{homeStats.thirdDownConversions}/{homeStats.thirdDownAttempts}</td>
-                    <td>{awayStats.thirdDownConversions}/{awayStats.thirdDownAttempts}</td>
+                    <td><strong>Third Down Defense</strong></td>
+                    <td>{awayStats.thirdDownConversions || 0}/{awayStats.thirdDownAttempts || 0}</td>
+                    <td>{homeStats.thirdDownConversions || 0}/{homeStats.thirdDownAttempts || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>Red Zone Efficiency</strong></td>
-                    <td>-</td>
-                    <td>-</td>
+                    <td><strong>Red Zone Defense</strong></td>
+                    <td>{awayStats.redZoneConversions || 0}/{awayStats.redZoneAttempts || 0}</td>
+                    <td>{homeStats.redZoneConversions || 0}/{homeStats.redZoneAttempts || 0}</td>
                   </tr>
                   <tr>
-                    <td><strong>Time of Possession</strong></td>
-                    <td>{homeStats.timeOfPossession}</td>
-                    <td>{awayStats.timeOfPossession}</td>
+                    <td><strong>Sacks</strong></td>
+                    <td>{homeStats.sacksTotal || 0}</td>
+                    <td>{awayStats.sacksTotal || 0}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Interceptions</strong></td>
+                    <td>{homeStats.interceptions || 0}</td>
+                    <td>{awayStats.interceptions || 0}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fumbles Forced</strong></td>
+                    <td>{homeStats.fumblesForced || 0}</td>
+                    <td>{awayStats.fumblesForced || 0}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fumbles Recovered</strong></td>
+                    <td>{homeStats.fumblesRecovered || 0}</td>
+                    <td>{awayStats.fumblesRecovered || 0}</td>
                   </tr>
                 </tbody>
               </table>

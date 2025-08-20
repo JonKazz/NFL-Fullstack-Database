@@ -444,6 +444,24 @@
   background: #2d2d2d;
 }
 
+/* Specific styling for third down conversion bars */
+.third-down-bars .stat-bars {
+  align-items: flex-start;
+}
+
+.third-down-bars .bar-row {
+  min-width: 100px;
+}
+
+/* Specific styling for fourth down conversion bars */
+.fourth-down-bars .stat-bars {
+  align-items: flex-start;
+}
+
+.fourth-down-bars .bar-row {
+  min-width: 100px;
+}
+
 .bar {
   display: flex;
   align-items: center;
@@ -453,6 +471,28 @@
   font-size: 12px;
   transition: all 0.3s ease;
   min-width: 60px;
+}
+
+/* Team bar background and styling for third down conversions */
+.team-bar-bg {
+  background-color: rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+/* Division lines within the bar */
+.division-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: white;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+/* Bar filled portion - uses CSS custom properties for team colors */
+.bar {
+  background-color: var(--team-primary-color, #808080);
 }
 
 .bar-container {

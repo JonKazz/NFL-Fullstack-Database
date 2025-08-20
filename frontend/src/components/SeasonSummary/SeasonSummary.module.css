@@ -5,6 +5,8 @@
   box-sizing: border-box;
 }
 
+
+
 .pageBackground {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
@@ -12,6 +14,18 @@
   min-height: 100vh;
   line-height: 1.6;
   padding: 20px;
+}
+
+/* Force background on body and html when this component is active */
+.pageBackground::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  z-index: -1;
 }
 
 .container {
@@ -70,7 +84,7 @@
 
 /* Sections */
 .section {
-  background: #2d2d2d;
+  background: #1a1a1a;
   border-radius: 12px;
   padding: 30px;
   margin-bottom: 30px;
@@ -207,10 +221,93 @@
 
 /* Standings */
 .standings-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
+
+/* Conference labels above the standings */
+.conference-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 0 15px;
+}
+
+.conference-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Position AFC label above left side */
+.conference-label:first-child {
+  text-align: right;
+  padding-right: 30px;
+  color: #D50A0A;
+}
+
+/* Position NFC label above right side */
+.conference-label:last-child {
+  text-align: left;
+  padding-left: 30px;
+  color: #2563eb;
+}
+
+/* Conference headers */
+.conference-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.conference-header h3 {
+  color: #dc2626;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Division groups */
+.division-group {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 8px;
+}
+
+/* Division labels within each division group */
+.division-label {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  margin: 10px 0;
+  align-self: center;
+  height: 100%;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  gap: 10px;
+}
+
+
+
+
 
 .conference h3 {
   color: #dc2626;
@@ -223,8 +320,8 @@
 }
 
 .division h4 {
-  color: #f59e0b;
-  font-size: 1.4rem;
+  color: #ffffff;
+  font-size: 0.9rem;
   margin-bottom: 15px;
   text-align: center;
   font-weight: 600;
@@ -232,28 +329,44 @@
   letter-spacing: 0.5px;
 }
 
+.division {
+  margin-bottom: 0;
+}
+
 .standings-table {
-  background: #1a1a1a;
+  background: #0f0f0f;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* AFC tables - Red outline */
+.division-group .division:first-child .standings-table {
+  border: 2px solid #D50A0A;
+}
+
+/* NFC tables - Blue outline */
+.division-group .division:last-child .standings-table {
+  border: 2px solid #2563eb;
+}
+
 .standings-row {
   display: grid;
   grid-template-columns: 4fr 1fr;
-  gap: 15px;
-  padding: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   align-items: center;
+  padding: 12px 15px;
+  background: #2a2a2a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.standings-row:hover {
+  background: #4a4a4a;
 }
 
 .standings-row:last-child {
   border-bottom: none;
-}
-
-.standings-row:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .team-info {
@@ -279,6 +392,16 @@
   flex-shrink: 0;
 }
 
+/* AFC ranking numbers - Red background */
+.division-group .division:first-child .rank {
+  background: #D50A0A;
+}
+
+/* NFC ranking numbers - Blue background */
+.division-group .division:last-child .rank {
+  background: #2563eb;
+}
+
 .team-logo-small {
   width: 30px;
   height: 30px;
@@ -289,10 +412,12 @@
 
 .team-record {
   font-weight: 600;
-  color: #f59e0b;
+  color: #ffffff;
   text-align: right;
   min-width: 60px;
 }
+
+
 
 
 
@@ -495,12 +620,13 @@
 
 /* Playoff Bracket */
 .playoff-bracket {
-  background: white;
+  background: #1d1d1d;
   border-radius: 15px;
   padding: 20px;
   margin-top: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bracket-container {
@@ -554,13 +680,43 @@
   align-items: center;
   gap: 15px;
   padding: 12px;
-  background: #f8f9fa;
+  background: #3a3a3a;
   border-radius: 8px;
-  border: 2px solid #dee2e6;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   position: relative;
   min-width: 110px;
   min-height: 110px;
   justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* AFC games - Red outline */
+.bracket-matchup.afc-game {
+  border: 2px solid #D50A0A;
+}
+
+/* NFC games - Blue outline */
+.bracket-matchup.nfc-game {
+  border: 2px solid #2563eb;
+}
+
+.bracket-matchup:hover {
+  background: #4a4a4a;
+  transform: scale(1.01) translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* AFC games hover - Red border */
+.bracket-matchup.afc-game:hover {
+  border-color: #ff4444;
+  box-shadow: 0 0 0 3px #ff4444;
+}
+
+/* NFC games hover - Blue border */
+.bracket-matchup.nfc-game:hover {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px #4a90e2;
 }
 
 /* Team section containing logo and score */
@@ -568,7 +724,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 /* VS divider between teams - REMOVED */
@@ -580,26 +736,41 @@
 .team-score {
   font-size: 14px;
   font-weight: bold;
-  color: #333;
-  background: white;
+  color: #e5e7eb;
+  background: #4a4a4a;
   padding: 3px 6px;
   border-radius: 4px;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   min-width: 25px;
   text-align: center;
+}
+
+/* Losing team styling - faded appearance */
+.team-section.losing-team {
+  opacity: 0.6;
+  filter: grayscale(30%);
+}
+
+.team-section.losing-team .team-logo {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.team-section.losing-team .team-score {
+  background: #3a3a3a;
+  color: #9ca3af;
 }
 
 /* Round titles */
 .round-title {
   font-size: 12px;
   font-weight: bold;
-  color: #333;
+  color: #e5e7eb;
   text-align: center;
   margin-bottom: 10px;
   padding: 6px 12px;
-  background: #f8f9fa;
+  background: #4a4a4a;
   border-radius: 4px;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   white-space: nowrap;
 }
 
@@ -618,8 +789,9 @@
   flex-shrink: 0;
 }
 
+/* Remove hover effect from team logos */
 .playoff-bracket .team-logo:hover {
-  transform: scale(1.1);
+  transform: none;
 }
 
 .playoff-bracket .team-logo img {
@@ -646,7 +818,7 @@
 .playoff-bracket .team-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #e5e7eb;
   flex: 1;
   text-align: center;
 }
@@ -658,11 +830,24 @@
   gap: 20px;
   padding: 20px;
   border-radius: 15px;
-  border: 2px solid #dee2e6;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(#3a3a3a, #3a3a3a) padding-box,
+    linear-gradient(to right, #D50A0A 0%, #D50A0A 50%, #2563eb 50%, #2563eb 100%) border-box;
   min-width: 200px;
   align-items: center;
-  background: #f8f9fa;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.super-bowl:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 6px solid transparent;
+  background: 
+    linear-gradient(#4a4a4a, #4a4a4a) padding-box,
+    linear-gradient(to right, #ff4444 0%, #ff4444 50%, #4a90e2 50%, #4a90e2 100%) border-box;
 }
 
 .super-bowl-matchup {
@@ -670,6 +855,35 @@
   align-items: center;
   gap: 25px;
   justify-content: center;
+}
+
+.super-bowl-scores {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.super-bowl-scores .team-score {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e5e7eb;
+  background: #4a4a4a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Fade the losing team's score in Super Bowl */
+.super-bowl-scores .team-score.losing-score {
+  opacity: 0.6;
+  filter: grayscale(30%);
+  background: #3a3a3a;
+  color: #9ca3af;
 }
 
 .super-bowl-matchup .team-logo {
@@ -680,56 +894,41 @@
 .super-bowl-matchup .team-name {
   font-size: 18px;
   font-weight: bold;
-  color: #333;
+  color: #e5e7eb;
 }
 
 .vs {
   font-size: 16px;
   font-weight: bold;
-  color: #666;
+  color: #9ca3af;
   padding: 0 10px;
 }
 
 .champion {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  padding: 15px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  border-radius: 15px;
-  border: 3px solid #ffc107;
   align-items: center;
-}
-
-.champion-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  padding: 8px 16px;
-  background: white;
-  border-radius: 6px;
-  border: 2px solid #ffc107;
+  margin-top: 20px;
 }
 
 .champion-logo {
-  width: 60px;
-  height: 60px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: white;
   border-radius: 50%;
-  border: 3px solid #ffc107;
-  box-shadow: 0 6px 18px rgba(255, 193, 7, 0.3);
+  border: 8px solid #ffd700;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }
 
 .champion-logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 6px;
+  padding: 10px;
 }
 
 .no-playoffs {

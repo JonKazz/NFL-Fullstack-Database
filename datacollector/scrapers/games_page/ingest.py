@@ -254,7 +254,7 @@ class GamePageScraper(PageScraper):
         if not rows:
             raise ValueError('[!] Malformed TeamStats table: No rows found')
         
-        team_ids = [self.home_team_id, self.away_team_id]
+        team_ids = [self.away_team_id, self.home_team_id]
         
         self.game_stats_df = pd.DataFrame({'team_id': team_ids})
 
@@ -279,6 +279,7 @@ class GamePageScraper(PageScraper):
             if len(cells) not in [7, 8]:
                 raise ValueError(f'[!] Malformed linescore table: {len(cells)} cells found at row {i}.')
 
+            # Fix: Row 0 is away team (index 2), Row 1 is home team (index 1)
             team_id = self.game_id.split('_')[2-i]
             
             scores = [cells[i].get_text(strip=True) for i in range(2, len(cells))]

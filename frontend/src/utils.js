@@ -33,6 +33,47 @@ export const TEAM_MAP = {
     'was': { name: 'Washington Commanders', city: 'Washington' }
 };
 
+// Get team primary color
+export function getTeamPrimaryColor(teamId) {
+  const teamColors = {
+    'crd': '#97233F', // Arizona Cardinals
+    'atl': '#A71930', // Atlanta Falcons
+    'rav': '#241773', // Baltimore Ravens
+    'buf': '#00338D', // Buffalo Bills
+    'car': '#0085CA', // Carolina Panthers
+    'chi': '#0B162A', // Chicago Bears
+    'cin': '#FB4F14', // Cincinnati Bengals
+    'cle': '#311D00', // Cleveland Browns
+    'dal': '#003594', // Dallas Cowboys
+    'den': '#FB4F14', // Denver Broncos
+    'det': '#0076B6', // Detroit Lions
+    'gnb': '#203731', // Green Bay Packers
+    'htx': '#03202F', // Houston Texans
+    'clt': '#002C5F', // Indianapolis Colts
+    'jax': '#006778', // Jacksonville Jaguars
+    'kan': '#E31837', // Kansas City Chiefs
+    'sdg': '#0080C6', // Los Angeles Chargers
+    'ram': '#003594', // Los Angeles Rams
+    'rai': '#000000', // Las Vegas Raiders
+    'mia': '#008E97', // Miami Dolphins
+    'min': '#4F2683', // Minnesota Vikings
+    'nwe': '#002244', // New England Patriots
+    'nor': '#D3BC8D', // New Orleans Saints
+    'nyg': '#0B2265', // New York Giants
+    'nyj': '#0C371D', // New York Jets
+    'phi': '#004C54', // Philadelphia Eagles
+    'pit': '#000000', // Pittsburgh Steelers
+    'sea': '#002244', // Seattle Seahawks
+    'sfo': '#AA0000', // San Francisco 49ers
+    'tam': '#D50A0A', // Tampa Bay Buccaneers
+    'oti': '#0C2340', // Tennessee Titans
+    'was': '#5A1414'  // Washington Commanders
+  };
+
+  return teamColors[teamId.toLowerCase()] || '#dc2626';
+}
+
+
 
 // Format numbers for display
 export function formatNumber(num) {

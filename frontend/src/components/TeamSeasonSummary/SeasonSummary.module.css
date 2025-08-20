@@ -24,12 +24,11 @@
 }
 
 .header {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: var(--team-primary-color, #dc2626);
   border-radius: 8px;
   padding: 0;
   margin-bottom: 30px;
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  border: 8px solid var(--team-border-color, rgba(220, 38, 38, 0.2));
   position: relative;
   overflow: hidden;
   min-height: 200px;
@@ -46,19 +45,25 @@
 
 .team-logo-bg {
   position: absolute;
-  left: -50px;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.15;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 270px;
+  background: var(--team-logo-bg-color, rgba(255, 255, 255, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
 }
 
 .team-logo-background {
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.3;
+  background: white;
+  border-radius: 50%;
+  padding: 20px;
+  border: 4px solid var(--team-border-color, rgba(255, 255, 255, 0.3));
 }
 
 .team-logo-placeholder {
@@ -78,6 +83,7 @@
   position: relative;
   z-index: 2;
   padding: 40px;
+  padding-left: 240px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
