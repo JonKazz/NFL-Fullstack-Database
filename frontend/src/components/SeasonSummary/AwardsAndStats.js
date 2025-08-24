@@ -26,14 +26,22 @@ function AwardsAndStats({ awards, statLeaders }) {
             <div key={category} className={styles['stat-card']}>
               <h3>{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
               <div className={styles['stat-leader']}>{leader.leader}</div>
-              <div className={styles['stat-team']}>{leader.team}</div>
-              <div className={styles['stat-value']}>
-                {category === 'passing' && `${leader.yards} yards, ${leader.tds} TDs`}
-                {category === 'rushing' && `${leader.yards} yards, ${leader.tds} TDs`}
-                {category === 'receiving' && `${leader.yards} yards, ${leader.tds} TDs`}
-                {category === 'sacks' && `${leader.sacks} sacks`}
-                {category === 'interceptions' && `${leader.ints} INTs`}
-              </div>
+              {leader.team && <div className={styles['stat-team']}>{leader.team}</div>}
+              {leader.yards && leader.tds && (
+                <div className={styles['stat-value']}>
+                  {leader.yards} yards, {leader.tds} TDs
+                </div>
+              )}
+              {leader.sacks && (
+                <div className={styles['stat-value']}>
+                  {leader.sacks} sacks
+                </div>
+              )}
+              {leader.ints && (
+                <div className={styles['stat-value']}>
+                  {leader.ints} INTs
+                </div>
+              )}
             </div>
           ))}
         </div>

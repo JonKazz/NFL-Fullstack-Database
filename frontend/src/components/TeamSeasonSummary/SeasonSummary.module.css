@@ -927,6 +927,19 @@
   border-right: 1px solid #5a5a5a;
 }
 
+.player-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.player-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .stat-cell {
   padding: 12px 15px;
   color: #fbbf24;

@@ -98,7 +98,32 @@
   margin-bottom: 25px;
   text-align: center;
   position: relative;
-  font-weight: 700;
+}
+
+.champion-display {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-radius: 8px;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.champion-display h3 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 0;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.no-data-message p {
+  font-size: 1.2rem;
+  margin: 0;
 }
 
 .section-title::before {

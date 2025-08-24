@@ -42,6 +42,60 @@
   font-weight: 600;
   color: #ffffff;
   text-align: center;
+  position: relative;
+}
+
+.year-button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 0 6px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.year-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.year-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2a2a2a;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 1000;
+  min-width: 80px;
+  margin-top: 5px;
+  padding: 8px 0;
+}
+
+.year-option {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.year-option:last-child {
+  border-bottom: none;
+}
+
+.year-option:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .stats-table {
@@ -55,8 +109,8 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 11px;
-  min-width: 500px;
-  table-layout: fixed;
+  min-width: 800px;
+  table-layout: auto;
 }
 
 .stats-table th {
@@ -70,9 +124,9 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 /* Group Headers */
@@ -91,6 +145,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Group headers now have dynamic widths set via inline styles */
+
 .stats-table td {
   padding: 4px 3px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -100,22 +156,64 @@
   font-size: 10px;
 }
 
-/* Date column width */
-.stats-table table td:first-child,
-.stats-table table th:first-child {
-  width: 250px;
-  min-width: 250px;
+/* Individual widths for the first 5 columns */
+.stats-table table td:nth-child(1),
+.stats-table table th:nth-child(1) {
+  width: 80px; /* Date - compact */
+  min-width: 80px;
+  max-width: 80px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
+.stats-table table td:nth-child(2),
+.stats-table table th:nth-child(2) {
+  width: 100px; /* Team - reduced from 120px */
+  min-width: 100px;
+  max-width: 100px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 
-/* Stat columns width */
-.stats-table table td:nth-child(n+2),
-.stats-table table th:nth-child(n+2) {
-  min-width: 250px;
+.stats-table table td:nth-child(3),
+.stats-table table th:nth-child(3) {
+  width: 100px; /* Opponent - reduced from 120px */
+  min-width: 100px;
+  max-width: 100px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stats-table table td:nth-child(4),
+.stats-table table th:nth-child(4) {
+  width: 70px; /* Score - significantly reduced from 100px */
+  min-width: 70px;
+  max-width: 70px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stats-table table td:nth-child(5),
+.stats-table table th:nth-child(5) {
+  width: 60px; /* W/L - compact for W/L */
+  min-width: 60px;
+  max-width: 60px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* All other columns (positional stats) - narrow */
+.stats-table table td:nth-child(n+6),
+.stats-table table th:nth-child(n+6) {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .stats-table table {
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 /* Game Row Styling */
@@ -143,6 +241,19 @@
 .stat-cell {
   font-weight: 600;
   color: #ffffff;
+}
+
+.win-loss-cell {
+  font-weight: 700;
+  text-align: center;
+}
+
+.win-loss-cell.win {
+  color: #10b981;
+}
+
+.win-loss-cell.loss {
+  color: #ef4444;
 }
 
 .summary-row {
@@ -198,7 +309,6 @@
   
   .stats-table table {
     font-size: 10px;
-    min-width: 400px;
   }
   
   .stats-table th,

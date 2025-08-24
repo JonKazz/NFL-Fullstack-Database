@@ -64,3 +64,12 @@ export async function fetchPlayerGameStats(gameId, playerId) {
   }
   return response.json();
 }
+
+// Fetch season information including awards and stat leaders
+export async function fetchSeasonInfo(year) {
+  const response = await fetch(`http://localhost:8080/api/season-info/${year}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch season info (api)');
+  }
+  return response.json();
+}

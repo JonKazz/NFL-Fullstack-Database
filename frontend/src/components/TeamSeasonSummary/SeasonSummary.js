@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
 import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats } from '../../api/fetches';
 import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName, getTeamPrimaryColor } from '../../utils';
@@ -17,7 +17,13 @@ function PlayerNameCell({ playerId }) {
     fetchPlayerName();
   }, [playerId]);
 
-  return <td className={styles['player-name-cell']}>{playerName}</td>;
+  return (
+    <td className={styles['player-name-cell']}>
+      <Link to={`/player/${playerId}`} className={styles['player-link']}>
+        {playerName}
+      </Link>
+    </td>
+  );
 }
 
 // Hook for sorting functionality
@@ -241,9 +247,20 @@ function SeasonSummaryVisualization() {
           <h2 className={styles['section-title']}>Season Schedule & Results</h2>
           <div className={styles['games-grid']}>
             {games.map((game, idx) => {
+              // Safety check - ensure game has required properties
+              if (!game || !game.gameInfo || !game.gameStats || !Array.isArray(game.gameStats)) {
+                return null;
+              }
+              
               const { gameInfo, gameStats } = game;
-              const myStats = gameStats.find(gs => gs.id.teamId === teamId);
-              const oppStats = gameStats.find(gs => gs.id.teamId !== teamId);
+              const myStats = gameStats.find(gs => gs && gs.id && gs.id.teamId === teamId);
+              const oppStats = gameStats.find(gs => gs && gs.id && gs.id.teamId !== teamId);
+              
+              // Safety check - if stats are not found or pointsTotal is undefined, skip this game
+              if (!myStats || !oppStats || typeof myStats.pointsTotal === 'undefined' || typeof oppStats.pointsTotal === 'undefined') {
+                return null;
+              }
+              
               const isHome = gameInfo.homeTeamId === teamId;
               const isWin = myStats.pointsTotal > oppStats.pointsTotal;
               const isPlayoff = gameInfo.seasonWeek === 'WC' || gameInfo.seasonWeek === 'DIV' || 
@@ -316,7 +333,7 @@ function SeasonSummaryVisualization() {
                   </div>
                 </div>
               );
-            })}
+            }).filter(Boolean)}
           </div>
         </div>
 

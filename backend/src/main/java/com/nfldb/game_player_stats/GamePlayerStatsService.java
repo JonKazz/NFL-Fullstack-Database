@@ -54,7 +54,7 @@ public class GamePlayerStatsService {
         dto.setSeasonYear(gameInfo.getSeasonYear());
         dto.setSeasonWeek(gameInfo.getSeasonWeek());
         
-        // Determine opponent
+        // Determine opponent and set scores
         String playerTeamId = stats.getTeamId();
         if (playerTeamId.equals(gameInfo.getHomeTeamId())) {
             dto.setOpponent(gameInfo.getAwayTeamId());
@@ -65,6 +65,10 @@ public class GamePlayerStatsService {
             dto.setHomeScore(gameInfo.getHomePoints());
             dto.setAwayScore(gameInfo.getAwayPoints());
         }
+        
+        // Set home team ID and winning team ID
+        dto.setHomeTeamId(gameInfo.getHomeTeamId());
+        dto.setWinningTeamId(gameInfo.getWinningTeamId());
         
         // Set player info
         dto.setTeamId(stats.getTeamId());

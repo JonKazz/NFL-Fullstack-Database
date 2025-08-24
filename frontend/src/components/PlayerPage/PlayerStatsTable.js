@@ -1,28 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PlayerStatsTable.module.css';
-import YearSelector from './YearSelector';
 import { getTeamPrimaryColor, TEAM_MAP } from '../../utils';
 
-// Helper function to darken hex colors for dark theme
-const darkenColor = (hexColor, amount = 0.6) => {
-  // Remove # if present
-  const hex = hexColor.replace('#', '');
-  
-  // Convert to RGB
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  
-  // Darken by reducing each component
-  const darkR = Math.max(0, Math.floor(r * (1 - amount)));
-  const darkG = Math.max(0, Math.floor(g * (1 - amount)));
-  const darkB = Math.max(0, Math.floor(b * (1 - amount)));
-  
-  // Convert back to hex
-  return `#${darkR.toString(16).padStart(2, '0')}${darkG.toString(16).padStart(2, '0')}${darkB.toString(16).padStart(2, '0')}`;
-};
+  // Helper function to darken hex colors for dark theme
+  const darkenColor = (hexColor, amount = 0.6) => {
+    // Remove # if present
+    const hex = hexColor.replace('#', '');
+    
+    // Convert to RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Darken by reducing each component
+    const darkR = Math.max(0, Math.floor(r * (1 - amount)));
+    const darkG = Math.max(0, Math.floor(g * (1 - amount)));
+    const darkB = Math.max(0, Math.floor(b * (1 - amount)));
+    
+    // Convert back to hex
+    return `#${darkR.toString(16).padStart(2, '0')}${darkG.toString(16).padStart(2, '0')}${darkB.toString(16).padStart(2, '0')}`;
+  };
 
 function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, onYearChange }) {
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const [availableSeasons, setAvailableSeasons] = useState([]);
+
+  // Fetch available seasons for this player and set default season
+  useEffect(() => {
+    async function fetchAvailableSeasons() {
+      try {
+        const response = await fetch(`http://localhost:8080/api/season-stats/player/${playerId}/seasons`);
+        if (response.ok) {
+          const seasons = await response.json();
+          setAvailableSeasons(seasons);
+          
+          // Set default to most recent season if no year is selected
+          if (seasons.length > 0 && !selectedYear) {
+            console.log('Setting default season to:', seasons[0], 'from available seasons:', seasons);
+            onYearChange(seasons[0]); // seasons[0] should be the most recent (sorted in backend)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching available seasons:', error);
+      }
+    }
+
+    if (playerId) {
+      fetchAvailableSeasons();
+    }
+  }, [playerId, selectedYear, onYearChange]);
 
 
   // Helper function to format stat values
@@ -84,7 +110,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build offensive table headers
   const buildOffensiveHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent'];
+    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.passing) {
       headers.push('CMP', 'Att', 'Yds', 'TD', 'Int', 'Rate');
@@ -107,7 +133,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build defensive table headers
   const buildDefensiveHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent'];
+    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.defensive) {
       headers.push('Tackles', 'Solo', 'Assist', 'Sacks', 'INT', 'PD');
@@ -118,7 +144,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build special teams table headers
   const buildSpecialTeamsHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent'];
+    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.kicking) {
       headers.push('FG Made', 'FG Att', 'XP Made', 'XP Att');
@@ -140,10 +166,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     // Format date by removing week name (take everything after first space)
     const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
     
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
     const row = [
       formattedDate,
       TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
     ];
     
     if (statCategories.passing) {
@@ -189,10 +224,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     // Format date by removing week name (take everything after first space)
     const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
     
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
     const row = [
       formattedDate,
       TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
     ];
     
     if (statCategories.defensive) {
@@ -214,10 +258,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     // Format date by removing week name (take everything after first space)
     const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
     
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
     const row = [
       formattedDate,
       TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
     ];
     
     if (statCategories.kicking) {
@@ -254,8 +307,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildOffensiveGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns
-    groupHeaders.push({ label: '', colspan: 3 });
+    // Basic info columns (Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 5 });
     
     if (statCategories.passing) {
       groupHeaders.push({ label: 'Passing', colspan: 6 });
@@ -280,8 +333,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildDefensiveGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns
-    groupHeaders.push({ label: '', colspan: 3 });
+    // Basic info columns (Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 5 });
     
     if (statCategories.defensive) {
       groupHeaders.push({ label: 'Defense', colspan: 6 });
@@ -294,8 +347,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildSpecialTeamsGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns
-    groupHeaders.push({ label: '', colspan: 3 });
+    // Basic info columns (Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 5 });
     
     if (statCategories.kicking) {
       groupHeaders.push({ label: 'Kicking', colspan: 4 });
@@ -318,8 +371,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team and opponent columns
-    summary.push('-', '-');
+    // Add empty cells for team, opponent, score, and W/L columns
+    summary.push('-', '-', '-', '-');
     
     if (statCategories.passing) {
       summary.push(
@@ -365,8 +418,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team and opponent columns
-    summary.push('-', '-');
+    // Add empty cells for team, opponent, score, and W/L columns
+    summary.push('-', '-', '-', '-');
     
     if (statCategories.defensive) {
       summary.push(
@@ -388,8 +441,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team and opponent columns
-    summary.push('-', '-');
+    // Add empty cells for team, opponent, score, and W/L columns
+    summary.push('-', '-', '-', '-');
     
     if (statCategories.kicking) {
       summary.push(
@@ -432,14 +485,40 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   return (
     <div className={styles['stats-table-container']}>
-      {/* Year Selector positioned at top left of table - ALWAYS visible */}
-      <YearSelector 
-        playerId={playerId}
-        selectedYear={selectedYear}
-        onYearChange={onYearChange}
-      />
-      
-      <h3>{selectedYear ? `${selectedYear} Season Statistics` : 'Select a Season'}</h3>
+      <h3>
+        {selectedYear ? (
+          <>
+            <span className={styles['year-button']} onClick={() => {
+              setShowYearDropdown(!showYearDropdown);
+            }}>
+              {selectedYear}
+            </span>
+            {' Season Statistics'}
+            {showYearDropdown && (
+              <div className={styles['year-dropdown']}>
+                {availableSeasons.length > 0 ? (
+                  availableSeasons.map(year => (
+                    <div 
+                      key={year} 
+                      className={styles['year-option']}
+                      onClick={() => {
+                        onYearChange(year);
+                        setShowYearDropdown(false);
+                      }}
+                    >
+                      {year}
+                    </div>
+                  ))
+                ) : (
+                  <div className={styles['year-option']}>Loading seasons...</div>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          'Select a Season'
+        )}
+      </h3>
       
       {!gameStats || gameStats.length === 0 ? (
         <div className={styles['no-stats']}>
@@ -456,11 +535,28 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                   <thead>
                     {/* Group Headers Row */}
                     <tr className={styles['group-headers']}>
-                      {buildOffensiveGroupHeaders().map((group, index) => (
-                        <th key={index} colSpan={group.colspan} className={styles['group-header']}>
-                          {group.label}
-                        </th>
-                      ))}
+                      {buildOffensiveGroupHeaders().map((group, index) => {
+                        // Calculate width based on colspan and column type
+                        let width;
+                        if (index === 0) {
+                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
+                          width = 410;
+                        } else {
+                          // Stat groups: each column is 40px
+                          width = group.colspan * 40;
+                        }
+                        
+                        return (
+                          <th 
+                            key={index} 
+                            colSpan={group.colspan} 
+                            className={styles['group-header']}
+                            style={{ width: `${width}px` }}
+                          >
+                            {group.label}
+                          </th>
+                        );
+                      })}
                     </tr>
                     {/* Column Headers Row */}
                     <tr>
@@ -479,11 +575,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                           style={{ backgroundColor: teamColor }}
                           className={styles['game-row']}
                         >
-                          {gameRow.map((cell, cellIndex) => (
-                            <td key={cellIndex} className={cellIndex > 2 ? styles['stat-cell'] : ''}>
-                              {cell}
-                            </td>
-                          ))}
+                          {gameRow.map((cell, cellIndex) => {
+                            let cellClass = '';
+                            if (cellIndex === 4) { // W/L column
+                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                            } else if (cellIndex > 4) { // Stat columns
+                              cellClass = styles['stat-cell'];
+                            }
+                            return (
+                              <td key={cellIndex} className={cellClass}>
+                                {cell}
+                              </td>
+                            );
+                          })}
                         </tr>
                       );
                     })}
@@ -513,11 +617,28 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                   <thead>
                     {/* Group Headers Row */}
                     <tr className={styles['group-headers']}>
-                      {buildDefensiveGroupHeaders().map((group, index) => (
-                        <th key={index} colSpan={group.colspan} className={styles['group-header']}>
-                          {group.label}
-                        </th>
-                      ))}
+                      {buildDefensiveGroupHeaders().map((group, index) => {
+                        // Calculate width based on colspan and column type
+                        let width;
+                        if (index === 0) {
+                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
+                          width = 410;
+                        } else {
+                          // Stat groups: each column is 40px
+                          width = group.colspan * 40;
+                        }
+                        
+                        return (
+                          <th 
+                            key={index} 
+                            colSpan={group.colspan} 
+                            className={styles['group-header']}
+                            style={{ width: `${width}px` }}
+                          >
+                            {group.label}
+                          </th>
+                        );
+                      })}
                     </tr>
                     {/* Column Headers Row */}
                     <tr>
@@ -536,11 +657,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                           style={{ backgroundColor: teamColor }}
                           className={styles['game-row']}
                         >
-                          {gameRow.map((cell, cellIndex) => (
-                            <td key={cellIndex} className={cellIndex > 2 ? styles['stat-cell'] : ''}>
-                              {cell}
-                            </td>
-                          ))}
+                          {gameRow.map((cell, cellIndex) => {
+                            let cellClass = '';
+                            if (cellIndex === 4) { // W/L column
+                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                            } else if (cellIndex > 4) { // Stat columns
+                              cellClass = styles['stat-cell'];
+                            }
+                            return (
+                              <td key={cellIndex} className={cellClass}>
+                                {cell}
+                              </td>
+                            );
+                          })}
                         </tr>
                       );
                     })}
@@ -570,11 +699,28 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                   <thead>
                     {/* Group Headers Row */}
                     <tr className={styles['group-headers']}>
-                      {buildSpecialTeamsGroupHeaders().map((group, index) => (
-                        <th key={index} colSpan={group.colspan} className={styles['group-header']}>
-                          {group.label}
-                        </th>
-                      ))}
+                      {buildSpecialTeamsGroupHeaders().map((group, index) => {
+                        // Calculate width based on colspan and column type
+                        let width;
+                        if (index === 0) {
+                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
+                          width = 410;
+                        } else {
+                          // Stat groups: each column is 40px
+                          width = group.colspan * 40;
+                        }
+                        
+                        return (
+                          <th 
+                            key={index} 
+                            colSpan={group.colspan} 
+                            className={styles['group-header']}
+                            style={{ width: `${width}px` }}
+                          >
+                            {group.label}
+                          </th>
+                        );
+                      })}
                     </tr>
                     {/* Column Headers Row */}
                     <tr>
@@ -593,11 +739,19 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                           style={{ backgroundColor: teamColor }}
                           className={styles['game-row']}
                         >
-                          {gameRow.map((cell, cellIndex) => (
-                            <td key={cellIndex} className={cellIndex > 2 ? styles['stat-cell'] : ''}>
-                            {cell}
-                            </td>
-                          ))}
+                          {gameRow.map((cell, cellIndex) => {
+                            let cellClass = '';
+                            if (cellIndex === 4) { // W/L column
+                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                            } else if (cellIndex > 4) { // Stat columns
+                              cellClass = styles['stat-cell'];
+                            }
+                            return (
+                              <td key={cellIndex} className={cellClass}>
+                                {cell}
+                              </td>
+                            );
+                          })}
                         </tr>
                       );
                     })}

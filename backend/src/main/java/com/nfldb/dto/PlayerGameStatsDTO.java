@@ -16,6 +16,8 @@ public class PlayerGameStatsDTO {
     private String opponent;
     private Integer homeScore;
     private Integer awayScore;
+    private String homeTeamId;
+    private String winningTeamId;
     private Integer seasonYear;
     private Integer seasonWeek;
     

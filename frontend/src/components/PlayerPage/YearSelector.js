@@ -55,9 +55,9 @@ function YearSelector({ playerId, selectedYear, onYearChange }) {
 
   return (
     <div className={styles['year-selector']}>
-      <label htmlFor="season-select" className={styles['season-label']}>Season:</label>
+      <label htmlFor="year-selector-dropdown" className={styles['season-label']}>Season:</label>
       <select
-        id="season-select"
+        id="year-selector-dropdown"
         value={selectedYear || ''}
         onChange={(e) => onYearChange(parseInt(e.target.value))}
         className={styles['season-dropdown']}
