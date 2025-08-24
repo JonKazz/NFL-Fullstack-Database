@@ -1,0 +1,54 @@
+.navigation {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 140px;
+  height: 100vh;
+  background-color: #171717;
+  color: #e5e7eb;
+  padding: 15px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.navItem {
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.navItem:hover {
+  background-color: #3a3a3a;
+}
+
+.navItem:active {
+  background-color: #1a1a1a;
+}
+
+.seasonsSection {
+  margin-top: 20px;
+  border-top: 1px solid #2b2b2b;
+  padding-top: 12px;
+}
+
+.seasonsLabel {
+  padding: 0 15px 10px 15px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.loading {
+  padding: 12px;
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 14px;
+}

@@ -8,6 +8,29 @@
   position: relative;
 }
 
+/* Sub-table container for regular season vs playoff sections */
+.sub-table-container {
+  margin-bottom: 10px;
+}
+
+.sub-table-container:last-child {
+  margin-bottom: 0;
+}
+
+.sub-table-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  padding-left: 20px;
+  border-left: none;
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+
 /* Stats Sections */
 .stats-section {
   margin-bottom: 30px;
@@ -102,7 +125,7 @@
   width: 100%;
   overflow-x: auto;
   max-width: 100%;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
 }
 
 .stats-table table {
@@ -156,9 +179,18 @@
   font-size: 10px;
 }
 
-/* Individual widths for the first 5 columns */
+/* Individual widths for the first 6 columns */
 .stats-table table td:nth-child(1),
 .stats-table table th:nth-child(1) {
+  width: 50px; /* Week - compact for week numbers */
+  min-width: 50px;
+  max-width: 50px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stats-table table td:nth-child(2),
+.stats-table table th:nth-child(2) {
   width: 80px; /* Date - compact */
   min-width: 80px;
   max-width: 80px;
@@ -166,18 +198,9 @@
   overflow: hidden;
 }
 
-.stats-table table td:nth-child(2),
-.stats-table table th:nth-child(2) {
-  width: 100px; /* Team - reduced from 120px */
-  min-width: 100px;
-  max-width: 100px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
 .stats-table table td:nth-child(3),
 .stats-table table th:nth-child(3) {
-  width: 100px; /* Opponent - reduced from 120px */
+  width: 100px; /* Team - reduced from 120px */
   min-width: 100px;
   max-width: 100px;
   box-sizing: border-box;
@@ -186,6 +209,15 @@
 
 .stats-table table td:nth-child(4),
 .stats-table table th:nth-child(4) {
+  width: 100px; /* Opponent - reduced from 120px */
+  min-width: 100px;
+  max-width: 100px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stats-table table td:nth-child(5),
+.stats-table table th:nth-child(5) {
   width: 70px; /* Score - significantly reduced from 100px */
   min-width: 70px;
   max-width: 70px;
@@ -193,8 +225,8 @@
   overflow: hidden;
 }
 
-.stats-table table td:nth-child(5),
-.stats-table table th:nth-child(5) {
+.stats-table table td:nth-child(6),
+.stats-table table th:nth-child(6) {
   width: 60px; /* W/L - compact for W/L */
   min-width: 60px;
   max-width: 60px;
@@ -203,8 +235,8 @@
 }
 
 /* All other columns (positional stats) - narrow */
-.stats-table table td:nth-child(n+6),
-.stats-table table th:nth-child(n+6) {
+.stats-table table td:nth-child(n+7),
+.stats-table table th:nth-child(n+7) {
   width: 40px;
   min-width: 40px;
   max-width: 40px;

@@ -6,7 +6,6 @@ import com.nfldb.dto.PlayerGameStatsDTO;
 import com.nfldb.dto.PlayerSeasonSummaryDTO;
 import com.nfldb.gameinfo.GameInfo;
 import com.nfldb.gameinfo.GameInfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class GamePlayerStatsService {
@@ -53,6 +52,8 @@ public class GamePlayerStatsService {
         dto.setDate(gameInfo.getDate());
         dto.setSeasonYear(gameInfo.getSeasonYear());
         dto.setSeasonWeek(gameInfo.getSeasonWeek());
+        dto.setPlayoffGame(gameInfo.getPlayoffGame());
+        
         
         // Determine opponent and set scores
         String playerTeamId = stats.getTeamId();

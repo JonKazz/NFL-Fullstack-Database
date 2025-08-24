@@ -1,1 +1,13 @@
+.app {
+  display: flex;
+  min-height: 100vh;
+}
 
+.main-content {
+  flex: 1;
+}
+
+/* Add margin to main content when sidebar is present */
+body.has-sidebar .main-content {
+  margin-left: 140px;
+}

@@ -20,7 +20,12 @@ public class SeasonInfoService {
         return repository.findBySeasonYear(seasonYear);
     }
 
-
+    public List<Integer> getAvailableSeasons() {
+        return repository.findAllByOrderBySeasonYearDesc()
+            .stream()
+            .map(SeasonInfo::getSeasonYear)
+            .toList();
+    }
 
     public List<SeasonInfo> getAllSeasons() {
         return repository.findAllByOrderBySeasonYearDesc();

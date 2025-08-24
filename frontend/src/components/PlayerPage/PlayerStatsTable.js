@@ -108,9 +108,9 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   // Get stat categories for this season
   const statCategories = getSeasonStatCategories(gameStats || []);
 
-  // Build offensive table headers
+  // Build offensive table headers for regular season games
   const buildOffensiveHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
+    const headers = ['Week', 'Date', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.passing) {
       headers.push('CMP', 'Att', 'Yds', 'TD', 'Int', 'Rate');
@@ -131,9 +131,32 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     return headers;
   };
 
-  // Build defensive table headers
+  // Build offensive table headers for playoff games (includes playoff_game column)
+  const buildPlayoffOffensiveHeaders = () => {
+    const headers = ['Playoff', 'Team', 'Opponent', 'Score', 'W/L'];
+    
+    if (statCategories.passing) {
+      headers.push('CMP', 'Att', 'Yds', 'TD', 'Int', 'Rate');
+    }
+    
+    if (statCategories.rushing) {
+      headers.push('Att', 'Yds', 'TD');
+    }
+    
+    if (statCategories.receiving) {
+      headers.push('TGT', 'Rec', 'Yds', 'TD');
+    }
+    
+    if (statCategories.fumbles) {
+      headers.push('Fumbles', 'Lost');
+    }
+    
+    return headers;
+  };
+
+  // Build defensive table headers for regular season games
   const buildDefensiveHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
+    const headers = ['Week', 'Date', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.defensive) {
       headers.push('Tackles', 'Solo', 'Assist', 'Sacks', 'INT', 'PD');
@@ -142,9 +165,39 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     return headers;
   };
 
-  // Build special teams table headers
+  // Build defensive table headers for playoff games (includes playoff_game column)
+  const buildPlayoffDefensiveHeaders = () => {
+    const headers = ['Playoff', 'Team', 'Opponent', 'Score', 'W/L'];
+    
+    if (statCategories.defensive) {
+      headers.push('Tackles', 'Solo', 'Assist', 'Sacks', 'INT', 'PD');
+    }
+    
+    return headers;
+  };
+
+  // Build special teams table headers for regular season games
   const buildSpecialTeamsHeaders = () => {
-    const headers = ['Date', 'Team', 'Opponent', 'Score', 'W/L'];
+    const headers = ['Week', 'Date', 'Team', 'Opponent', 'Score', 'W/L'];
+    
+    if (statCategories.kicking) {
+      headers.push('FG Made', 'FG Att', 'XP Made', 'XP Att');
+    }
+    
+    if (statCategories.punting) {
+      headers.push('Punts', 'Yds');
+    }
+    
+    if (statCategories.returns) {
+      headers.push('KR', 'Yds', 'TD', 'PR', 'Yds', 'TD');
+    }
+    
+    return headers;
+  };
+
+  // Build special teams table headers for playoff games (includes playoff_game column)
+  const buildPlayoffSpecialTeamsHeaders = () => {
+    const headers = ['Playoff', 'Team', 'Opponent', 'Score', 'W/L'];
     
     if (statCategories.kicking) {
       headers.push('FG Made', 'FG Att', 'XP Made', 'XP Att');
@@ -174,7 +227,63 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
     
     const row = [
+      game.seasonWeek || '-',
       formattedDate,
+      TEAM_MAP[game.teamId]?.city || game.teamId,
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
+    ];
+    
+    if (statCategories.passing) {
+      row.push(
+        formatStat(game.passCompletions),
+        formatStat(game.passAttempts),
+        formatStat(game.passYards),
+        formatStat(game.passTouchdowns),
+        formatStat(game.passInterceptions),
+        formatStat(game.passRating)
+      );
+    }
+    
+    if (statCategories.rushing) {
+      row.push(
+        formatStat(game.rushAttempts),
+        formatStat(game.rushYards),
+        formatStat(game.rushTouchdowns)
+      );
+    }
+    
+    if (statCategories.receiving) {
+      row.push(
+        formatStat(game.receivingTargets),
+        formatStat(game.receivingReceptions),
+        formatStat(game.receivingYards),
+        formatStat(game.receivingTouchdowns)
+      );
+    }
+    
+    if (statCategories.fumbles) {
+      row.push(
+        formatStat(game.fumblesTotal),
+        formatStat(game.fumblesLost)
+      );
+    }
+    
+    return row;
+  };
+
+  // Build offensive row data for playoff games (includes playoff_game column)
+  const buildPlayoffOffensiveRow = (game) => {
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
+    const row = [
+      game.playoffGame || '-', // Playoff column first
       TEAM_MAP[game.teamId]?.city || game.teamId,
       TEAM_MAP[game.opponent]?.city || game.opponent,
       score,
@@ -232,7 +341,39 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
     
     const row = [
+      game.seasonWeek || '-',
       formattedDate,
+      TEAM_MAP[game.teamId]?.city || game.teamId,
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
+    ];
+    
+    if (statCategories.defensive) {
+      row.push(
+        formatStat(game.defensiveTacklesCombined),
+        formatStat(game.defensiveTacklesSolo),
+        formatStat(game.defensiveTacklesAssists),
+        formatStat(game.defensiveSacks),
+        formatStat(game.defensiveInterceptions),
+        formatStat(game.defensivePassesDefended)
+      );
+    }
+    
+    return row;
+  };
+
+  // Build defensive row data for playoff games (includes playoff_game column)
+  const buildPlayoffDefensiveRow = (game) => {
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
+    const row = [
+      game.playoffGame || '-', // Playoff column first
       TEAM_MAP[game.teamId]?.city || game.teamId,
       TEAM_MAP[game.opponent]?.city || game.opponent,
       score,
@@ -266,7 +407,55 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
     
     const row = [
+      game.seasonWeek || '-',
       formattedDate,
+      TEAM_MAP[game.teamId]?.city || game.teamId,
+      TEAM_MAP[game.opponent]?.city || game.opponent,
+      score,
+      winLoss
+    ];
+    
+    if (statCategories.kicking) {
+      row.push(
+        formatStat(game.fieldGoalsMade),
+        formatStat(game.fieldGoalsAttempted),
+        formatStat(game.extraPointsMade),
+        formatStat(game.extraPointsAttempted)
+      );
+    }
+    
+    if (statCategories.punting) {
+      row.push(
+        formatStat(game.punts),
+        formatStat(game.puntYards)
+      );
+    }
+    
+    if (statCategories.returns) {
+      row.push(
+        formatStat(game.kickReturns),
+        formatStat(game.kickReturnYards),
+        formatStat(game.kickReturnTouchdowns),
+        formatStat(game.puntReturns),
+        formatStat(game.puntReturnYards),
+        formatStat(game.puntReturnTouchdowns)
+      );
+    }
+    
+    return row;
+  };
+
+  // Build special teams row data for playoff games (includes playoff_game column)
+  const buildPlayoffSpecialTeamsRow = (game) => {
+    // Determine if player's team won
+    const isWinner = game.winningTeamId === game.teamId;
+    const winLoss = isWinner ? 'W' : 'L';
+    
+    // Format score (team score - opponent score)
+    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    
+    const row = [
+      game.playoffGame || '-', // Playoff column first
       TEAM_MAP[game.teamId]?.city || game.teamId,
       TEAM_MAP[game.opponent]?.city || game.opponent,
       score,
@@ -307,8 +496,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildOffensiveGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns (Date, Team, Opponent, Score, W/L)
-    groupHeaders.push({ label: '', colspan: 5 });
+    // Basic info columns (Week, Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 6 });
     
     if (statCategories.passing) {
       groupHeaders.push({ label: 'Passing', colspan: 6 });
@@ -333,8 +522,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildDefensiveGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns (Date, Team, Opponent, Score, W/L)
-    groupHeaders.push({ label: '', colspan: 5 });
+    // Basic info columns (Week, Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 6 });
     
     if (statCategories.defensive) {
       groupHeaders.push({ label: 'Defense', colspan: 6 });
@@ -347,8 +536,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   const buildSpecialTeamsGroupHeaders = () => {
     const groupHeaders = [];
     
-    // Basic info columns (Date, Team, Opponent, Score, W/L)
-    groupHeaders.push({ label: '', colspan: 5 });
+    // Basic info columns (Week, Date, Team, Opponent, Score, W/L)
+    groupHeaders.push({ label: '', colspan: 6 });
     
     if (statCategories.kicking) {
       groupHeaders.push({ label: 'Kicking', colspan: 4 });
@@ -365,14 +554,91 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     return groupHeaders;
   };
 
+  // Build offensive group headers for playoff games (includes playoff column)
+  const buildPlayoffOffensiveGroupHeaders = () => {
+    const groups = [
+      { label: 'Game Info', colspan: 5 }, // Playoff, Team, Opponent, Score, W/L
+    ];
+    
+    if (statCategories.passing) {
+      groups.push({ label: 'Passing', colspan: 6 });
+    }
+    
+    if (statCategories.rushing) {
+      groups.push({ label: 'Rushing', colspan: 3 });
+    }
+    
+    if (statCategories.receiving) {
+      groups.push({ label: 'Receiving', colspan: 4 });
+    }
+    
+    if (statCategories.fumbles) {
+      groups.push({ label: 'Fumbles', colspan: 2 });
+    }
+    
+    return groups;
+  };
+
+  // Build defensive group headers for playoff games (includes playoff column)
+  const buildPlayoffDefensiveGroupHeaders = () => {
+    const groups = [
+      { label: 'Game Info', colspan: 5 }, // Playoff, Team, Opponent, Score, W/L
+    ];
+    
+    if (statCategories.defensive) {
+      groups.push({ label: 'Defensive', colspan: 6 });
+    }
+    
+    return groups;
+  };
+
+  // Build special teams group headers for playoff games (includes playoff column)
+  const buildPlayoffSpecialTeamsGroupHeaders = () => {
+    const groups = [
+      { label: 'Game Info', colspan: 5 }, // Playoff, Team, Opponent, Score, W/L
+    ];
+    
+    if (statCategories.kicking) {
+      groups.push({ label: 'Kicking', colspan: 4 });
+    }
+    
+    if (statCategories.punting) {
+      groups.push({ label: 'Punting', colspan: 2 });
+    }
+    
+    if (statCategories.returns) {
+      groups.push({ label: 'Returns', colspan: 6 });
+    }
+    
+    return groups;
+  };
+
+  // Calculate season win-loss record
+  const calculateSeasonRecord = () => {
+    if (!gameStats || gameStats.length === 0) return '0-0';
+    
+    let wins = 0;
+    let losses = 0;
+    
+    gameStats.forEach(game => {
+      if (game.winningTeamId === game.teamId) {
+        wins++;
+      } else {
+        losses++;
+      }
+    });
+    
+    return `${wins}-${losses}`;
+  };
+
   // Build offensive summary row
   const buildOffensiveSummaryRow = () => {
     if (!seasonSummary) return null;
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team, opponent, score, and W/L columns
-    summary.push('-', '-', '-', '-');
+    // Add week, team, opponent, score, and season record
+    summary.push('-', '-', '-', '-', calculateSeasonRecord());
     
     if (statCategories.passing) {
       summary.push(
@@ -418,8 +684,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team, opponent, score, and W/L columns
-    summary.push('-', '-', '-', '-');
+    // Add week, team, opponent, score, and season record
+    summary.push('-', '-', '-', '-', calculateSeasonRecord());
     
     if (statCategories.defensive) {
       summary.push(
@@ -441,8 +707,8 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     const summary = ['SEASON TOTAL'];
     
-    // Add empty cells for team, opponent, score, and W/L columns
-    summary.push('-', '-', '-', '-');
+    // Add week, team, opponent, score, and season record
+    summary.push('-', '-', '-', '-', calculateSeasonRecord());
     
     if (statCategories.kicking) {
       summary.push(
@@ -482,6 +748,52 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   
   // Check if we have any special teams stats
   const hasSpecialTeamsStats = statCategories.kicking || statCategories.punting || statCategories.returns;
+
+  // Separate regular season and playoff games
+  const regularSeasonGames = gameStats ? gameStats.filter(game => {
+    // A game is regular season if playoffGame is null, undefined, or empty string
+    return !game.playoffGame || game.playoffGame === '' || game.playoffGame === null;
+  }).sort((a, b) => {
+    return (a.seasonWeek || 0) - (b.seasonWeek || 0);
+  }) : [];
+  
+  const playoffGames = gameStats ? gameStats.filter(game => {
+    // A game is playoff if playoffGame has a non-empty string value
+    return game.playoffGame && game.playoffGame !== '' && game.playoffGame !== null;
+  }).sort((a, b) => {
+    // Sort playoff games by playoff type (Wild Card, Divisional, Conference Championship, Superbowl)
+    const playoffOrder = { 
+      'Wild Card': 1, 
+      'Divisional': 2, 
+      'Conference Championship': 3, 
+      'Superbowl': 4 
+    };
+    return (playoffOrder[a.playoffGame] || 0) - (playoffOrder[b.playoffGame] || 0);
+  }) : [];
+
+  // Debug logging
+  console.log('All gameStats:', gameStats);
+  console.log('Regular season games:', regularSeasonGames);
+  console.log('Playoff games:', playoffGames);
+  console.log('Sample game playoffGame field:', gameStats?.[0]?.playoffGame);
+  console.log('Sample game keys:', gameStats?.[0] ? Object.keys(gameStats[0]) : 'No games');
+  console.log('Sample game full object:', gameStats?.[0]);
+  
+  // Log playoffGame value for each game
+  if (gameStats && gameStats.length > 0) {
+    console.log('=== PLAYOFF GAME VALUES FOR EACH GAME ===');
+    gameStats.forEach((game, index) => {
+      console.log(`Game ${index + 1}:`, {
+        gameId: game.gameId,
+        date: game.date,
+        seasonWeek: game.seasonWeek,
+        playoffGame: game.playoffGame,
+        playoffGameType: typeof game.playoffGame,
+        isPlayoff: game.playoffGame && game.playoffGame !== '' && game.playoffGame !== null
+      });
+    });
+    console.log('=== END PLAYOFF GAME VALUES ===');
+  }
 
   return (
     <div className={styles['stats-table-container']}>
@@ -526,255 +838,474 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
         </div>
       ) : (
         <>
-          {/* Offensive Stats Table */}
+          {/* Offensive Stats Table - Combined Container */}
           {hasOffensiveStats && (
             <div className={styles['stats-section']}>
-              <h4 className={styles['table-title']}>Offensive Statistics</h4>
-              <div className={styles['stats-table']}>
-                <table>
-                  <thead>
-                    {/* Group Headers Row */}
-                    <tr className={styles['group-headers']}>
-                      {buildOffensiveGroupHeaders().map((group, index) => {
-                        // Calculate width based on colspan and column type
-                        let width;
-                        if (index === 0) {
-                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
-                          width = 410;
-                        } else {
-                          // Stat groups: each column is 40px
-                          width = group.colspan * 40;
-                        }
-                        
-                        return (
-                          <th 
-                            key={index} 
-                            colSpan={group.colspan} 
-                            className={styles['group-header']}
-                            style={{ width: `${width}px` }}
-                          >
-                            {group.label}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                    {/* Column Headers Row */}
-                    <tr>
-                      {buildOffensiveHeaders().map((header, index) => (
-                        <th key={index}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {gameStats.map((game, gameIndex) => {
-                      const gameRow = buildOffensiveRow(game);
-                      const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
-                      return (
-                        <tr 
-                          key={gameIndex} 
-                          style={{ backgroundColor: teamColor }}
-                          className={styles['game-row']}
-                        >
-                          {gameRow.map((cell, cellIndex) => {
-                            let cellClass = '';
-                            if (cellIndex === 4) { // W/L column
-                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
-                            } else if (cellIndex > 4) { // Stat columns
-                              cellClass = styles['stat-cell'];
+              <h4 className={styles['table-title']}>OFFENSIVE STATISTICS</h4>
+              
+              {/* Regular Season Offensive Table */}
+              {regularSeasonGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Regular Season</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildOffensiveGroupHeaders().map((group, index) => {
+                            // Calculate width based on colspan and column type
+                            let width;
+                            if (index === 0) {
+                              // First group: Week(50) + Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 460px
+                              width = 460;
+                            } else {
+                              // Stat groups: each column is 40px
+                              width = group.colspan * 40;
                             }
+                            
                             return (
-                              <td key={cellIndex} className={cellClass}>
-                                {cell}
-                              </td>
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
                             );
                           })}
                         </tr>
-                      );
-                    })}
-                    
-                    {/* Season Summary Row */}
-                    {buildOffensiveSummaryRow() && (
-                      <tr className={styles['summary-row']}>
-                        {buildOffensiveSummaryRow().map((cell, cellIndex) => (
-                          <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
-                            {cell}
-                          </td>
-                        ))}
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildOffensiveHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {regularSeasonGames.map((game, gameIndex) => {
+                          const gameRow = buildOffensiveRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={gameIndex} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 5) { // W/L column (index 5 in regular season: Week, Date, Team, Opponent, Score, W/L)
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 5) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                        
+                        {/* Season Summary Row */}
+                        {buildOffensiveSummaryRow() && (
+                          <tr className={styles['summary-row']}>
+                            {buildOffensiveSummaryRow().map((cell, cellIndex) => (
+                              <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Playoff Offensive Table */}
+              {playoffGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Playoff</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildPlayoffOffensiveGroupHeaders().map((group, index) => {
+                            let width;
+                            if (index === 0) {
+                              // First group: Week(50) + Date(80) + Playoff(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 540px
+                              width = 540;
+                            } else {
+                              // Stat groups: each column is 40px
+                              width = group.colspan * 40;
+                            }
+                            
+                            return (
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
+                            );
+                          })}
+                        </tr>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildPlayoffOffensiveHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {playoffGames.map((game, gameIndex) => {
+                          const gameRow = buildPlayoffOffensiveRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={`playoff-offensive-${gameIndex}`} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 4) { // W/L column (now at index 4 since we removed Week and Date)
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 4) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* Defensive Stats Table */}
           {hasDefensiveStats && (
             <div className={styles['stats-section']}>
-              <h4 className={styles['table-title']}>Defensive Statistics</h4>
-              <div className={styles['stats-table']}>
-                <table>
-                  <thead>
-                    {/* Group Headers Row */}
-                    <tr className={styles['group-headers']}>
-                      {buildDefensiveGroupHeaders().map((group, index) => {
-                        // Calculate width based on colspan and column type
-                        let width;
-                        if (index === 0) {
-                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
-                          width = 410;
-                        } else {
-                          // Stat groups: each column is 40px
-                          width = group.colspan * 40;
-                        }
-                        
-                        return (
-                          <th 
-                            key={index} 
-                            colSpan={group.colspan} 
-                            className={styles['group-header']}
-                            style={{ width: `${width}px` }}
-                          >
-                            {group.label}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                    {/* Column Headers Row */}
-                    <tr>
-                      {buildDefensiveHeaders().map((header, index) => (
-                        <th key={index}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {gameStats.map((game, gameIndex) => {
-                      const gameRow = buildDefensiveRow(game);
-                      const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
-                      return (
-                        <tr 
-                          key={gameIndex} 
-                          style={{ backgroundColor: teamColor }}
-                          className={styles['game-row']}
-                        >
-                          {gameRow.map((cell, cellIndex) => {
-                            let cellClass = '';
-                            if (cellIndex === 4) { // W/L column
-                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
-                            } else if (cellIndex > 4) { // Stat columns
-                              cellClass = styles['stat-cell'];
+              <h4 className={styles['table-title']}>DEFENSIVE STATISTICS</h4>
+              
+              {/* Regular Season Defensive Table */}
+              {regularSeasonGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Regular Season</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildDefensiveGroupHeaders().map((group, index) => {
+                            let width;
+                            if (index === 0) {
+                              width = 460;
+                            } else {
+                              width = group.colspan * 40;
                             }
+                            
                             return (
-                              <td key={cellIndex} className={cellClass}>
-                                {cell}
-                              </td>
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
                             );
                           })}
                         </tr>
-                      );
-                    })}
-                    
-                    {/* Season Summary Row */}
-                    {buildDefensiveSummaryRow() && (
-                      <tr className={styles['summary-row']}>
-                        {buildDefensiveSummaryRow().map((cell, cellIndex) => (
-                          <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
-                            {cell}
-                          </td>
-                        ))}
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildDefensiveHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {regularSeasonGames.map((game, gameIndex) => {
+                          const gameRow = buildDefensiveRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={gameIndex} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 5) { // W/L column (index 5 in regular season: Week, Date, Team, Opponent, Score, W/L)
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 5) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                        
+                        {/* Season Summary Row */}
+                        {buildDefensiveSummaryRow() && (
+                          <tr className={styles['summary-row']}>
+                            {buildDefensiveSummaryRow().map((cell, cellIndex) => (
+                              <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Playoff Defensive Table */}
+              {playoffGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Playoff</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildPlayoffDefensiveGroupHeaders().map((group, index) => {
+                            let width;
+                            if (index === 0) {
+                              // First group: Playoff(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
+                              width = 410;
+                            } else {
+                              // Stat groups: each column is 40px
+                              width = group.colspan * 40;
+                            }
+                            
+                            return (
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
+                            );
+                          })}
+                        </tr>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildPlayoffDefensiveHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {playoffGames.map((game, gameIndex) => {
+                          const gameRow = buildPlayoffDefensiveRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={`playoff-defensive-${gameIndex}`} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 4) { // W/L column
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 4) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* Special Teams Stats Table */}
           {hasSpecialTeamsStats && (
             <div className={styles['stats-section']}>
-              <h4 className={styles['table-title']}>Special Teams Statistics</h4>
-              <div className={styles['stats-table']}>
-                <table>
-                  <thead>
-                    {/* Group Headers Row */}
-                    <tr className={styles['group-headers']}>
-                      {buildSpecialTeamsGroupHeaders().map((group, index) => {
-                        // Calculate width based on colspan and column type
-                        let width;
-                        if (index === 0) {
-                          // First group: Date(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
-                          width = 410;
-                        } else {
-                          // Stat groups: each column is 40px
-                          width = group.colspan * 40;
-                        }
-                        
-                        return (
-                          <th 
-                            key={index} 
-                            colSpan={group.colspan} 
-                            className={styles['group-header']}
-                            style={{ width: `${width}px` }}
-                          >
-                            {group.label}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                    {/* Column Headers Row */}
-                    <tr>
-                      {buildSpecialTeamsHeaders().map((header, index) => (
-                        <th key={index}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                                    <tbody>
-                    {gameStats.map((game, gameIndex) => {
-                      const gameRow = buildSpecialTeamsRow(game);
-                      const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
-                      return (
-                        <tr 
-                          key={gameIndex} 
-                          style={{ backgroundColor: teamColor }}
-                          className={styles['game-row']}
-                        >
-                          {gameRow.map((cell, cellIndex) => {
-                            let cellClass = '';
-                            if (cellIndex === 4) { // W/L column
-                              cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
-                            } else if (cellIndex > 4) { // Stat columns
-                              cellClass = styles['stat-cell'];
+              <h4 className={styles['table-title']}>SPECIAL TEAMS STATISTICS</h4>
+              
+              {/* Regular Season Special Teams Table */}
+              {regularSeasonGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Regular Season</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildSpecialTeamsGroupHeaders().map((group, index) => {
+                            let width;
+                            if (index === 0) {
+                              width = 460;
+                            } else {
+                              width = group.colspan * 40;
                             }
+                            
                             return (
-                              <td key={cellIndex} className={cellClass}>
-                                {cell}
-                              </td>
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
                             );
                           })}
                         </tr>
-                      );
-                    })}
-                    
-                    {/* Season Summary Row */}
-                    {buildSpecialTeamsSummaryRow() && (
-                      <tr className={styles['summary-row']}>
-                        {buildSpecialTeamsSummaryRow().map((cell, cellIndex) => (
-                          <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
-                            {cell}
-                          </td>
-                        ))}
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-          
-          {seasonSummary && (
-            <div className={styles['season-info']}>
-              <p>Games Played: {seasonSummary.gamesPlayed}</p>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildSpecialTeamsHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {regularSeasonGames.map((game, gameIndex) => {
+                          const gameRow = buildSpecialTeamsRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={gameIndex} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 5) { // W/L column (index 5 in regular season: Week, Date, Team, Opponent, Score, W/L)
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 5) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                        
+                        {/* Season Summary Row */}
+                        {buildSpecialTeamsSummaryRow() && (
+                          <tr className={styles['summary-row']}>
+                            {buildSpecialTeamsSummaryRow().map((cell, cellIndex) => (
+                              <td key={cellIndex} className={cellIndex === 0 ? styles['summary-label'] : styles['summary-cell']}>
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Playoff Special Teams Table */}
+              {playoffGames.length > 0 && (
+                <div className={styles['sub-table-container']}>
+                  <div className={styles['sub-table-label']}>Playoff</div>
+                  <div className={styles['stats-table']}>
+                    <table>
+                      <thead>
+                        {/* Group Headers Row */}
+                        <tr className={styles['group-headers']}>
+                          {buildPlayoffSpecialTeamsGroupHeaders().map((group, index) => {
+                            let width;
+                            if (index === 0) {
+                              // First group: Playoff(80) + Team(100) + Opponent(100) + Score(70) + W/L(60) = 410px
+                              width = 410;
+                            } else {
+                              // Stat groups: each column is 40px
+                              width = group.colspan * 40;
+                            }
+                            
+                            return (
+                              <th 
+                                key={index} 
+                                colSpan={group.colspan} 
+                                className={styles['group-header']}
+                                style={{ width: `${width}px` }}
+                              >
+                                {group.label}
+                              </th>
+                            );
+                          })}
+                        </tr>
+                        {/* Column Headers Row */}
+                        <tr>
+                          {buildPlayoffSpecialTeamsHeaders().map((header, index) => (
+                            <th key={index}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {playoffGames.map((game, gameIndex) => {
+                          const gameRow = buildPlayoffSpecialTeamsRow(game);
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          return (
+                            <tr 
+                              key={`playoff-special-${gameIndex}`} 
+                              style={{ backgroundColor: teamColor }}
+                              className={styles['game-row']}
+                            >
+                              {gameRow.map((cell, cellIndex) => {
+                                let cellClass = '';
+                                if (cellIndex === 4) { // W/L column
+                                  cellClass = `${styles['win-loss-cell']} ${cell === 'W' ? styles['win'] : styles['loss']}`;
+                                } else if (cellIndex > 4) { // Stat columns
+                                  cellClass = styles['stat-cell'];
+                                }
+                                return (
+                                  <td key={cellIndex} className={cellClass}>
+                                    {cell}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

@@ -17,6 +17,15 @@ export async function fetchTeamsBySeason(year) {
   return response.json();
 }
 
+// Fetch available seasons from the database
+export async function fetchAvailableSeasons() {
+  const response = await fetch(`http://localhost:8080/api/season-info/seasons`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch available seasons (api)');
+  }
+  return response.json();
+}
+
 // Fetch playoff games for a specific season
 export async function fetchPlayoffGames(year) {
   const response = await fetch(`http://localhost:8080/api/game-info/playoffs/${year}`);

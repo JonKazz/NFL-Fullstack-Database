@@ -18,6 +18,11 @@ public class SeasonInfoController {
         return seasonInfoService.getSeasonInfoWithPlayerNames(seasonYear).orElse(null);
     }
 
+    @GetMapping("/seasons")
+    public List<Integer> getAvailableSeasons() {
+        return seasonInfoService.getAvailableSeasons();
+    }
+
     @GetMapping("/all")
     public List<SeasonInfo> getAllSeasons() {
         return seasonInfoService.getAllSeasons();

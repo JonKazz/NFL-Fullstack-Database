@@ -20,6 +20,7 @@ public class PlayerGameStatsDTO {
     private String winningTeamId;
     private Integer seasonYear;
     private Integer seasonWeek;
+    private String playoffGame;
     
     // Player stats (only the key ones for display)
     private String teamId;
