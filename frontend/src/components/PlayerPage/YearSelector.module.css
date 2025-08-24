@@ -1,0 +1,74 @@
+.year-selector {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.season-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.season-dropdown {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: #2d2d2d;
+  color: #ffffff;
+  cursor: pointer;
+  min-width: 80px;
+  transition: all 0.2s ease;
+}
+
+.season-dropdown:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: #3a3a3a;
+}
+
+.season-dropdown:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+.season-dropdown option {
+  background: #2d2d2d;
+  color: #ffffff;
+}
+
+.loading-seasons {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 12px;
+}
+
+.no-seasons {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .year-selector {
+    top: 15px;
+    left: 15px;
+    padding: 6px 10px;
+  }
+  
+  .season-dropdown {
+    min-width: 70px;
+    font-size: 12px;
+  }
+}

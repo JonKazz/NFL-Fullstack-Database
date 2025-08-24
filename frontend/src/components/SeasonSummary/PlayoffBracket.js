@@ -4,8 +4,11 @@ import styles from './SeasonSummary.module.css';
 
 function PlayoffBracket({ playoffs, teams, year }) {
   const navigate = useNavigate();
-
-  if (playoffs.length === 0) {
+  
+  // Filter out non-playoff games (playoffGame === 'None')
+  const playoffGames = playoffs.filter(game => game.playoffGame && game.playoffGame !== 'None');
+  
+  if (playoffGames.length === 0) {
     return (
       <div className={styles.section}>
         <h2 className={styles['section-title']}>Playoff Bracket</h2>
@@ -22,12 +25,12 @@ function PlayoffBracket({ playoffs, teams, year }) {
       
       <div className={styles['playoff-bracket']}>
         <div className={styles['bracket-container']}>
-          {/* Group playoff games by round and conference */}
+          {/* Group playoff games by round using the new playoffGame field */}
           {(() => {
-            const wildCardGames = playoffs.filter(game => game.seasonWeek === 19);
-            const divisionalGames = playoffs.filter(game => game.seasonWeek === 20);
-            const conferenceGames = playoffs.filter(game => game.seasonWeek === 21);
-            const superBowlGames = playoffs.filter(game => game.seasonWeek === 22);
+            const wildCardGames = playoffGames.filter(game => game.playoffGame === 'Wild Card');
+            const divisionalGames = playoffGames.filter(game => game.playoffGame === 'Divisional');
+            const conferenceGames = playoffGames.filter(game => game.playoffGame === 'Conference Championship');
+            const superBowlGames = playoffGames.filter(game => game.playoffGame === 'Superbowl');
             
             // Filter games by conference using team division
             const afcWildCard = wildCardGames.filter(game => {

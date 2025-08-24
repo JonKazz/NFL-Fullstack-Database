@@ -17,6 +17,9 @@ public class PlayerProfile {
     @Column(name = "player_id")
     private String playerId;
 
+    @Column(name = "img")
+    private String img;
+    
     @Column(name = "name", nullable = false)
     private String name;
 

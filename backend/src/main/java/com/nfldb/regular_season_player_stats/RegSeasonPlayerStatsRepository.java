@@ -6,4 +6,5 @@ import java.util.List;
 public interface RegSeasonPlayerStatsRepository extends JpaRepository<RegSeasonPlayerStats, RegSeasonPlayerStatsId> {
     RegSeasonPlayerStats findByIdPlayerIdAndIdSeasonYear(String playerId, Integer seasonYear);
     List<RegSeasonPlayerStats> findByIdTeamIdAndIdSeasonYear(String teamId, Integer seasonYear);
+    List<RegSeasonPlayerStats> findByIdPlayerId(String playerId);
 }

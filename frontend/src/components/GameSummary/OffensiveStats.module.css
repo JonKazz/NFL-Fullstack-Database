@@ -1,0 +1,72 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.stat-card h3 {
+  color: #dc2626;
+  margin-bottom: 15px;
+  font-size: 18px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #2d2d2d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.stats-table th {
+  background: #1f1f1f;
+  color: #ffffff;
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table td {
+  padding: 12px 15px;
+  text-align: center;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.stats-table td:nth-child(2) {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.stats-table td:nth-child(3) {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

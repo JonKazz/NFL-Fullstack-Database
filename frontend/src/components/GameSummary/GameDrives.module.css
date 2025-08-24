@@ -1,0 +1,98 @@
+.game-drives {
+  margin-top: 30px;
+  padding: 30px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.game-drives h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.game-drives h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.drives-table-container {
+  overflow-x: auto;
+}
+
+.drives-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #2d2d2d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.drives-table th {
+  background: #dc2626;
+  color: white;
+  padding: 15px 10px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.drives-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.drives-table tr:nth-child(even) {
+  background: #1a1a1a;
+}
+
+.drives-table tr:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.drives-table tr:last-child td {
+  border-bottom: none;
+}
+
+.drives-loading,
+.drives-error,
+.no-drives {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.drives-error {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .game-drives {
+    padding: 20px;
+  }
+  
+  .drives-table {
+    font-size: 12px;
+  }
+  
+  .drives-table th,
+  .drives-table td {
+    padding: 8px 6px;
+  }
+}

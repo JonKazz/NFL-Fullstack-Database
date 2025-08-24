@@ -1,0 +1,226 @@
+.stats-table-container {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  overflow-x: auto;
+  position: relative;
+}
+
+/* Stats Sections */
+.stats-section {
+  margin-bottom: 30px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stats-section:last-child {
+  margin-bottom: 0;
+}
+
+.table-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 15px;
+  background: #374151;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+
+.stats-table-container h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+}
+
+.stats-table {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  min-width: 500px;
+  table-layout: fixed;
+}
+
+.stats-table th {
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Group Headers */
+.group-headers {
+  background: #1f2937;
+}
+
+.group-header {
+  background: #1f2937 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 8px 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.stats-table td {
+  padding: 4px 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  vertical-align: middle;
+  color: #e5e7eb;
+  font-size: 10px;
+}
+
+/* Date column width */
+.stats-table table td:first-child,
+.stats-table table th:first-child {
+  width: 250px;
+  min-width: 250px;
+}
+
+
+/* Stat columns width */
+.stats-table table td:nth-child(n+2),
+.stats-table table th:nth-child(n+2) {
+  min-width: 250px;
+}
+
+.stats-table table {
+  table-layout: fixed;
+}
+
+/* Game Row Styling */
+.game-row {
+  transition: all 0.2s ease;
+}
+
+.game-row:hover {
+  filter: brightness(1.2);
+  transform: translateX(2px);
+}
+
+.game-row td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.stats-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-cell {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.summary-row {
+  background: #dc2626 !important;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.summary-row:hover {
+  background: #b91c1c !important;
+}
+
+.summary-label {
+  text-align: left !important;
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626 !important;
+}
+
+.summary-cell {
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626 !important;
+}
+
+.no-stats {
+  text-align: center;
+  padding: 30px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.season-info {
+  margin-top: 15px;
+  text-align: center;
+  padding: 12px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 6px;
+}
+
+.season-info p {
+  margin: 0;
+  font-weight: 600;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .stats-table-container {
+    padding: 15px;
+  }
+  
+  .stats-table table {
+    font-size: 10px;
+    min-width: 400px;
+  }
+  
+  .stats-table th,
+  .stats-table td {
+    padding: 3px 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .year-selector {
+    top: 15px;
+    left: 15px;
+    padding: 10px;
+  }
+  
+  .season-dropdown {
+    min-width: 70px;
+    font-size: 12px;
+  }
+  
+  .group-header {
+    font-size: 10px !important;
+    padding: 6px 2px !important;
+  }
+}

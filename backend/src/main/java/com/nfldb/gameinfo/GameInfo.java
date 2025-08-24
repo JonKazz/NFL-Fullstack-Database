@@ -45,6 +45,8 @@ public class GameInfo {
     private Integer seasonYear;
     @Column(name = "season_week")
     private Integer seasonWeek;
+    @Column(name = "playoff_game")
+    private String playoffGame;
 
     // 5. OverTime
     @Column(name = "overtime")

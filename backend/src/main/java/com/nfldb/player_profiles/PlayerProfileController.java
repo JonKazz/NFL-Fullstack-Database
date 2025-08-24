@@ -16,4 +16,21 @@ public class PlayerProfileController {
     public PlayerProfile getPlayerProfile(@RequestParam String playerId) {
         return playerProfileService.getPlayerProfile(playerId);
     }
+    
+    @GetMapping("/{playerId}")
+    public java.util.Map<String, Object> getPlayerProfileById(@PathVariable String playerId) {
+        PlayerProfile profile = playerProfileService.getPlayerProfile(playerId);
+        
+        if (profile == null) {
+            return java.util.Map.of(
+                "exists", false,
+                "message", "Profile not yet populated in database"
+            );
+        }
+        
+        return java.util.Map.of(
+            "exists", true,
+            "profile", profile
+        );
+    }
 } 

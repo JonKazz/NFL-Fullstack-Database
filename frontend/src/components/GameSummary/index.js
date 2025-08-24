@@ -1,1 +1,11 @@
-export { default } from './GameSummary.js'; 
+export { default } from './GameSummary';
+export { default as GameHeader } from './GameHeader';
+export { default as Scoreboard } from './Scoreboard';
+export { default as QuarterScores } from './QuarterScores';
+export { default as TeamStatsComparison } from './TeamStatsComparison';
+export { default as DownConversionRates } from './DownConversionRates';
+export { default as OffensiveStats } from './OffensiveStats';
+export { default as DefensiveStats } from './DefensiveStats';
+export { default as PlayerStats } from './PlayerStats';
+export { default as GameDrives } from './GameDrives';
+export { default as ScoringProgression } from './ScoringProgression'; 

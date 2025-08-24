@@ -1,0 +1,44 @@
+.quarter-scores {
+  padding: 20px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  margin-bottom: 30px;
+}
+
+.quarter-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.quarter-table th,
+.quarter-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quarter-table th {
+  background: #dc2626;
+  color: white;
+  font-weight: bold;
+}
+
+.quarter-table td {
+  background: #2d2d2d;
+  color: #e5e7eb;
+  font-weight: bold;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.winner {
+  color: #10b981;
+}
+
+@media (max-width: 768px) {
+  .quarter-table {
+    font-size: 14px;
+  }
+}

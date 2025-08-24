@@ -1,0 +1,132 @@
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #2d2d2d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.stats-table th {
+  background: #1f1f1f;
+  color: #ffffff;
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table td {
+  padding: 12px 15px;
+  text-align: center;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.stats-table td:nth-child(2) {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.stats-table td:nth-child(3) {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Visual comparison styles for key stats */
+.visual-comparison {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.visual-comparison h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 18px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-comparison {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-name {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 120px;
+  text-align: right;
+}
+
+.stat-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bar-row {
+  display: flex;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #2d2d2d;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  min-width: 60px;
+}
+
+@media (max-width: 768px) {
+  .stat-comparison {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .stat-name {
+    min-width: auto;
+    text-align: left;
+  }
+  
+  .stat-bars {
+    width: 100%;
+  }
+}

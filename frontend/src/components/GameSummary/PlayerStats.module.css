@@ -1,0 +1,68 @@
+.player-stats {
+  margin-top: 30px;
+  padding: 30px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.player-stats h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.player-stats h4 {
+  color: #dc2626;
+  margin: 25px 0 15px 0;
+  font-size: 20px;
+  border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+  padding-bottom: 8px;
+}
+
+.player-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #2d2d2d;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.player-table th {
+  background: #dc2626;
+  color: white;
+  padding: 15px 10px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.player-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+.player-table tr:nth-child(even) {
+  background: #1a1a1a;
+}
+
+.player-table tr:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.player-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.player-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+  cursor: pointer;
+}

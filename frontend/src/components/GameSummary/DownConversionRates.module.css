@@ -1,0 +1,128 @@
+.visual-comparison {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.visual-comparison h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 18px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-comparison {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-name {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 120px;
+  text-align: right;
+}
+
+.stat-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bar-row {
+  display: flex;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #2d2d2d;
+}
+
+/* Specific styling for third down conversion bars */
+.third-down-bars .stat-bars {
+  align-items: flex-start;
+}
+
+.third-down-bars .bar-row {
+  min-width: 100px;
+}
+
+/* Specific styling for fourth down conversion bars */
+.fourth-down-bars .stat-bars {
+  align-items: flex-start;
+}
+
+.fourth-down-bars .bar-row {
+  min-width: 100px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  min-width: 60px;
+}
+
+/* Team bar background and styling for third down conversions */
+.team-bar-bg {
+  background-color: rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+/* Division lines within the bar */
+.division-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: white;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+/* Bar filled portion - uses CSS custom properties for team colors */
+.bar {
+  background-color: var(--team-primary-color, #808080);
+}
+
+/* No attempts text styling */
+.no-attempts {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  font-size: 14px;
+  padding: 8px 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .stat-comparison {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .stat-name {
+    min-width: auto;
+    text-align: left;
+  }
+  
+  .stat-bars {
+    width: 100%;
+  }
+}

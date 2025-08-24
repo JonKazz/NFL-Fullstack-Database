@@ -1,0 +1,228 @@
+.scoring-progression {
+  margin-top: 30px;
+  padding: 30px 40px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.scoring-progression h3 {
+  color: #000000;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.scoring-progression h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.scoring-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chart-container {
+  display: flex;
+  align-items: stretch;
+  height: 600px;
+  position: relative;
+  overflow: auto;
+  min-width: 100%;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  min-height: 600px;
+  min-width: 100%;
+  overflow: auto;
+  background: #2d2d2d;
+  padding: 50px;
+}
+
+.scoring-svg {
+  width: calc(100% - 100px);
+  height: calc(100% - 100px);
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  min-width: 800px;
+}
+
+/* Scoring line group - treats horizontal + vertical as one entity */
+.scoring-line-group {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scoring-line-group:hover .scoring-line {
+  stroke-width: 10 !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+/* Enhanced hover effects for entire drive bars */
+.drive-bar-group {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drive-bar-group:hover .drive-line {
+  stroke-width: 10 !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+/* Drive info popup */
+.drive-popup {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  color: white;
+  font-size: 14px;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.drive-popup h4 {
+  margin: 0 0 10px 0;
+  color: #f59e0b;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+}
+
+.drive-popup-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.drive-popup-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.drive-popup-value {
+  color: white;
+  font-weight: 600;
+}
+
+.drive-popup-team {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.scoring-line {
+  transition: stroke-width 0.2s ease, opacity 0.2s ease;
+}
+
+.scoring-line:hover {
+  stroke-width: 8;
+}
+
+/* Team logo styles */
+.team-logo {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.team-logo:hover {
+  r: 18;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+.team-logo-text {
+  pointer-events: none;
+  user-select: none;
+}
+
+.dotted-line {
+  stroke-dasharray: 10, 5;
+  stroke-width: 2;
+  opacity: 0.4;
+}
+
+.scoring-point {
+  transition: r 0.2s ease;
+}
+
+.scoring-point:hover {
+  r: 6;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.scoring-loading,
+.scoring-error,
+.no-scoring {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.scoring-error {
+  color: #ef4444;
+}
+
+.bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kc-bar {
+  background: #E31837;
+}
+
+.lac-bar {
+  background: #0080C6;
+}
+
+.team-label {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 30px;
+  font-size: 12px;
+}
