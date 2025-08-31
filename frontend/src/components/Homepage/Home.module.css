@@ -98,6 +98,15 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2rem;
+  color: #e5e7eb;
+}
+
 .section-title {
   font-size: 1.8rem;
   margin-bottom: 25px;

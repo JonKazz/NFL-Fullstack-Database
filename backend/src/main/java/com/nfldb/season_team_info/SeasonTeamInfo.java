@@ -1,4 +1,4 @@
-package com.nfldb.team;
+package com.nfldb.season_team_info;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "season_team_info")
-public class Team {
+public class SeasonTeamInfo {
 
     // 1. Identifiers & Basic Info
     @Id
@@ -56,4 +56,36 @@ public class Team {
     private String offScheme;
     @Column(name = "def_alignment")
     private String defAlignment;
+
+    // 7. Team Statistics
+    @Column(name = "total_yards_for")
+    private Integer totalYardsFor;
+    @Column(name = "total_yards_against")
+    private Integer totalYardsAgainst;
+    @Column(name = "turnovers")
+    private Integer turnovers;
+    @Column(name = "forced_turnovers")
+    private Integer forcedTurnovers;
+    @Column(name = "pass_yards_for")
+    private Integer passYardsFor;
+    @Column(name = "pass_yards_against")
+    private Integer passYardsAgainst;
+    @Column(name = "pass_td_for")
+    private Integer passTdFor;
+    @Column(name = "pass_td_against")
+    private Integer passTdAgainst;
+    @Column(name = "pass_ints_thrown")
+    private Integer passIntsThrown;
+    @Column(name = "pass_ints")
+    private Integer passInts;
+    @Column(name = "rush_yards_for")
+    private Integer rushYardsFor;
+    @Column(name = "rush_yards_against")
+    private Integer rushYardsAgainst;
+    @Column(name = "rush_td_for")
+    private Integer rushTdFor;
+    @Column(name = "rush_td_against")
+    private Integer rushTdAgainst;
+    @Column(name = "penalties_for")
+    private Integer penaltiesFor;
 }

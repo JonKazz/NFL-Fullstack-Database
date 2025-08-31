@@ -1,8 +1,84 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PlayerStats.module.css';
 import { Link } from 'react-router-dom';
+import { fetchPlayerProfile } from '../../api/fetches';
 
-function PlayerStats({ gamePlayerStats, teams }) {
+function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
+  const [playerProfiles, setPlayerProfiles] = useState({});
+  const [sortConfig, setSortConfig] = useState({
+    passing: { column: 'passYds', direction: 'desc' },
+    rushing: { column: 'rushYds', direction: 'desc' },
+    receiving: { column: 'recYds', direction: 'desc' },
+    defense: { column: 'tacklesTotal', direction: 'desc' }
+  });
+
+  // Sort function for any column
+  const sortData = (data, column, direction) => {
+    return [...data].sort((a, b) => {
+      const aVal = a[column] || 0;
+      const bVal = b[column] || 0;
+      
+      if (direction === 'asc') {
+        return aVal - bVal;
+      } else {
+        return bVal - aVal;
+      }
+    });
+  };
+
+  // Handle column header click
+  const handleSort = (tableType, column) => {
+    setSortConfig(prev => ({
+      ...prev,
+      [tableType]: {
+        column,
+        direction: prev[tableType].column === column && prev[tableType].direction === 'desc' ? 'asc' : 'desc'
+      }
+    }));
+  };
+
+  // Get sort indicator
+  const getSortIndicator = (tableType, column) => {
+    const config = sortConfig[tableType];
+    if (config.column === column) {
+      return config.direction === 'desc' ? ' ▼' : ' ▲';
+    }
+    return '';
+  };
+
+  // Fetch player profiles for all players in the game
+  useEffect(() => {
+    const fetchPlayerProfiles = async () => {
+      if (!gamePlayerStats || gamePlayerStats.length === 0) return;
+
+      const profiles = {};
+      const uniquePlayerIds = [...new Set(gamePlayerStats.map(player => 
+        player.id?.playerId || player.playerId
+      ))];
+
+      for (const playerId of uniquePlayerIds) {
+        try {
+          const profile = await fetchPlayerProfile(playerId);
+          if (profile && profile.name) {
+            profiles[playerId] = profile.name;
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch profile for player ${playerId}:`, error);
+          profiles[playerId] = playerId; // Fallback to player ID if profile fetch fails
+        }
+      }
+      
+      setPlayerProfiles(profiles);
+    };
+
+    fetchPlayerProfiles();
+  }, [gamePlayerStats]);
+
+  // Get player name from profiles or fallback to player ID
+  const getPlayerName = (playerId) => {
+    return playerProfiles[playerId] || playerId;
+  };
+
   // Process player stats by position
   const processPlayerStats = (players) => {
     const quarterbacks = [];
@@ -26,26 +102,43 @@ function PlayerStats({ gamePlayerStats, teams }) {
         passAtt: player.passAttempts || 0,
         passCmp: player.passCompletions || 0,
         passRating: player.passRating || 0,
+        passSacked: player.passSacked || 0,
+        passSackedYards: player.passSackedYards || 0,
+        passLong: player.passLong || 0,
+        passFirstDowns: player.passFirstDowns || 0,
         // Rushing stats
         rushYds: player.rushYards || 0,
         rushTd: player.rushTouchdowns || 0,
         rushAtt: player.rushAttempts || 0,
         rushLong: player.rushLong || 0,
+        rushFirstDowns: player.rushFirstDowns || 0,
         // Receiving stats
         rec: player.receivingReceptions || 0,
         recYds: player.receivingYards || 0,
         recTd: player.receivingTouchdowns || 0,
         targets: player.receivingTargets || 0,
         recLong: player.receivingLong || 0,
+        recYardsAfterCatch: player.receivingYardsAfterCatch || 0,
+        recFirstDowns: player.receivingFirstDowns || 0,
+        recDrops: player.receivingDrops || 0,
         // Defensive stats
         sacks: player.defensiveSacks || 0,
         tacklesTotal: player.defensiveTacklesCombined || 0,
         soloTackles: player.defensiveTacklesSolo || 0,
+        tacklesAssists: player.defensiveTacklesAssists || 0,
         defInt: player.defensiveInterceptions || 0,
+        defIntYards: player.defensiveInterceptionYards || 0,
+        defIntTouchdowns: player.defensiveInterceptionTouchdowns || 0,
         passDefended: player.defensivePassesDefended || 0,
         tacklesLoss: player.defensiveTacklesLoss || 0,
         qbHits: player.defensiveQbHits || 0,
+        pressures: player.defensivePressures || 0,
+        qbHurries: player.defensiveQbHurries || 0,
+        missedTackles: player.defensiveTacklesMissed || 0,
         fumblesForced: player.fumblesForced || 0,
+        // Fumble stats
+        fumblesTotal: player.fumblesTotal || 0,
+        fumblesLost: player.fumblesLost || 0,
         // Kicking stats
         fgm: player.fieldGoalsMade || 0,
         fga: player.fieldGoalsAttempted || 0,
@@ -54,7 +147,10 @@ function PlayerStats({ gamePlayerStats, teams }) {
         // Punting stats
         punt: player.punts || 0,
         puntYds: player.puntYards || 0,
-        puntLong: player.puntLong || 0
+        puntLong: player.puntLong || 0,
+        // Snap count stats
+        snapcountsOffense: player.snapcountsOffense || 0,
+        snapcountsOffensePercentage: player.snapcountsOffensePercentage || 0
       };
 
       const position = mappedPlayer.position;
@@ -91,35 +187,81 @@ function PlayerStats({ gamePlayerStats, teams }) {
 
   // Get team names for display
   const getTeamName = (teamId) => {
+    if (!teamId) return 'N/A';
     const team = teams.find(t => t.teamId === teamId);
-    return team?.name || teamId.toUpperCase();
+    return team?.city || teamId.toUpperCase();
   };
 
   return (
     <div className={styles['player-stats']}>
       <h3>Player Statistics</h3>
       
-      {playerStats.quarterbacks.length > 0 && (
+      {playerStats.quarterbacks.filter(player => player.passAtt > 0).length > 0 && (
         <>
           <h4>Passing</h4>
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Cmp/Att</th>
-                <th>Yards</th>
-                <th>TD</th>
-                <th>INT</th>
-                <th>Rating</th>
+                <th onClick={() => handleSort('passing', 'playerId')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('passing', 'playerId')}
+                </th>
+                <th onClick={() => handleSort('passing', 'teamId')} style={{ cursor: 'pointer' }}>
+                  Team{getSortIndicator('passing', 'teamId')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passCmp')} style={{ cursor: 'pointer' }}>
+                  Cmp/Att{getSortIndicator('passing', 'passCmp')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passYds')} style={{ cursor: 'pointer' }}>
+                  Yards{getSortIndicator('passing', 'passYds')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passTd')} style={{ cursor: 'pointer' }}>
+                  TD{getSortIndicator('passing', 'passTd')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passInt')} style={{ cursor: 'pointer' }}>
+                  INT{getSortIndicator('passing', 'passInt')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passRating')} style={{ cursor: 'pointer' }}>
+                  Rating{getSortIndicator('passing', 'passRating')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passFirstDowns')} style={{ cursor: 'pointer' }}>
+                  1st Downs{getSortIndicator('passing', 'passFirstDowns')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passSacked')} style={{ cursor: 'pointer' }}>
+                  Sacks{getSortIndicator('passing', 'passSacked')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passSackedYards')} style={{ cursor: 'pointer' }}>
+                  Sack Yds{getSortIndicator('passing', 'passSackedYards')}
+                </th>
+                <th onClick={() => handleSort('passing', 'passLong')} style={{ cursor: 'pointer' }}>
+                  Long{getSortIndicator('passing', 'passLong')}
+                </th>
+                <th onClick={() => handleSort('passing', 'fumblesTotal')} style={{ cursor: 'pointer' }}>
+                  Fumbles{getSortIndicator('passing', 'fumblesTotal')}
+                </th>
+                <th onClick={() => handleSort('passing', 'fumblesLost')} style={{ cursor: 'pointer' }}>
+                  Fumbles Lost{getSortIndicator('passing', 'fumblesLost')}
+                </th>
+                <th onClick={() => handleSort('passing', 'snapcountsOffense')} style={{ cursor: 'pointer' }}>
+                  Snaps{getSortIndicator('passing', 'snapcountsOffense')}
+                </th>
+                <th onClick={() => handleSort('passing', 'snapcountsOffensePercentage')} style={{ cursor: 'pointer' }}>
+                  Snap %{getSortIndicator('passing', 'snapcountsOffensePercentage')}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {playerStats.quarterbacks.map((player, index) => (
+              {sortData(
+                playerStats.quarterbacks.filter(player => player.passAtt > 0),
+                sortConfig.passing.column,
+                sortConfig.passing.direction
+              ).map((player, index) => (
                 <tr key={index}>
                   <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -128,6 +270,14 @@ function PlayerStats({ gamePlayerStats, teams }) {
                   <td>{player.passTd}</td>
                   <td>{player.passInt}</td>
                   <td>{player.passRating || 'N/A'}</td>
+                  <td>{player.passFirstDowns || 0}</td>
+                  <td>{player.passSacked || 0}</td>
+                  <td>{player.passSackedYards || 0}</td>
+                  <td>{player.passLong || 'N/A'}</td>
+                  <td>{player.fumblesTotal || 0}</td>
+                  <td>{player.fumblesLost || 0}</td>
+                  <td>{player.snapcountsOffense || 0}</td>
+                  <td>{player.snapcountsOffensePercentage || 0}%</td>
                 </tr>
               ))}
             </tbody>
@@ -135,35 +285,76 @@ function PlayerStats({ gamePlayerStats, teams }) {
         </>
       )}
 
-      {playerStats.runningBacks.length > 0 && (
+      {playerStats.runningBacks.filter(player => player.rushAtt > 0).length > 0 && (
         <>
           <h4>Rushing</h4>
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Att</th>
-                <th>Yards</th>
-                <th>TD</th>
-                <th>Long</th>
-                <th>YPC</th>
+                <th onClick={() => handleSort('rushing', 'playerId')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('rushing', 'playerId')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'teamId')} style={{ cursor: 'pointer' }}>
+                  Team{getSortIndicator('rushing', 'teamId')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushYds')} style={{ cursor: 'pointer' }}>
+                  Yards{getSortIndicator('rushing', 'rushYds')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushAtt')} style={{ cursor: 'pointer' }}>
+                  Attempts{getSortIndicator('rushing', 'rushAtt')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushYds')} style={{ cursor: 'pointer' }}>
+                  YPA{getSortIndicator('rushing', 'rushYds')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushTd')} style={{ cursor: 'pointer' }}>
+                  TD{getSortIndicator('rushing', 'rushTd')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushLong')} style={{ cursor: 'pointer' }}>
+                  Long{getSortIndicator('rushing', 'rushLong')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'rushFirstDowns')} style={{ cursor: 'pointer' }}>
+                  1st Downs{getSortIndicator('rushing', 'rushFirstDowns')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'fumblesTotal')} style={{ cursor: 'pointer' }}>
+                  Fumbles{getSortIndicator('rushing', 'fumblesTotal')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'fumblesLost')} style={{ cursor: 'pointer' }}>
+                  Fumbles Lost{getSortIndicator('rushing', 'fumblesLost')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'snapcountsOffense')} style={{ cursor: 'pointer' }}>
+                  Snaps{getSortIndicator('rushing', 'snapcountsOffense')}
+                </th>
+                <th onClick={() => handleSort('rushing', 'snapcountsOffensePercentage')} style={{ cursor: 'pointer' }}>
+                  Snap %{getSortIndicator('rushing', 'snapcountsOffensePercentage')}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {playerStats.runningBacks.map((player, index) => (
+              {sortData(
+                playerStats.runningBacks.filter(player => player.rushAtt > 0),
+                sortConfig.rushing.column,
+                sortConfig.rushing.direction
+              ).map((player, index) => (
                 <tr key={index}>
                   <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
-                  <td>{player.rushAtt}</td>
                   <td>{player.rushYds}</td>
+                  <td>{player.rushAtt}</td>
+                  <td>{player.rushAtt > 0 ? (player.rushYds / player.rushAtt).toFixed(1) : '0.0'}</td>
                   <td>{player.rushTd}</td>
                   <td>{player.rushLong || 'N/A'}</td>
-                  <td>{player.rushAtt > 0 ? (player.rushYds / player.rushAtt).toFixed(1) : '0.0'}</td>
+                  <td>{player.rushFirstDowns || 0}</td>
+                  <td>{player.fumblesTotal || 0}</td>
+                  <td>{player.fumblesLost || 0}</td>
+                  <td>{player.snapcountsOffense || 0}</td>
+                  <td>{player.snapcountsOffensePercentage || 0}%</td>
                 </tr>
               ))}
             </tbody>
@@ -177,71 +368,78 @@ function PlayerStats({ gamePlayerStats, teams }) {
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Rec</th>
-                <th>Yards</th>
-                <th>TD</th>
-                <th>Long</th>
-                <th>YPR</th>
+                <th onClick={() => handleSort('receiving', 'playerId')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('receiving', 'playerId')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'teamId')} style={{ cursor: 'pointer' }}>
+                  Team{getSortIndicator('receiving', 'teamId')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'position')} style={{ cursor: 'pointer' }}>
+                  Position{getSortIndicator('receiving', 'position')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recYds')} style={{ cursor: 'pointer' }}>
+                  Yards{getSortIndicator('receiving', 'recYds')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'targets')} style={{ cursor: 'pointer' }}>
+                  Targets/Rec{getSortIndicator('receiving', 'targets')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recTd')} style={{ cursor: 'pointer' }}>
+                  TD{getSortIndicator('receiving', 'recTd')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recYardsAfterCatch')} style={{ cursor: 'pointer' }}>
+                  YAC{getSortIndicator('receiving', 'recYardsAfterCatch')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recFirstDowns')} style={{ cursor: 'pointer' }}>
+                  1st Downs{getSortIndicator('receiving', 'recFirstDowns')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recLong')} style={{ cursor: 'pointer' }}>
+                  Long{getSortIndicator('receiving', 'recLong')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'recDrops')} style={{ cursor: 'pointer' }}>
+                  Drops{getSortIndicator('receiving', 'recDrops')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'fumblesTotal')} style={{ cursor: 'pointer' }}>
+                  Fumbles{getSortIndicator('receiving', 'fumblesTotal')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'fumblesLost')} style={{ cursor: 'pointer' }}>
+                  Fumbles Lost{getSortIndicator('receiving', 'fumblesLost')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'snapcountsOffense')} style={{ cursor: 'pointer' }}>
+                  Snaps{getSortIndicator('receiving', 'snapcountsOffense')}
+                </th>
+                <th onClick={() => handleSort('receiving', 'snapcountsOffensePercentage')} style={{ cursor: 'pointer' }}>
+                  Snap %{getSortIndicator('receiving', 'snapcountsOffensePercentage')}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {playerStats.receivers.map((player, index) => (
+              {sortData(
+                playerStats.receivers.filter(player => player.targets > 0),
+                sortConfig.receiving.column,
+                sortConfig.receiving.direction
+              ).map((player, index) => (
                 <tr key={index}>
                   <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
-                  <td>{player.rec}</td>
+                  <td>{player.position}</td>
                   <td>{player.recYds}</td>
+                  <td>{player.targets}/{player.rec}</td>
                   <td>{player.recTd}</td>
+                  <td>{player.recYardsAfterCatch || 0}</td>
+                  <td>{player.recFirstDowns || 0}</td>
                   <td>{player.recLong || 'N/A'}</td>
-                  <td>{player.rec > 0 ? (player.recYds / player.rec).toFixed(1) : '0.0'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
-      {(playerStats.defensiveLine.length > 0 || playerStats.linebackers.length > 0 || playerStats.defensiveBacks.length > 0) && (
-        <>
-          <h4>Defense</h4>
-          <table className={styles['player-table']}>
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Tackles</th>
-                <th>Solo</th>
-                <th>Sacks</th>
-                <th>INT</th>
-                <th>PD</th>
-                <th>TFL</th>
-                <th>QB Hits</th>
-                <th>FF</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...playerStats.defensiveLine, ...playerStats.linebackers, ...playerStats.defensiveBacks].map((player, index) => (
-                <tr key={index}>
-                  <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
-                    </Link>
-                  </td>
-                  <td>{getTeamName(player.teamId)}</td>
-                  <td>{player.tacklesTotal}</td>
-                  <td>{player.soloTackles || 0}</td>
-                  <td>{player.sacks}</td>
-                  <td>{player.defInt}</td>
-                  <td>{player.passDefended}</td>
-                  <td>{player.tacklesLoss || 0}</td>
-                  <td>{player.qbHits || 0}</td>
-                  <td>{player.fumblesForced}</td>
+                  <td>{player.recDrops || 0}</td>
+                  <td>{player.fumblesTotal || 0}</td>
+                  <td>{player.fumblesLost || 0}</td>
+                  <td>{player.snapcountsOffense || 0}</td>
+                  <td>{player.snapcountsOffensePercentage || 0}%</td>
                 </tr>
               ))}
             </tbody>
@@ -269,8 +467,11 @@ function PlayerStats({ gamePlayerStats, teams }) {
               {playerStats.specialTeams.filter(player => player.position === 'K').map((player, index) => (
                 <tr key={index}>
                   <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -305,8 +506,11 @@ function PlayerStats({ gamePlayerStats, teams }) {
               {playerStats.specialTeams.filter(player => player.position === 'P').map((player, index) => (
                 <tr key={index}>
                   <td>
-                    <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
-                      {player.playerId}
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -314,6 +518,99 @@ function PlayerStats({ gamePlayerStats, teams }) {
                   <td>{player.puntYds}</td>
                   <td>{player.punt > 0 ? (player.puntYds / player.punt).toFixed(1) : '0.0'}</td>
                   <td>{player.puntLong || 'N/A'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {(playerStats.defensiveLine.length > 0 || playerStats.linebackers.length > 0 || playerStats.defensiveBacks.length > 0) && (
+        <>
+          <h4>Defense</h4>
+          <table className={styles['player-table']}>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort('defense', 'playerId')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('defense', 'playerId')}
+                </th>
+                <th onClick={() => handleSort('defense', 'teamId')} style={{ cursor: 'pointer' }}>
+                  Team{getSortIndicator('defense', 'teamId')}
+                </th>
+                <th onClick={() => handleSort('defense', 'tacklesTotal')} style={{ cursor: 'pointer' }}>
+                  Tackles{getSortIndicator('defense', 'tacklesTotal')}
+                </th>
+                <th onClick={() => handleSort('defense', 'soloTackles')} style={{ cursor: 'pointer' }}>
+                  Solo{getSortIndicator('defense', 'soloTackles')}
+                </th>
+                <th onClick={() => handleSort('defense', 'tacklesAssists')} style={{ cursor: 'pointer' }}>
+                  Assists{getSortIndicator('defense', 'tacklesAssists')}
+                </th>
+                <th onClick={() => handleSort('defense', 'sacks')} style={{ cursor: 'pointer' }}>
+                  Sacks{getSortIndicator('defense', 'sacks')}
+                </th>
+                <th onClick={() => handleSort('defense', 'defInt')} style={{ cursor: 'pointer' }}>
+                  INT{getSortIndicator('defense', 'defInt')}
+                </th>
+                <th onClick={() => handleSort('defense', 'defIntYards')} style={{ cursor: 'pointer' }}>
+                  INT Yds{getSortIndicator('defense', 'defIntYards')}
+                </th>
+                <th onClick={() => handleSort('defense', 'defIntTouchdowns')} style={{ cursor: 'pointer' }}>
+                  INT TD{getSortIndicator('defense', 'defIntTouchdowns')}
+                </th>
+                <th onClick={() => handleSort('defense', 'passDefended')} style={{ cursor: 'pointer' }}>
+                  PD{getSortIndicator('defense', 'passDefended')}
+                </th>
+                <th onClick={() => handleSort('defense', 'tacklesLoss')} style={{ cursor: 'pointer' }}>
+                  TFL{getSortIndicator('defense', 'tacklesLoss')}
+                </th>
+                <th onClick={() => handleSort('defense', 'qbHits')} style={{ cursor: 'pointer' }}>
+                  QB Hits{getSortIndicator('defense', 'qbHits')}
+                </th>
+                <th onClick={() => handleSort('defense', 'pressures')} style={{ cursor: 'pointer' }}>
+                  Pressures{getSortIndicator('defense', 'pressures')}
+                </th>
+                <th onClick={() => handleSort('defense', 'qbHurries')} style={{ cursor: 'pointer' }}>
+                  QB Hurries{getSortIndicator('defense', 'qbHurries')}
+                </th>
+                <th onClick={() => handleSort('defense', 'missedTackles')} style={{ cursor: 'pointer' }}>
+                  Missed Tackles{getSortIndicator('defense', 'missedTackles')}
+                </th>
+                <th onClick={() => handleSort('defense', 'fumblesForced')} style={{ cursor: 'pointer' }}>
+                  FF{getSortIndicator('defense', 'fumblesForced')}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortData(
+                [...playerStats.defensiveLine, ...playerStats.linebackers, ...playerStats.defensiveBacks],
+                sortConfig.defense.column,
+                sortConfig.defense.direction
+              ).map((player, index) => (
+                <tr key={index}>
+                  <td>
+                    <Link 
+                      to={`/player/${player.playerId}`} 
+                      className={styles['player-link']}
+                    >
+                      {getPlayerName(player.playerId)}
+                    </Link>
+                  </td>
+                  <td>{getTeamName(player.teamId)}</td>
+                  <td>{player.tacklesTotal}</td>
+                  <td>{player.soloTackles || 0}</td>
+                  <td>{player.tacklesAssists || 0}</td>
+                  <td>{player.sacks}</td>
+                  <td>{player.defInt}</td>
+                  <td>{player.defIntYards || 0}</td>
+                  <td>{player.defIntTouchdowns || 0}</td>
+                  <td>{player.passDefended}</td>
+                  <td>{player.tacklesLoss || 0}</td>
+                  <td>{player.qbHits || 0}</td>
+                  <td>{player.pressures || 0}</td>
+                  <td>{player.qbHurries || 0}</td>
+                  <td>{player.missedTackles || 0}</td>
+                  <td>{player.fumblesForced}</td>
                 </tr>
               ))}
             </tbody>

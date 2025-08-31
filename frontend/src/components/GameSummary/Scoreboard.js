@@ -1,13 +1,33 @@
 import React from 'react';
 import styles from './Scoreboard.module.css';
 
-function Scoreboard({ homeTeam, awayTeam, homeStats, awayStats, gameInfo, homeName, awayName }) {
-  const hasOvertime = !!gameInfo.overtime;
+function Scoreboard({ homeTeam, awayTeam, homeStats, awayStats, gameInfo, homeName, awayName, homeTeamColor, awayTeamColor }) {
+  const homeScore = homeStats.pointsTotal;
+  const awayScore = awayStats.pointsTotal;
+  const homeWon = homeScore > awayScore;
+  const awayWon = awayScore > homeScore;
+
+  // Determine what to display based on playoff status
+  let displayText = '';
+  if (gameInfo.playoffGame) {
+    displayText = `${gameInfo.playoffGame} • ${gameInfo.date}`;
+  } else {
+    displayText = `Week ${gameInfo.seasonWeek} • ${gameInfo.date}`;
+  }
 
   return (
     <div className={styles.scoreboard}>
+      {/* Game Info Header */}
+      <div className={styles['game-info-header']}>
+        {displayText}
+      </div>
+      
+      {/* Home Team (Left Side) */}
       <div className={styles.team}>
-        <div className={styles['team-logo']}>
+        <div 
+          className={styles['team-logo']}
+          style={{ border: `4px solid ${homeTeamColor}` }}
+        >
           {homeTeam?.logo ? (
             <img 
               src={homeTeam.logo} 
@@ -23,18 +43,30 @@ function Scoreboard({ homeTeam, awayTeam, homeStats, awayStats, gameInfo, homeNa
             {homeStats.id.teamId.toUpperCase()}
           </div>
         </div>
-        <div className={styles['team-name']}>{homeName}</div>
-        <div className={styles['team-record']}>({gameInfo.homeTeamRecord || 'N/A'})</div>
-        <div className={styles.score}>{homeStats.pointsTotal}</div>
+        <div className={styles['team-info']}>
+          <div className={styles['team-name']}>{homeName}</div>
+          <div className={styles['team-record']}>({gameInfo.homeTeamRecord || 'N/A'})</div>
+        </div>
+        <div className={`${styles.score} ${homeWon ? styles.winner : styles.loser}`}>{homeStats.pointsTotal}</div>
       </div>
 
+      {/* VS Section */}
       <div className={styles.vs}>
-        <div className={styles['team-record']}>VS</div>
-        {hasOvertime && <div className={styles.overtime}>OT</div>}
+        <div className={styles['vs-text']}>VS</div>
+        {gameInfo.overtime && <div className={styles.overtime}>OT</div>}
       </div>
 
+      {/* Away Team (Right Side) */}
       <div className={styles.team}>
-        <div className={styles['team-logo']}>
+        <div className={`${styles.score} ${awayWon ? styles.winner : styles.loser}`}>{awayStats.pointsTotal}</div>
+        <div className={styles['team-info']}>
+          <div className={styles['team-name']}>{awayName}</div>
+          <div className={styles['team-record']}>({gameInfo.awayTeamRecord || 'N/A'})</div>
+        </div>
+        <div 
+          className={styles['team-logo']}
+          style={{ border: `4px solid ${awayTeamColor}` }}
+        >
           {awayTeam?.logo ? (
             <img 
               src={awayTeam.logo} 
@@ -50,12 +82,10 @@ function Scoreboard({ homeTeam, awayTeam, homeStats, awayStats, gameInfo, homeNa
             {awayStats.id.teamId.toUpperCase()}
           </div>
         </div>
-        <div className={styles['team-name']}>{awayName}</div>
-        <div className={styles['team-record']}>({gameInfo.awayTeamRecord || 'N/A'})</div>
-        <div className={styles.score}>{awayStats.pointsTotal}</div>
       </div>
     </div>
   );
 }
 
 export default Scoreboard;
+

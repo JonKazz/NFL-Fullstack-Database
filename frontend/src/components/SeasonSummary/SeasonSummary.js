@@ -4,7 +4,9 @@ import { fetchTeamsBySeason, fetchPlayoffGames, fetchSeasonInfo } from '../../ap
 import styles from './SeasonSummary.module.css';
 import Standings from './Standings';
 import PlayoffBracket from './PlayoffBracket';
-import AwardsAndStats from './AwardsAndStats';
+import AwardWinners from './AwardWinners';
+import StatLeaders from './StatLeaders';
+import TeamStatLeaders from './TeamStatLeaders';
 
 function SeasonSummary() {
   const { year } = useParams();
@@ -12,7 +14,7 @@ function SeasonSummary() {
   const [teams, setTeams] = useState([]);
   const [playoffs, setPlayoffs] = useState([]);
   const [awards, setAwards] = useState([]);
-  const [statLeaders, setStatLeaders] = useState({});
+
   const [seasonInfo, setSeasonInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,34 +40,22 @@ function SeasonSummary() {
           setSeasonInfo(seasonInfoData);
           
           // Transform awards data
+          // Now using both player IDs and names to enable player images
           const awardsData = [
-            { award: 'MVP', winner: seasonInfoData.mvpName, team: '' },
-            { award: 'Offensive Player of the Year', winner: seasonInfoData.opoyName, team: '' },
-            { award: 'Defensive Player of the Year', winner: seasonInfoData.dpoyName, team: '' },
-            { award: 'Offensive Rookie of the Year', winner: seasonInfoData.oroyName, team: '' },
-            { award: 'Defensive Rookie of the Year', winner: seasonInfoData.droyName, team: '' }
+            { award: 'MVP', winner: seasonInfoData.mvpName, team: '', playerId: seasonInfoData.mvpId },
+            { award: 'Offensive Player of the Year', winner: seasonInfoData.opoyName, team: '', playerId: seasonInfoData.opoyId },
+            { award: 'Defensive Player of the Year', winner: seasonInfoData.dpoyName, team: '', playerId: seasonInfoData.dpoyId },
+            { award: 'Offensive Rookie of the Year', winner: seasonInfoData.oroyName, team: '', playerId: seasonInfoData.oroyId },
+            { award: 'Defensive Rookie of the Year', winner: seasonInfoData.droyName, team: '', playerId: seasonInfoData.droyId }
           ].filter(award => award.winner); // Only show awards that have winners
 
           setAwards(awardsData);
 
-          // Transform stat leaders data
-          const statLeadersData = {};
-          if (seasonInfoData.passingLeaderName) {
-            statLeadersData.passing = { leader: seasonInfoData.passingLeaderName, team: '', yards: '', tds: '' };
-          }
-          if (seasonInfoData.rushingLeaderName) {
-            statLeadersData.rushing = { leader: seasonInfoData.rushingLeaderName, team: '', yards: '', tds: '' };
-          }
-          if (seasonInfoData.receivingLeaderName) {
-            statLeadersData.receiving = { leader: seasonInfoData.receivingLeaderName, team: '', yards: '', tds: '' };
-          }
 
-          setStatLeaders(statLeadersData);
         } else {
           // Fallback to empty data if no season info found
           setSeasonInfo(null);
           setAwards([]);
-          setStatLeaders({});
         }
       
         setLoading(false);
@@ -95,9 +85,6 @@ function SeasonSummary() {
       <div className={styles.container}>
         {/* Header */}
         <div className={styles.header}>
-          <button onClick={() => navigate('/')} className={styles.backButton}>
-            ← Back to Home
-          </button>
           <h1>{year} NFL Season</h1>
           <p>League Overview, Standings, and Statistics</p>
         </div>
@@ -108,21 +95,15 @@ function SeasonSummary() {
         <Standings teams={teams} year={year} />
 
         {/* Playoff Bracket */}
-        <PlayoffBracket playoffs={playoffs} teams={teams} year={year} />
-
-        {/* Super Bowl Champion */}
-        {seasonInfo?.sbChamp && (
-          <div className={styles.section}>
-            <h2 className={styles['section-title']}>Super Bowl Champion</h2>
-            <div className={styles['champion-display']}>
-              <h3>{seasonInfo.sbChamp}</h3>
-            </div>
-          </div>
-        )}
+        <PlayoffBracket playoffs={playoffs} teams={teams} year={year} seasonInfo={seasonInfo} />
 
         {/* Awards and Stats */}
-        {awards.length > 0 || Object.keys(statLeaders).length > 0 ? (
-          <AwardsAndStats awards={awards} statLeaders={statLeaders} />
+        {awards.length > 0 ? (
+          <>
+            <AwardWinners awards={awards} />
+            <StatLeaders year={year} />
+            <TeamStatLeaders year={year} />
+          </>
         ) : (
           <div className={styles.section}>
             <h2 className={styles['section-title']}>Season Information</h2>

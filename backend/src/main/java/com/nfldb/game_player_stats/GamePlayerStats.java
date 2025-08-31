@@ -16,7 +16,8 @@ public class GamePlayerStats {
     // 1. Composite Key (game_id, player_id)
     @EmbeddedId
     private GamePlayerStatsId id;
-    
+
+
     @Column(name = "team_id")
     private String teamId;
 

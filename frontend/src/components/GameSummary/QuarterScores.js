@@ -4,7 +4,6 @@ import styles from './QuarterScores.module.css';
 function QuarterScores({ homeStats, awayStats, homeName, awayName, hasOvertime }) {
   return (
     <div className={styles['quarter-scores']}>
-      <h3>Quarter Scores</h3>
       <table className={styles['quarter-table']}>
         <thead>
           <tr>

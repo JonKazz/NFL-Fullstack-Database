@@ -30,4 +30,8 @@ public class RegSeasonPlayerStatsService {
             .sorted(Comparator.reverseOrder()) // Most recent first
             .collect(Collectors.toList());
     }
+    
+    public List<RegSeasonPlayerStats> getAllPlayersBySeason(Integer seasonYear) {
+        return repository.findByIdSeasonYear(seasonYear);
+    }
 }

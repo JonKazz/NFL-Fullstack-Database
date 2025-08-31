@@ -1,17 +1,13 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './GameSummary.module.css';
-import { fetchTeamsBySeason } from '../../api/fetches';
-import GameHeader from './GameHeader';
 import Scoreboard from './Scoreboard';
-import QuarterScores from './QuarterScores';
 import TeamStatsComparison from './TeamStatsComparison';
-import DownConversionRates from './DownConversionRates';
-import OffensiveStats from './OffensiveStats';
-import DefensiveStats from './DefensiveStats';
-import PlayerStats from './PlayerStats';
-import GameDrives from './GameDrives';
 import ScoringProgression from './ScoringProgression';
+import PlayerStats from './PlayerStats';
+import DownConversionRates from './DownConversionRates';
+import { fetchTeamsBySeason } from '../../api/fetches';
+import { getTeamColorsForGame } from '../../utils';
 
 function GameSummary() {
   const { gameId } = useParams();
@@ -72,13 +68,14 @@ function GameSummary() {
   const homeName = homeTeam?.name || homeStats.id.teamId;
   const awayName = awayTeam?.name || awayStats.id.teamId;
   
+  // Get contrasting team colors for the game
+  const { homeTeamColor, awayTeamColor } = getTeamColorsForGame(homeTeamId, awayTeamId);
+  
   const hasOvertime = !!gameInfo.overtime;
 
   return (
     <div className={styles.pageBackground}>
       <div className={styles.container}>
-        <GameHeader gameInfo={gameInfo} />
-        
         <Scoreboard 
           homeTeam={homeTeam}
           awayTeam={awayTeam}
@@ -87,35 +84,47 @@ function GameSummary() {
           gameInfo={gameInfo}
           homeName={homeName}
           awayName={awayName}
+          homeTeamColor={homeTeamColor}
+          awayTeamColor={awayTeamColor}
         />
-
-        <GameDrives gameId={gameId} teams={teams} gameInfo={gameInfo} />
 
         <ScoringProgression 
           gameId={gameId} 
           homeTeamId={homeTeamId} 
-          awayTeamId={awayTeamId} 
-        />
-
-        <QuarterScores 
+          awayTeamId={awayTeamId}
           homeStats={homeStats}
           awayStats={awayStats}
           homeName={homeName}
           awayName={awayName}
           hasOvertime={hasOvertime}
+          homeTeamColor={homeTeamColor}
+          awayTeamColor={awayTeamColor}
         />
 
         <div className={styles['stats-section']}>
           <div className={styles['section-title']}>Team Statistics</div>
           
-          <TeamStatsComparison homeStats={homeStats} awayStats={awayStats} />
-          <DownConversionRates homeStats={homeStats} awayStats={awayStats} />
+          <TeamStatsComparison 
+            homeStats={homeStats} 
+            awayStats={awayStats} 
+            homeTeamColor={homeTeamColor}
+            awayTeamColor={awayTeamColor}
+          />
+          <DownConversionRates 
+            homeStats={homeStats} 
+            awayStats={awayStats} 
+            homeTeamColor={homeTeamColor}
+            awayTeamColor={awayTeamColor}
+          />
           
-          <OffensiveStats homeStats={homeStats} awayStats={awayStats} />
-          <DefensiveStats homeStats={homeStats} awayStats={awayStats} />
         </div>
 
-        <PlayerStats gamePlayerStats={gamePlayerStats} teams={teams} />
+        <PlayerStats 
+          gamePlayerStats={gamePlayerStats} 
+          teams={teams}
+          homeTeamId={homeTeamId}
+          awayTeamId={awayTeamId}
+        />
       </div>
     </div>
   );

@@ -1,17 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
+import { getTeamPrimaryColor } from '../../utils';
 
-function PlayoffBracket({ playoffs, teams, year }) {
+function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
   const navigate = useNavigate();
   
   // Filter out non-playoff games (playoffGame === 'None')
   const playoffGames = playoffs.filter(game => game.playoffGame && game.playoffGame !== 'None');
   
+  // Get Super Bowl games for the champion display
+  const superBowlGames = playoffGames.filter(game => game.playoffGame === 'Superbowl');
+  
   if (playoffGames.length === 0) {
     return (
       <div className={styles.section}>
-        <h2 className={styles['section-title']}>Playoff Bracket</h2>
+        <h2 className={styles['section-title']}>Super Bowl Champion</h2>
         <div className={styles['no-playoffs']}>
           <p>No playoff games found for the {year} season.</p>
         </div>
@@ -21,8 +25,22 @@ function PlayoffBracket({ playoffs, teams, year }) {
 
   return (
     <div className={styles.section}>
-      <h2 className={styles['section-title']}>Playoff Bracket</h2>
+      <h2 className={styles['section-title']}>Super Bowl Champion</h2>
       
+      {/* Super Bowl Champion Display */}
+      {seasonInfo?.sbChamp && (
+        <div 
+          className={styles['champion-display']}
+          style={{ 
+            backgroundColor: getTeamPrimaryColor(seasonInfo.sbChamp),
+            borderColor: getTeamPrimaryColor(seasonInfo.sbChamp)
+          }}
+        >
+          <h3>{teams.find(t => t.teamId === seasonInfo.sbChamp)?.name || seasonInfo.sbChamp}</h3>
+        </div>
+      )}
+      
+
       <div className={styles['playoff-bracket']}>
         <div className={styles['bracket-container']}>
           {/* Group playoff games by round using the new playoffGame field */}
@@ -30,7 +48,6 @@ function PlayoffBracket({ playoffs, teams, year }) {
             const wildCardGames = playoffGames.filter(game => game.playoffGame === 'Wild Card');
             const divisionalGames = playoffGames.filter(game => game.playoffGame === 'Divisional');
             const conferenceGames = playoffGames.filter(game => game.playoffGame === 'Conference Championship');
-            const superBowlGames = playoffGames.filter(game => game.playoffGame === 'Superbowl');
             
             // Filter games by conference using team division
             const afcWildCard = wildCardGames.filter(game => {
@@ -268,7 +285,10 @@ function PlayoffBracket({ playoffs, teams, year }) {
                             </div>
                           </div>
                           <div className={styles['champion']}>
-                            <div className={styles['champion-logo']}>
+                            <div 
+                              className={styles['champion-logo']}
+                              style={{ borderColor: getTeamPrimaryColor(game.winningTeamId) }}
+                            >
                               <img 
                                 src={teams.find(t => t.teamId === game.winningTeamId)?.logo || ''} 
                                 alt={game.winningTeamId || 'Champion'}

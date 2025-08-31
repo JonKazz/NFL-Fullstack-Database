@@ -7,4 +7,5 @@ public interface RegSeasonPlayerStatsRepository extends JpaRepository<RegSeasonP
     RegSeasonPlayerStats findByIdPlayerIdAndIdSeasonYear(String playerId, Integer seasonYear);
     List<RegSeasonPlayerStats> findByIdTeamIdAndIdSeasonYear(String teamId, Integer seasonYear);
     List<RegSeasonPlayerStats> findByIdPlayerId(String playerId);
+    List<RegSeasonPlayerStats> findByIdSeasonYear(Integer seasonYear);
 }

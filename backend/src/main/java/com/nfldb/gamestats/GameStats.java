@@ -84,5 +84,9 @@ public class GameStats {
     private Integer fourthDownConversions;
     @Column(name = "first_downs_total")
     private Integer firstDownsTotal;
+
+    // 10. Time of Possession
+    @Column(name = "time_of_possession")
+    private String timeOfPossession;
 }
 

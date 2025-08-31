@@ -1,18 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchAvailableSeasons } from '../../api/fetches';
 import styles from './Home.module.css';
 
 function Home() {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [seasons, setSeasons] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Generate years from 2000 to current year
-  const years = Array.from({ length: new Date().getFullYear() - 1999 }, (_, i) => new Date().getFullYear() - i);
+  useEffect(() => {
+    const loadSeasons = async () => {
+      try {
+        const availableSeasons = await fetchAvailableSeasons();
+        setSeasons(availableSeasons);
+        // Set the first available season as default selected
+        if (availableSeasons.length > 0) {
+          setSelectedYear(availableSeasons[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch seasons:', error);
+        // Fallback to hardcoded seasons if API fails
+        const fallbackSeasons = [2023, 2024];
+        setSeasons(fallbackSeasons);
+        setSelectedYear(fallbackSeasons[0]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSeasons();
+  }, []);
 
   const handleExploreSeason = () => {
     if (!selectedYear) return;
     navigate(`/season/${selectedYear}`);
   };
+
+  if (loading) {
+    return (
+      <div className={styles.pageBackground}>
+        <div className={styles.container}>
+          <div className={styles.loading}>Loading seasons...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageBackground}>
@@ -40,7 +73,7 @@ function Home() {
             <div className={styles['year-selection']}>
               <label className={styles.label}>Choose Season</label>
               <div className={styles['year-grid']}>
-                {years.map(year => (
+                {seasons.map(year => (
                   <button
                     key={year}
                     className={`${styles['year-box']} ${selectedYear === year ? styles['year-box-selected'] : ''}`}
@@ -59,6 +92,7 @@ function Home() {
             <button 
               onClick={handleExploreSeason}
               className={styles.searchButton}
+              disabled={!selectedYear}
             >
               Explore Season
             </button>
@@ -71,9 +105,9 @@ function Home() {
           
           <div className={styles['stats-overview']}>
             <div className={styles['stat-overview-item']}>
-              <div className={styles['stat-overview-number']}>25</div>
+              <div className={styles['stat-overview-number']}>{seasons.length}</div>
               <div className={styles['stat-overview-label']}>Years</div>
-              <div className={styles['stat-overview-detail']}>2000-2024</div>
+              <div className={styles['stat-overview-detail']}>{seasons.length > 0 ? `${Math.min(...seasons)}-${Math.max(...seasons)}` : 'N/A'}</div>
             </div>
             
             <div className={styles['stat-overview-item']}>

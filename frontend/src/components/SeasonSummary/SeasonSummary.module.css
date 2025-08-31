@@ -42,7 +42,7 @@
 .header {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   border-radius: 8px;
-  padding: 40px;
+  padding: 20px;
   margin-bottom: 30px;
   box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
   border: 1px solid rgba(220, 38, 38, 0.2);
@@ -50,27 +50,9 @@
   position: relative;
 }
 
-.backButton {
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: rgba(220, 38, 38, 0.1);
-  border: 2px solid #dc2626;
-  color: #dc2626;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.backButton:hover {
-  background: #dc2626;
-  color: white;
-}
 
 .header h1 {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   color: #ffffff;
   margin-bottom: 10px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -103,10 +85,11 @@
 .champion-display {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   border-radius: 8px;
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  border: 2px solid;
 }
+
+
 
 .champion-display h3 {
   font-size: 2.5rem;
@@ -495,17 +478,41 @@
 /* Awards */
 .awards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+/* Responsive design for awards */
+@media (max-width: 1200px) {
+  .awards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .awards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .awards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 .award-card {
   background: #1a1a1a;
   border-radius: 8px;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  min-width: 0;
 }
 
 .award-card:hover {
@@ -515,28 +522,117 @@
 
 .award-card h3 {
   color: #dc2626;
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
   font-weight: 600;
+  line-height: 1.2;
+  white-space: pre-line;
+  word-wrap: break-word;
+}
+
+.award-title {
+  color: #dc2626;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.award-title div:first-child {
+  margin-bottom: 2px;
+}
+
+.award-title div:last-child {
+  font-size: 1.2rem;
+}
+
+.mvp-title {
+  color: #dc2626;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .award-winner {
   color: #ffffff;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  line-height: 1.2;
 }
 
 .award-team {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.player-picture-placeholder {
+  margin-top: 8px;
+}
+
+.player-picture {
+  width: 170px;
+  height: 250px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.picture-placeholder {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.picture-placeholder span {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Stat Leaders */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* Specific 2x2 grid layouts for stat sections */
+.passing-stats-grid,
+.receiving-stats-grid,
+.defensive-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+/* Player link styling */
+.player-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.player-link:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments for 2x2 grids */
+@media (max-width: 768px) {
+  .passing-stats-grid,
+  .receiving-stats-grid,
+  .defensive-stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
@@ -944,9 +1040,9 @@
   justify-content: center;
   background: white;
   border-radius: 50%;
-  border: 8px solid #ffd700;
+  border: 8px solid;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 20px currentColor, 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .champion-logo img {
@@ -975,4 +1071,89 @@
   font-weight: bold;
   color: #333;
   text-align: center;
+}
+
+/* Stat Leaders */
+.stats-section {
+  margin-bottom: 40px;
+}
+
+.stats-section h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.stats-section h4 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.stat-category {
+  background: #1a1a1a;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Leader table - smaller */
+.leader-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.leader-table th {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #000000;
+  font-weight: 600;
+}
+.leader-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+.leader-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.leader-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Team Stat Grids */
+.offensive-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.defensive-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.other-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* Team link styling */
+.team-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.team-link:hover {
+  color: #93c5fd;
+  text-decoration: none;
 }

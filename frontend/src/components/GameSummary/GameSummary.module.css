@@ -16,11 +16,11 @@
 .container {
   max-width: 1300px;
   margin: 0 auto;
-  background: #2d2d2d;
-  border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-  overflow: hidden;
   padding: 20px;
+}
+
+.scoring-container {
+  margin-bottom: 30px;
 }
 
 .stats-section {

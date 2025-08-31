@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
-import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats } from '../../api/fetches';
-import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName, getTeamPrimaryColor } from '../../utils';
+import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats, fetchTeamsStatsBySeason } from '../../api/fetches';
+import { TEAM_MAP, processPlayerStats, formatNumber, getPlayerName, getTeamPrimaryColor, calculateTeamRanking, formatRanking, getStatValue } from '../../utils';
 
 // Component to handle async player name fetching
 function PlayerNameCell({ playerId }) {
@@ -85,35 +85,75 @@ function SortableTable({ players, columns }) {
     return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
   };
 
+  const renderCell = (player, column) => {
+    const value = player[column.key];
+    
+    // Handle special cases
+    if (column.key === 'playerId') {
+      return <PlayerNameCell playerId={player.playerId} />;
+    }
+    
+    if (column.key === 'passCmp') {
+      const completions = player.passCompletions || 0;
+      const attempts = player.passAttempts || 0;
+      return <td className={styles['stat-cell']}>{completions}/{attempts}</td>;
+    }
+    
+    if (column.key === 'rushYardsPerAttempt') {
+      const yards = player.rushYards || 0;
+      const attempts = player.rushAtt || 0;
+      const ypa = attempts > 0 ? (yards / attempts).toFixed(1) : '0.0';
+      return <td className={styles['stat-cell']}>{ypa}</td>;
+    }
+    
+    if (column.key === 'fieldGoalPercentage') {
+      const made = player.fieldGoalsMade || 0;
+      const attempted = player.fieldGoalsAttempted || 0;
+      const percentage = attempted > 0 ? Math.round((made / attempted) * 100) : 0;
+      return <td className={styles['stat-cell']}>{percentage}%</td>;
+    }
+    
+    if (column.key === 'puntAverage') {
+      const yards = player.puntYards || 0;
+      const punts = player.punts || 0;
+      const average = punts > 0 ? Math.round(yards / punts) : 0;
+      return <td className={styles['stat-cell']}>{average}</td>;
+    }
+    
+    // Default case
+    return <td className={styles['stat-cell']}>{formatNumber(value)}</td>;
+  };
+
   return (
-    <table className={styles['position-table']}>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th 
-              key={column.key}
-              className={getClassNamesFor(column.key)}
-              onClick={() => requestSort(column.key)}
-              style={{ cursor: 'pointer' }}
-            >
-              {column.label}{getSortIndicator(column.key)}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {sortedPlayers.map((player, index) => (
-          <tr key={player.playerId || index} className={styles['table-row']}>
-            <PlayerNameCell playerId={player.playerId} />
-            {columns.slice(1).map((column) => (
-              <td key={column.key} className={styles['stat-cell']}>
-                {formatNumber(player[column.key])}
-              </td>
+    <div className={styles['table-container']}>
+      <table className={styles['position-table']}>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th 
+                key={column.key}
+                className={getClassNamesFor(column.key)}
+                onClick={() => requestSort(column.key)}
+                style={{ cursor: 'pointer' }}
+              >
+                {column.label}{getSortIndicator(column.key)}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sortedPlayers.map((player, index) => (
+            <tr key={player.playerId || index} className={styles['table-row']}>
+              {columns.map((column) => (
+                <React.Fragment key={column.key}>
+                  {renderCell(player, column)}
+                </React.Fragment>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -125,18 +165,54 @@ function SeasonSummaryVisualization() {
   const [teamInfo, setTeamInfo] = useState(null);
   const [games, setGames] = useState(null);
   const [playerStats, setPlayerStats] = useState(null);
+  const [teamStats, setTeamStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Sort games by season week for chronological order
+  const sortedGames = useMemo(() => {
+    if (!games) return [];
+    
+    return [...games].sort((a, b) => {
+      const weekA = a.gameInfo?.seasonWeek;
+      const weekB = b.gameInfo?.seasonWeek;
+      
+      // Handle playoff weeks (they come after regular season)
+      if (weekA === 'WC' || weekA === 'DIV' || weekA === 'CONF' || weekA === 'SB') {
+        if (weekB === 'WC' || weekB === 'DIV' || weekB === 'CONF' || weekB === 'SB') {
+          // Sort playoff weeks in order: WC -> DIV -> CONF -> SB
+          const playoffOrder = { 'WC': 1, 'DIV': 2, 'CONF': 3, 'SB': 4 };
+          return playoffOrder[weekA] - playoffOrder[weekB];
+        }
+        return 1; // Playoff games come after regular season
+      }
+      
+      if (weekB === 'WC' || weekB === 'DIV' || weekB === 'CONF' || weekB === 'SB') {
+        return -1; // Regular season comes before playoff
+      }
+      
+      // Regular season weeks - convert to numbers and sort
+      const numWeekA = parseInt(weekA);
+      const numWeekB = parseInt(weekB);
+      
+      if (isNaN(numWeekA) || isNaN(numWeekB)) {
+        return 0; // Keep original order if parsing fails
+      }
+      
+      return numWeekA - numWeekB;
+    });
+  }, [games]);
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       setError(null);
       try {
-        const [teamInfoResult, gamesResult, playerStatsResult] = await Promise.allSettled([
+        const [teamInfoResult, gamesResult, playerStatsResult, teamStatsResult] = await Promise.allSettled([
           fetchTeamInfo(teamId, year),
           fetchFullSeason(teamId, year),
-          fetchTeamPlayerStats(teamId, year)
+          fetchTeamPlayerStats(teamId, year),
+          fetchTeamsStatsBySeason(year)
         ]);
 
         if (teamInfoResult.status === 'fulfilled') {
@@ -155,6 +231,12 @@ function SeasonSummaryVisualization() {
           setPlayerStats(playerStatsResult.value);
         } else {
           console.warn('Failed to fetch player stats, using fallback data');
+        }
+
+        if (teamStatsResult.status === 'fulfilled') {
+          setTeamStats(teamStatsResult.value);
+        } else {
+          console.warn('Failed to fetch team stats, using fallback data');
         }
 
       } finally {
@@ -244,9 +326,14 @@ function SeasonSummaryVisualization() {
 
         {/* Games Section */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Season Schedule & Results</h2>
+          <h2 className={styles['section-title']}>Regular Season</h2>
           <div className={styles['games-grid']}>
-            {games.map((game, idx) => {
+            {sortedGames
+              .filter(game => {
+                // Filter to only show regular season games (no playoff_game column or null)
+                return game?.gameInfo?.playoffGame === null || game?.gameInfo?.playoffGame === undefined;
+              })
+              .map((game, idx) => {
               // Safety check - ensure game has required properties
               if (!game || !game.gameInfo || !game.gameStats || !Array.isArray(game.gameStats)) {
                 return null;
@@ -263,15 +350,8 @@ function SeasonSummaryVisualization() {
               
               const isHome = gameInfo.homeTeamId === teamId;
               const isWin = myStats.pointsTotal > oppStats.pointsTotal;
-              const isPlayoff = gameInfo.seasonWeek === 'WC' || gameInfo.seasonWeek === 'DIV' || 
-                               gameInfo.seasonWeek === 'CONF' || gameInfo.seasonWeek === 'SB';
 
-              let gameCardClass = styles['game-card'];
-              if (isPlayoff) {
-                gameCardClass += ` ${styles.playoff}`;
-              } else {
-                gameCardClass += isWin ? ` ${styles.win}` : ` ${styles.loss}`;
-              }
+              const gameCardClass = `${styles['game-card']} ${isWin ? styles.win : styles.loss}`;
 
               return (
                 <div
@@ -283,8 +363,8 @@ function SeasonSummaryVisualization() {
                   <div className={styles['game-header']}>
                     <div className={styles['game-meta']}>
                       <div className={styles['week-date-row']}>
-                        <div className={`${styles.week} ${isPlayoff ? styles.playoff : ''}`}>
-                          {isPlayoff ? gameInfo.seasonWeek : `Week ${gameInfo.seasonWeek}`}
+                        <div className={styles.week}>
+                          Week {gameInfo.seasonWeek}
                         </div>
                     <div className={styles['game-date']}>{gameInfo.date}</div>
                       </div>
@@ -337,6 +417,101 @@ function SeasonSummaryVisualization() {
           </div>
         </div>
 
+        {/* Playoffs Section - Only show if there are playoff games */}
+        {sortedGames.some(game => game?.gameInfo?.playoffGame !== null && game?.gameInfo?.playoffGame !== undefined) && (
+          <div className={styles.section}>
+            <h2 className={styles['section-title']}>Playoffs</h2>
+            <div className={styles['games-grid']}>
+              {sortedGames
+                .filter(game => {
+                  // Filter to only show playoff games (playoff_game column is not null)
+                  return game?.gameInfo?.playoffGame !== null && game?.gameInfo?.playoffGame !== undefined;
+                })
+                .map((game, idx) => {
+              // Safety check - ensure game has required properties
+              if (!game || !game.gameInfo || !game.gameStats || !Array.isArray(game.gameStats)) {
+                return null;
+              }
+              
+              const { gameInfo, gameStats } = game;
+              const myStats = gameStats.find(gs => gs && gs.id && gs.id.teamId === teamId);
+              const oppStats = gameStats.find(gs => gs && gs.id && gs.id.teamId !== teamId);
+              
+              // Safety check - if stats are not found or pointsTotal is undefined, skip this game
+              if (!myStats || !oppStats || typeof myStats.pointsTotal === 'undefined' || typeof oppStats.pointsTotal === 'undefined') {
+                return null;
+              }
+              
+              const isHome = gameInfo.homeTeamId === teamId;
+              const isWin = myStats.pointsTotal > oppStats.pointsTotal;
+
+              const gameCardClass = `${styles['game-card']} ${styles.playoff} ${isWin ? styles.win : styles.loss}`;
+
+              return (
+                <div
+                  className={gameCardClass}
+                  onClick={() => handleGameClick(gameInfo.gameId)}
+                  key={gameInfo.gameId || idx}
+                >
+                  {/* Game Header */}
+                  <div className={styles['game-header']}>
+                    <div className={styles['game-meta']}>
+                      <div className={styles['week-date-row']}>
+                        <div className={styles['playoff-game-text']}>
+                          {gameInfo.playoffGame === 'Conference Championship' ? 'Conference' : gameInfo.playoffGame}
+                        </div>
+                        <div className={styles['game-date']}>{gameInfo.date}</div>
+                      </div>
+                    </div>
+                    <div className={styles['game-result']}>
+                      {isWin ? 'W' : 'L'}
+                    </div>
+                  </div>
+
+                  {/* Game Matchup */}
+                  <div className={styles['game-matchup']}>
+                    {/* My Team */}
+                    <div className={styles['team-section']}>
+                      <div className={styles['team-info']}>
+                        <div className={`${styles['team-name']} ${isWin ? styles['winner-text'] : ''}`}>
+                          {TEAM_MAP[myStats.id.teamId]?.city}
+                        </div>
+                        <div className={styles['team-record']}>
+                          {/* Could add team record here if available */}
+                        </div>
+                      </div>
+                      <div className={`${styles['team-score']} ${isWin ? styles['winner-score'] : ''}`}>
+                        {myStats.pointsTotal}
+                      </div>
+                    </div>
+
+                    {/* Game Status */}
+                    <div className={styles['game-status']}>
+                      <div className={styles['vs-indicator']}>{isHome ? 'vs' : '@'}</div>
+                    </div>
+
+                    {/* Opponent Team */}
+                    <div className={styles['team-section']}>
+                      <div className={styles['team-info']}>
+                        <div className={`${styles['team-name']} ${!isWin ? styles['winner-text'] : ''}`}>
+                          {TEAM_MAP[oppStats.id.teamId]?.city}
+                        </div>
+                        <div className={styles['team-record']}>
+                          {/* Could add team record here if available */}
+                        </div>
+                      </div>
+                      <div className={`${styles['team-score']} ${!isWin ? styles['winner-score'] : ''}`}>
+                        {oppStats.pointsTotal}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }).filter(Boolean)}
+          </div>
+        </div>
+        )}
+
         {/* Team Statistics Section */}
         <div className={styles.section}>
           <h2 className={styles['section-title']}>Team Statistics</h2>
@@ -350,24 +525,36 @@ function SeasonSummaryVisualization() {
               <div className={styles['main-stats-grid']}>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#5</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'totalYardsFor', 'desc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Total Offense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>389.2 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.totalYardsFor ? `${Math.round(teamInfo.totalYardsFor / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#12</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passYardsFor', 'desc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Passing Offense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>244.4 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.passYardsFor ? `${Math.round(teamInfo.passYardsFor / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#3</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushYardsFor', 'desc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Rushing Offense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>144.8 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.rushYardsFor ? `${Math.round(teamInfo.rushYardsFor / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
               </div>
 
@@ -376,34 +563,49 @@ function SeasonSummaryVisualization() {
                 <table className={styles['misc-stats-table']}>
                   <tbody>
                     <tr>
-                      <td className={styles['rank-cell']}>#1</td>
-                      <td className={styles['stat-name-cell']}>Red Zone Efficiency</td>
-                      <td className={styles['stat-value-cell']}>73.5%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#7</td>
-                      <td className={styles['stat-name-cell']}>3rd Down Conversion</td>
-                      <td className={styles['stat-value-cell']}>44.2%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#4</td>
-                      <td className={styles['stat-name-cell']}>Time of Possession</td>
-                      <td className={styles['stat-value-cell']}>31:42</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#6</td>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'pointsFor', 'desc')}` : '#N/A'}
+                      </td>
                       <td className={styles['stat-name-cell']}>Points Per Game</td>
-                      <td className={styles['stat-value-cell']}>28.9</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.pointsFor ? `${Math.round(teamInfo.pointsFor / 17)} PPG` : 'N/A'}
+                      </td>
                     </tr>
                     <tr>
-                      <td className={styles['rank-cell']}>#5</td>
-                      <td className={styles['stat-name-cell']}>Touchdowns</td>
-                      <td className={styles['stat-value-cell']}>48</td>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passTdFor', 'desc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Passing Touchdowns</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.passTdFor || 'N/A'}
+                      </td>
                     </tr>
                     <tr>
-                      <td className={styles['rank-cell']}>#8</td>
-                      <td className={styles['stat-name-cell']}>Field Goals</td>
-                      <td className={styles['stat-value-cell']}>28</td>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushTdFor', 'desc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Rushing Touchdowns</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.rushTdFor || 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'turnovers', 'asc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Turnovers</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.turnovers || 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'penaltiesFor', 'asc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Penalties</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.penaltiesFor || 'N/A'}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -418,24 +620,36 @@ function SeasonSummaryVisualization() {
               <div className={styles['main-stats-grid']}>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#3</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'totalYardsAgainst', 'asc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Total Defense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>298.4 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.totalYardsAgainst ? `${Math.round(teamInfo.totalYardsAgainst / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#8</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passYardsAgainst', 'asc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Passing Defense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>210.6 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.passYardsAgainst ? `${Math.round(teamInfo.passYardsAgainst / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
                 <div className={styles['main-stat-item']}>
                   <div className={styles['main-stat-header']}>
-                    <div className={styles['main-stat-rank']}>#1</div>
+                    <div className={styles['main-stat-rank']}>
+                      {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushYardsAgainst', 'asc')}` : '#N/A'}
+                    </div>
                     <div className={styles['main-stat-name']}>Rushing Defense</div>
                   </div>
-                  <div className={styles['main-stat-value']}>87.8 YPG</div>
+                  <div className={styles['main-stat-value']}>
+                    {teamInfo?.rushYardsAgainst ? `${Math.round(teamInfo.rushYardsAgainst / 17)} YPG` : 'N/A'}
+                  </div>
                 </div>
               </div>
 
@@ -444,34 +658,49 @@ function SeasonSummaryVisualization() {
                 <table className={styles['misc-stats-table']}>
                   <tbody>
                     <tr>
-                      <td className={styles['rank-cell']}>#2</td>
-                      <td className={styles['stat-name-cell']}>Red Zone Defense</td>
-                      <td className={styles['stat-value-cell']}>47.1%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#6</td>
-                      <td className={styles['stat-name-cell']}>3rd Down Defense</td>
-                      <td className={styles['stat-value-cell']}>35.8%</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#5</td>
-                      <td className={styles['stat-name-cell']}>Sacks</td>
-                      <td className={styles['stat-value-cell']}>48</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#4</td>
-                      <td className={styles['stat-name-cell']}>Interceptions</td>
-                      <td className={styles['stat-value-cell']}>18</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#7</td>
-                      <td className={styles['stat-name-cell']}>Fumble Recoveries</td>
-                      <td className={styles['stat-value-cell']}>8</td>
-                    </tr>
-                    <tr>
-                      <td className={styles['rank-cell']}>#3</td>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'pointsAgainst', 'asc')}` : '#N/A'}
+                      </td>
                       <td className={styles['stat-name-cell']}>Points Allowed</td>
-                      <td className={styles['stat-value-cell']}>17.2 PPG</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.pointsAgainst ? `${Math.round(teamInfo.pointsAgainst / 17)} PPG` : 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passTdAgainst', 'asc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Passing TDs Allowed</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.passTdAgainst || 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushTdAgainst', 'asc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Rushing TDs Allowed</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.rushTdAgainst || 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passInts', 'desc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Interceptions</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.passInts || 'N/A'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={styles['rank-cell']}>
+                        {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'forcedTurnovers', 'desc')}` : '#N/A'}
+                      </td>
+                      <td className={styles['stat-name-cell']}>Forced Turnovers</td>
+                      <td className={styles['stat-value-cell']}>
+                        {teamInfo?.forcedTurnovers || 'N/A'}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -493,9 +722,19 @@ function SeasonSummaryVisualization() {
                   players={processedPlayerStats.quarterbacks} 
                   columns={[
                     { key: 'playerId', label: 'Player' },
-                    { key: 'passYds', label: 'Pass YDS' },
+                    { key: 'passCmp', label: 'Cmp/Att' },
+                    { key: 'passYds', label: 'Yards' },
                     { key: 'passTd', label: 'TD' },
-                    { key: 'passInt', label: 'INT' }
+                    { key: 'passInt', label: 'INT' },
+                    { key: 'passRating', label: 'Rating' },
+                    { key: 'passFirstDowns', label: '1st Downs' },
+                    { key: 'passSacked', label: 'Sacks' },
+                    { key: 'passSackedYards', label: 'Sack Yds' },
+                    { key: 'passLong', label: 'Long' },
+                    { key: 'fumblesTotal', label: 'Fumbles' },
+                    { key: 'fumblesLost', label: 'Fumbles Lost' },
+                    { key: 'snapcountsOffense', label: 'Snaps' },
+                    { key: 'snapcountsOffensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -509,10 +748,19 @@ function SeasonSummaryVisualization() {
                   players={processedPlayerStats.runningBacks} 
                   columns={[
                     { key: 'playerId', label: 'Player' },
-                    { key: 'rushYds', label: 'Rush YDS' },
-                    { key: 'rushTd', label: 'Rush TD' },
+                    { key: 'rushYds', label: 'Yards' },
+                    { key: 'rushAtt', label: 'Attempts' },
+                    { key: 'rushYardsPerAttempt', label: 'YPA' },
+                    { key: 'rushTd', label: 'TD' },
+                    { key: 'rushLong', label: 'Long' },
+                    { key: 'rushFirstDowns', label: '1st Downs' },
+                    { key: 'fumblesTotal', label: 'Fumbles' },
+                    { key: 'fumblesLost', label: 'Fumbles Lost' },
                     { key: 'rec', label: 'REC' },
-                    { key: 'recYds', label: 'Rec YDS' }
+                    { key: 'recYds', label: 'Rec YDS' },
+                    { key: 'recTd', label: 'Rec TD' },
+                    { key: 'snapcountsOffense', label: 'Snaps' },
+                    { key: 'snapcountsOffensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -527,10 +775,18 @@ function SeasonSummaryVisualization() {
                   columns={[
                     { key: 'playerId', label: 'Player' },
                     { key: 'position', label: 'Pos' },
-                    { key: 'rec', label: 'REC' },
-                    { key: 'recYds', label: 'YDS' },
+                    { key: 'recYds', label: 'Yards' },
                     { key: 'recTd', label: 'TD' },
-                    { key: 'targets', label: 'TGT' }
+                    { key: 'targets', label: 'Targets' },
+                    { key: 'rec', label: 'REC' },
+                    { key: 'recYardsAfterCatch', label: 'YAC' },
+                    { key: 'recFirstDowns', label: '1st Downs' },
+                    { key: 'recLong', label: 'Long' },
+                    { key: 'recDrops', label: 'Drops' },
+                    { key: 'fumblesTotal', label: 'Fumbles' },
+                    { key: 'fumblesLost', label: 'Fumbles Lost' },
+                    { key: 'snapcountsOffense', label: 'Snaps' },
+                    { key: 'snapcountsOffensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -544,9 +800,21 @@ function SeasonSummaryVisualization() {
                   players={processedPlayerStats.defensiveLine} 
                   columns={[
                     { key: 'playerId', label: 'Player' },
-                    { key: 'sacks', label: 'Sacks' },
+                    { key: 'position', label: 'Pos' },
                     { key: 'tacklesTotal', label: 'Tackles' },
-                    { key: 'tacklesLoss', label: 'TFL' }
+                    { key: 'tacklesSolo', label: 'Solo' },
+                    { key: 'tacklesAssists', label: 'Assists' },
+                    { key: 'tacklesLoss', label: 'TFL' },
+                    { key: 'sacks', label: 'Sacks' },
+                    { key: 'defensivePressures', label: 'Pressures' },
+                    { key: 'defensiveHits', label: 'Hits' },
+                    { key: 'defensiveHurries', label: 'Hurries' },
+                    { key: 'defensivePassesDefended', label: 'PD' },
+                    { key: 'defensiveInterceptions', label: 'INT' },
+                    { key: 'fumblesForced', label: 'FF' },
+                    { key: 'fumblesRecovered', label: 'FR' },
+                    { key: 'snapcountsDefense', label: 'Snaps' },
+                    { key: 'snapcountsDefensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -560,9 +828,21 @@ function SeasonSummaryVisualization() {
                   players={processedPlayerStats.linebackers} 
                   columns={[
                     { key: 'playerId', label: 'Player' },
+                    { key: 'position', label: 'Pos' },
                     { key: 'tacklesTotal', label: 'Tackles' },
+                    { key: 'tacklesSolo', label: 'Solo' },
+                    { key: 'tacklesAssists', label: 'Assists' },
+                    { key: 'tacklesLoss', label: 'TFL' },
                     { key: 'sacks', label: 'Sacks' },
-                    { key: 'defInt', label: 'INT' }
+                    { key: 'defensivePressures', label: 'Pressures' },
+                    { key: 'defensiveHits', label: 'Hits' },
+                    { key: 'defensiveHurries', label: 'Hurries' },
+                    { key: 'defensivePassesDefended', label: 'PD' },
+                    { key: 'defensiveInterceptions', label: 'INT' },
+                    { key: 'fumblesForced', label: 'FF' },
+                    { key: 'fumblesRecovered', label: 'FR' },
+                    { key: 'snapcountsDefense', label: 'Snaps' },
+                    { key: 'snapcountsDefensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -576,9 +856,21 @@ function SeasonSummaryVisualization() {
                   players={processedPlayerStats.defensiveBacks} 
                   columns={[
                     { key: 'playerId', label: 'Player' },
-                    { key: 'defInt', label: 'INT' },
-                    { key: 'passDefended', label: 'PD' },
-                    { key: 'tacklesTotal', label: 'Tackles' }
+                    { key: 'position', label: 'Pos' },
+                    { key: 'tacklesTotal', label: 'Tackles' },
+                    { key: 'tacklesSolo', label: 'Solo' },
+                    { key: 'tacklesAssists', label: 'Assists' },
+                    { key: 'defensiveInterceptions', label: 'INT' },
+                    { key: 'defensivePassesDefended', label: 'PD' },
+                    { key: 'defensiveInterceptionYards', label: 'INT Yds' },
+                    { key: 'defensiveInterceptionTouchdowns', label: 'INT TD' },
+                    { key: 'defensiveInterceptionLong', label: 'INT Long' },
+                    { key: 'fumblesForced', label: 'FF' },
+                    { key: 'fumblesRecovered', label: 'FR' },
+                    { key: 'fumbleRecoveryYards', label: 'FR Yds' },
+                    { key: 'fumbleRecoveryTouchdowns', label: 'FR TD' },
+                    { key: 'snapcountsDefense', label: 'Snaps' },
+                    { key: 'snapcountsDefensePercentage', label: 'Snap %' }
                   ]}
                 />
               </div>
@@ -593,10 +885,23 @@ function SeasonSummaryVisualization() {
                   columns={[
                     { key: 'playerId', label: 'Player' },
                     { key: 'position', label: 'Position' },
-                    { key: 'fgm', label: 'FG' },
-                    { key: 'fga', label: 'FGA' },
-                    { key: 'punt', label: 'Punt' },
-                    { key: 'puntYds', label: 'YDS Avg' }
+                    { key: 'fieldGoalsMade', label: 'FG Made' },
+                    { key: 'fieldGoalsAttempted', label: 'FG Att' },
+                    { key: 'fieldGoalPercentage', label: 'FG %' },
+                    { key: 'fieldGoalLong', label: 'FG Long' },
+                    { key: 'extraPointsMade', label: 'XP Made' },
+                    { key: 'extraPointsAttempted', label: 'XP Att' },
+                    { key: 'punts', label: 'Punts' },
+                    { key: 'puntYards', label: 'Punt Yds' },
+                    { key: 'puntAverage', label: 'Punt Avg' },
+                    { key: 'puntLong', label: 'Punt Long' },
+                    { key: 'puntInside20', label: 'Inside 20' },
+                    { key: 'kickReturns', label: 'KR' },
+                    { key: 'kickReturnYards', label: 'KR Yds' },
+                    { key: 'kickReturnTouchdowns', label: 'KR TD' },
+                    { key: 'puntReturns', label: 'PR' },
+                    { key: 'puntReturnYards', label: 'PR Yds' },
+                    { key: 'puntReturnTouchdowns', label: 'PR TD' }
                   ]}
                 />
               </div>

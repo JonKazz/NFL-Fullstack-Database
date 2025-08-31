@@ -1,32 +1,34 @@
 import React from 'react';
 import styles from './DownConversionRates.module.css';
-import { getTeamPrimaryColor } from '../../utils';
+import { TEAM_MAP } from '../../utils';
 
-function DownConversionRates({ homeStats, awayStats }) {
+function DownConversionRates({ homeStats, awayStats, homeTeamColor, awayTeamColor }) {
   // Third down calculations
   const thirdDownMaxAttempts = Math.max(homeStats.thirdDownAttempts || 0, awayStats.thirdDownAttempts || 0);
   const thirdDownHomeBarWidth = thirdDownMaxAttempts > 0 ? ((homeStats.thirdDownAttempts || 0) / thirdDownMaxAttempts * 100) : 0;
   const thirdDownAwayBarWidth = thirdDownMaxAttempts > 0 ? ((awayStats.thirdDownAttempts || 0) / thirdDownMaxAttempts * 100) : 0;
 
   // Fourth down calculations
-  const fourthDownMaxAttempts = Math.max(homeStats.fourthDownAttempts || 0, awayStats.fourthDownAttempts || 0);
+  const fourthDownMaxAttempts = Math.max(homeStats.thirdDownAttempts || 0, awayStats.thirdDownAttempts || 0);
   const fourthDownHomeBarWidth = fourthDownMaxAttempts > 0 ? ((homeStats.fourthDownAttempts || 0) / fourthDownMaxAttempts * 100) : 0;
   const fourthDownAwayBarWidth = fourthDownMaxAttempts > 0 ? ((awayStats.fourthDownAttempts || 0) / fourthDownMaxAttempts * 100) : 0;
 
   return (
-    <>
+    <div className={styles['visual-comparison']}>
+      <h3>Down Conversion Rates</h3>
+      
       {/* Third Down Conversion Rate */}
-      <div className={`${styles['visual-comparison']} ${styles['third-down-bars']}`}>
-        <h3>Third Down Conversion Rate</h3>
+      <div className={styles['conversion-section']}>
+        <h4>Third Down</h4>
         <div className={styles['chart-container']}>
           <div className={styles['stat-comparison']}>
-            <div className={styles['stat-name']}>{homeStats.id.teamId}</div>
+            <div className={styles['stat-name']}>{TEAM_MAP[homeStats.id.teamId]?.city || homeStats.id.teamId}</div>
             <div className={styles['stat-bars']}>
               <div 
                 className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
                 data-team-id={homeStats.id.teamId}
                 style={{ 
-                  '--team-primary-color': getTeamPrimaryColor(homeStats.id.teamId),
+                  '--team-primary-color': homeTeamColor,
                   width: `${thirdDownHomeBarWidth}%`
                 }}
               >
@@ -54,13 +56,13 @@ function DownConversionRates({ homeStats, awayStats }) {
           </div>
           
           <div className={styles['stat-comparison']}>
-            <div className={styles['stat-name']}>{awayStats.id.teamId}</div>
+            <div className={styles['stat-name']}>{TEAM_MAP[awayStats.id.teamId]?.city || awayStats.id.teamId}</div>
             <div className={styles['stat-bars']}>
               <div 
                 className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
                 data-team-id={awayStats.id.teamId}
                 style={{ 
-                  '--team-primary-color': getTeamPrimaryColor(awayStats.id.teamId),
+                  '--team-primary-color': awayTeamColor,
                   width: `${thirdDownAwayBarWidth}%`
                 }}
               >
@@ -90,18 +92,18 @@ function DownConversionRates({ homeStats, awayStats }) {
       </div>
 
       {/* Fourth Down Conversion Rate */}
-      <div className={`${styles['visual-comparison']} ${styles['fourth-down-bars']}`}>
-        <h3>Fourth Down Conversion Rate</h3>
+      <div className={styles['conversion-section']}>
+        <h4>Fourth Down</h4>
         <div className={styles['chart-container']}>
           <div className={styles['stat-comparison']}>
-            <div className={styles['stat-name']}>{homeStats.id.teamId}</div>
+            <div className={styles['stat-name']}>{TEAM_MAP[homeStats.id.teamId]?.city || homeStats.id.teamId}</div>
             <div className={styles['stat-bars']}>
               {(homeStats.fourthDownAttempts || 0) > 0 ? (
                 <div 
                   className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
                   data-team-id={homeStats.id.teamId}
                   style={{ 
-                    '--team-primary-color': getTeamPrimaryColor(homeStats.id.teamId),
+                    '--team-primary-color': homeTeamColor,
                     width: `${fourthDownHomeBarWidth}%`
                   }}
                 >
@@ -132,14 +134,14 @@ function DownConversionRates({ homeStats, awayStats }) {
           </div>
           
           <div className={styles['stat-comparison']}>
-            <div className={styles['stat-name']}>{awayStats.id.teamId}</div>
+            <div className={styles['stat-name']}>{TEAM_MAP[awayStats.id.teamId]?.city || awayStats.id.teamId}</div>
             <div className={styles['stat-bars']}>
               {(awayStats.fourthDownAttempts || 0) > 0 ? (
                 <div 
                   className={`${styles['bar-row']} ${styles['team-bar-bg']}`} 
                   data-team-id={awayStats.id.teamId}
                   style={{ 
-                    '--team-primary-color': getTeamPrimaryColor(awayStats.id.teamId),
+                    '--team-primary-color': awayTeamColor,
                     width: `${fourthDownAwayBarWidth}%`
                   }}
                 >
@@ -170,7 +172,7 @@ function DownConversionRates({ homeStats, awayStats }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -17,6 +17,15 @@ export async function fetchTeamsBySeason(year) {
   return response.json();
 }
 
+// Fetch all teams' stats for a specific season (for ranking calculations)
+export async function fetchTeamsStatsBySeason(year) {
+  const response = await fetch(`http://localhost:8080/api/teams/season/${year}/stats`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch teams stats by season (api)');
+  }
+  return response.json();
+}
+
 // Fetch available seasons from the database
 export async function fetchAvailableSeasons() {
   const response = await fetch(`http://localhost:8080/api/season-info/seasons`);
@@ -79,6 +88,24 @@ export async function fetchSeasonInfo(year) {
   const response = await fetch(`http://localhost:8080/api/season-info/${year}`);
   if (!response.ok) {
     throw new Error('Failed to fetch season info (api)');
+  }
+  return response.json();
+}
+
+// Fetch drive data for a specific game
+export async function fetchGameDrives(gameId) {
+  const response = await fetch(`http://localhost:8080/api/game-drives/game?gameId=${gameId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch game drives (api)');
+  }
+  return response.json();
+}
+
+// Fetch player profile by player ID
+export async function fetchPlayerProfile(playerId) {
+  const response = await fetch(`http://localhost:8080/api/player-profiles/player?playerId=${playerId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player profile (api)');
   }
   return response.json();
 }
