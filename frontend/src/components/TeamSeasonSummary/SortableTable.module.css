@@ -1,0 +1,101 @@
+/* Position Table Styles */
+.position-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #2a2a2a;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  margin-top: 15px;
+  border: 1px solid #333333;
+  min-width: 800px; /* Ensure minimum width for all columns */
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.table-header {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 6px 4px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 10px;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #333333;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.table-header:hover {
+  background: #1a1a1a;
+  cursor: pointer;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.table-header:active {
+  background: #262626;
+  transform: translateY(0);
+}
+
+.table-row {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #333333;
+}
+
+.table-row:hover {
+  background: #3a3a3a;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:nth-child(even) {
+  background: #323232;
+}
+
+.table-row:nth-child(even):hover {
+  background: #3a3a3a;
+}
+
+.player-name-cell {
+  padding: 8px 6px;
+  color: #f9fafb;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1px solid #333333;
+}
+
+.player-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.player-link:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.stat-cell {
+  padding: 8px 6px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-align: center;
+  border-right: 1px solid #333333;
+  white-space: nowrap;
+}
+
+.stat-cell:last-child {
+  border-right: none;
+}

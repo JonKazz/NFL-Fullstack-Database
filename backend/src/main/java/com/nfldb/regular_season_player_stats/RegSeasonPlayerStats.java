@@ -1,8 +1,8 @@
 package com.nfldb.regular_season_player_stats;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +13,18 @@ import lombok.Setter;
 @Table(name = "regular_season_player_stats")
 public class RegSeasonPlayerStats {
 
-    @EmbeddedId
-    private RegSeasonPlayerStatsId id;
+    @Id
+    @Column(name = "id")
+    private String id;
+
+    @Column(name = "player_id")
+    private String playerId;
+
+    @Column(name = "season_year")
+    private Integer seasonYear;
+
+    @Column(name = "team_id")
+    private String teamId;
 
     @Column(name = "position")
     private String position;
@@ -32,6 +42,8 @@ public class RegSeasonPlayerStats {
     private Integer passingTouchdowns;
     @Column(name = "passing_interceptions")
     private Integer passingInterceptions;
+    @Column(name = "passer_rating")
+    private Double passerRating;
 
     // Rushing stats
     @Column(name = "rushing_attempts")

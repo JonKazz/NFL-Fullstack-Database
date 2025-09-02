@@ -1,0 +1,253 @@
+.section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.game-card {
+  background: #3a3a3a;
+  border-radius: 6px;
+  padding: 8px;
+  border: 2px solid var(--game-result-color);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.game-card.win {
+  --game-result-color: #10b981;
+}
+
+.game-card.loss {
+  --game-result-color: #ef4444;
+}
+
+/* Subtle hover colors */
+.game-card.win:hover {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.game-card.loss:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.game-card.playoff {
+  /* Same grey background as regular season games */
+}
+
+/* Create a 4-column grid specifically for playoff games */
+.games-grid:has(.game-card.playoff) {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Ensure win/loss colors take precedence over playoff colors */
+.game-card.playoff.win {
+  --game-result-color: #10b981;
+}
+
+.game-card.playoff.loss {
+  --game-result-color: #ef4444;
+}
+
+/* Subtle hover colors for playoff games */
+.game-card.playoff.win:hover {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.game-card.playoff.loss:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.week.playoff {
+  background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.game-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.week-date-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.game-result {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-align: center;
+  min-width: 16px;
+}
+
+.game-card.win .game-result {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.game-card.loss .game-result {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.game-card.playoff .game-result {
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+}
+
+/* Override playoff game result colors with win/loss colors */
+.game-card.playoff.win .game-result {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.game-card.playoff.loss .game-result {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.week {
+  font-size: 0.75rem;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Style playoff game text the same as week numbers */
+.playoff-game-text {
+  font-size: 0.75rem;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.game-date {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.game-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.team-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.team-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #f9fafb;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.team-record {
+  font-size: 0.6rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.game-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 24px;
+  flex-shrink: 0;
+}
+
+.vs-indicator {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.scores-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.team-score {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.score-separator {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.winner-text {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.winner-score {
+  font-weight: 900;
+  color: #fcd34d;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 768px) {
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+}

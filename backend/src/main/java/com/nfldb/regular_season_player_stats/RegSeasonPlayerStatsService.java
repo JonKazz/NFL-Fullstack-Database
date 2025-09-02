@@ -1,6 +1,7 @@
 package com.nfldb.regular_season_player_stats;
 
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Comparator;
@@ -14,24 +15,24 @@ public class RegSeasonPlayerStatsService {
     }
 
     public RegSeasonPlayerStats getPlayerSeason(String playerId, Integer seasonYear) {
-        return repository.findByIdPlayerIdAndIdSeasonYear(playerId, seasonYear);
+        return repository.findByPlayerIdAndSeasonYear(playerId, seasonYear);
     } 
 
     public List<RegSeasonPlayerStats> getTeamBySeason(Integer seasonYear, String teamId) {
-        return repository.findByIdTeamIdAndIdSeasonYear(teamId, seasonYear);
+        return repository.findByTeamIdAndSeasonYear(teamId, seasonYear);
     }
     
     public List<Integer> getPlayerSeasons(String playerId) {
-        List<RegSeasonPlayerStats> playerSeasons = repository.findByIdPlayerId(playerId);
+        List<RegSeasonPlayerStats> playerSeasons = repository.findByPlayerId(playerId);
         
         return playerSeasons.stream()
-            .map(season -> season.getId().getSeasonYear())
+            .map(RegSeasonPlayerStats::getSeasonYear)
             .distinct()
             .sorted(Comparator.reverseOrder()) // Most recent first
             .collect(Collectors.toList());
     }
     
     public List<RegSeasonPlayerStats> getAllPlayersBySeason(Integer seasonYear) {
-        return repository.findByIdSeasonYear(seasonYear);
+        return repository.findBySeasonYear(seasonYear);
     }
 }
