@@ -1,7 +1,7 @@
 services:
   - type: web
     name: nfl-backend
-    env: java
+    runtime: java
     plan: free
     region: us-west-2
     rootDir: backend
