@@ -3,7 +3,6 @@ services:
     name: nfl-backend
     env: docker
     plan: free
-    region: us-west-2
     rootDir: backend
     dockerfilePath: ./Dockerfile
     buildCommand: ./mvnw clean package -DskipTests
