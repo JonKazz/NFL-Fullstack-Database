@@ -13,4 +13,4 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: production
       - key: JAVA_HOME
-        value: /opt/render/project/.jdk
+        value: /usr/lib/jvm/java-17-openjdk-amd64
