@@ -6,6 +6,3 @@ services:
     rootDir: backend
     dockerfilePath: ./Dockerfile
     buildCommand: ./mvnw clean package -DskipTests
-    envVars:
-      - key: SPRING_PROFILES_ACTIVE
-        value: production
