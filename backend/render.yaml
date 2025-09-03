@@ -12,7 +12,5 @@ services:
           property: connectionString
       - key: SPRING_PROFILES_ACTIVE
         value: production
-      - key: PORT
-        value: 10000
       - key: JAVA_HOME
         value: /opt/render/project/.jdk
