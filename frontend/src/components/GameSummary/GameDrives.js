@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchGameDrives } from '../../api/fetches';
 import styles from './GameDrives.module.css';
 
 function GameDrives({ gameId, teams, gameInfo }) {
@@ -10,13 +11,7 @@ function GameDrives({ gameId, teams, gameInfo }) {
     async function fetchDrives() {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/api/game-drives/game?gameId=${gameId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch drive data');
-        }
-        
-        const drivesData = await response.json();
+        const drivesData = await fetchGameDrives(gameId);
         
         // Helper function to convert time string to seconds for sorting
         const timeStringToSecondsForSort = (timeStr) => {

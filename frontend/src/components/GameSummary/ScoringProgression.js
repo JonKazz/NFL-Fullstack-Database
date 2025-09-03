@@ -329,7 +329,7 @@ function ScoringProgression({
               className={styles[cssClass]}
             />
             <image
-              href="/icons/td.png"
+              href={getIconPath('Touchdown')}
               x={position.x - 20}
               y={opposingPosition.circleY - 20}
               width="40"
