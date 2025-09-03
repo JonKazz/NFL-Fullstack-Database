@@ -1,10 +1,11 @@
 services:
   - type: web
     name: nfl-backend
-    runtime: java
+    env: docker
     plan: free
     region: us-west-2
     rootDir: backend
+    dockerfilePath: ./Dockerfile
     buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/quickstart-0.0.1-SNAPSHOT.jar
     envVars:
