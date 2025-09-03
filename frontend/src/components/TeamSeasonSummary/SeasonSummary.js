@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
 import { fetchTeamSeasonGamesInfo, fetchTeam, fetchTeamPlayerStats, fetchTeamsBySeason } from '../../api/fetches';
 import { TEAM_MAP, getTeamPrimaryColor } from '../../utils';
@@ -110,9 +110,7 @@ function SeasonSummaryVisualization() {
   if (error) return <p className={styles['season-summary-error']}>{error}</p>;
   if (!teamInfo || !games) return <p>No data available</p>;
 
-  const { logo, wins, losses, division, divisionRank, playoffs, coach, offCoordinator,
-          defCoordinator } = teamInfo;
-  const teamName = TEAM_MAP[teamId]?.name;
+  // Team info is available for use in child components
 
   // Process player stats
 

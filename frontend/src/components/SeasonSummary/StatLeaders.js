@@ -46,10 +46,7 @@ function StatLeaders({ year }) {
     );
   };
 
-  // Helper function to get player name
-  const getPlayerName = (player) => {
-    return player.playerName || player.playerId || 'N/A';
-  };
+
 
   // Helper function to get team city
   const getTeamCity = (teamId) => {

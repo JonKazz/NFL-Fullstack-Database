@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fetchAvailableSeasons } from '../../api/fetches';
 import styles from './Navigation.module.css';
 
 function Navigation() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [seasons, setSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
 

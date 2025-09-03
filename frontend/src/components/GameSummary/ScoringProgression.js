@@ -163,7 +163,6 @@ function ScoringProgression({
   
   // Ensure minimum chart height and add padding for logos and labels
   const chartHeight = 400; // Fixed height for consistent Y-axis
-  const chartPadding = 0; // Reduced padding for logos, labels, and quarter lines
   const fixedMaxScore = Math.max(finalHomeScore, finalAwayScore) + 3; // Dynamic max based on winning team's score
 
   // Helper function to get icon path based on endEvent

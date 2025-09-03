@@ -10,7 +10,6 @@ import TeamStatLeaders from './TeamStatLeaders';
 
 function SeasonSummary() {
   const { year } = useParams();
-  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [playoffs, setPlayoffs] = useState([]);
   const [awards, setAwards] = useState([]);
