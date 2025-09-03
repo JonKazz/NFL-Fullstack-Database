@@ -1,44 +1,56 @@
-# NFL DataCollector
+# NFL StatHead - Full-Stack Database Application
 
-A Python-based data collection system for NFL statistics and game data.
+A comprehensive full-stack web application for exploring NFL statistics, game data, and player performance across multiple seasons.
 
-## Overview
+## 🌐 Live Application
 
-This repository contains the data collection components for the NFL Database project, including web scrapers, data transformation utilities, and database loading scripts.
+**Website:** [www.nfl-stathead.com](https://www.nfl-stathead.com)
 
-## Components
+## 🏗️ Architecture
 
-- **Scrapers**: Web scraping modules for collecting NFL data from various sources
-- **Data Processing**: Transformation and cleaning utilities for collected data
-- **Database Loading**: Scripts for loading processed data into the database
-- **SQL Queries**: Database schema and query files
-- **Tests**: Unit tests for the data collection system
+### Backend
+- **Framework:** Spring Boot (Java 17)
+- **Database:** PostgreSQL (Supabase)
+- **Deployment:** Render (Docker)
+- **API:** RESTful endpoints with CORS support
 
-## Setup
+### Frontend
+- **Framework:** React 18
+- **Styling:** CSS Modules
+- **Deployment:** Vercel
+- **Domain:** nfl-stathead.com
 
-1. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 📊 Features
 
-2. Configure the database connection in `config.py`
+### Game Information
+- **Game Details:** Date, teams, scores, venue information
+- **Game Statistics:** Team performance metrics, player performance metrics
+- **Drive Analytics:** Visual timeline of game events with detailed breakdown of each drive
 
-3. Run the data collection:
-   ```bash
-   python main.py
-   ```
+### Player Statistics
+- **Game-by-Game Stats:** Individual player performance for each game
+- **Season Summaries:** Aggregated statistics across entire seasons
+- **Position-Specific Metrics:** Tailored statistics for different player positions
+- **Career Tracking:** Historical performance data across multiple seasons
 
-## Structure
+### Team Data
+- **Season Records:** Win-loss records, division standings
+- **Team Statistics:** Offensive and defensive team metrics
+- **Roster Information:** Player rosters and team composition
 
-- `scrapers/` - Web scraping modules
-- `nfl_datacollector/` - Core data collection utilities
-- `sql_queries/` - Database schema and queries
-- `tests/` - Unit tests
-- `load.py` - Database loading scripts
-- `main.py` - Main execution script
+### Season Overview
+- **Standings:** Division and conference standings
+- **Playoff Brackets:** Postseason tournament visualization
+- **Award Winners:** Season-end awards and recognition
+- **Statistical Leaders:** Top performers in various categories
 
-## Requirements
 
-- Python 3.8+
-- Required packages listed in `requirements.txt`
+## 🛠️ Tech Stack
 
+- **Backend:** Spring Boot (Java 17) + PostgreSQL (Supabase)
+- **Frontend:** React 18 + CSS Modules
+- **Deployment:** Render (Backend) + Vercel (Frontend)
+
+---
+
+**Built with ❤️ for NFL fans and data enthusiasts**
