@@ -12,7 +12,7 @@ function PlayerPage() {
   const [profileExists, setProfileExists] = useState(true);
   const [selectedYear, setSelectedYear] = useState(null); // Will be set by YearSelector
   const [gameStats, setGameStats] = useState([]);
-  const [seasonSummary, setSeasonSummary] = useState(null);
+  const [seasonStats, setSeasonSeasonStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,11 +53,11 @@ function PlayerPage() {
         
         // Fetch season summary
         try {
-          const summary = await fetchPlayerSeasonStats(playerId, selectedYear);
-          setSeasonSummary(summary);
-        } catch (summaryErr) {
-          console.warn('Could not fetch season summary:', summaryErr);
-          setSeasonSummary(null);
+          const seasonStats = await fetchPlayerSeasonStats(playerId, selectedYear);
+          setSeasonSeasonStats(seasonStats);
+        } catch (seasonStatsErr) {
+          console.warn('Could not fetch season summary:', seasonStatsErr);
+          setSeasonSeasonStats(null);
         }
       } catch (err) {
         console.error('Error fetching player stats:', err);
@@ -113,7 +113,7 @@ function PlayerPage() {
             playerId={playerId} 
             selectedYear={selectedYear}
             gameStats={gameStats}
-            seasonSummary={seasonSummary}
+            seasonStats={seasonStats}
             onYearChange={handleYearChange}
           />
         </div>

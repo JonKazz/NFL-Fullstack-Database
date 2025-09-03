@@ -22,7 +22,7 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     return `#${darkR.toString(16).padStart(2, '0')}${darkG.toString(16).padStart(2, '0')}${darkB.toString(16).padStart(2, '0')}`;
   };
 
-function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, onYearChange }) {
+  function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonStats, onYearChange }) {
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [availableSeasons, setAvailableSeasons] = useState([]);
 
@@ -657,7 +657,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     let losses = 0;
     
     gameStats.forEach(game => {
-      if (game.gameInfo.winningTeamId === game.playerStats.teamId) {
+      if (game.gameInfo.winningTeamId === game.playerStats.teamId && game.gameInfo.playoffGame === null) {
         wins++;
       } else {
         losses++;
@@ -669,7 +669,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build offensive summary row
   const buildOffensiveSummaryRow = () => {
-    if (!seasonSummary) return null;
+    if (!seasonStats) return null;
     
     const summary = ['SEASON TOTAL'];
     
@@ -678,36 +678,36 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     if (statCategories.passing) {
       summary.push(
-        formatStat(seasonSummary.totalPassCompletions),
-        formatStat(seasonSummary.totalPassAttempts),
-        formatStat(seasonSummary.totalPassYards),
-        formatStat(seasonSummary.totalPassTouchdowns),
-        formatStat(seasonSummary.totalPassInterceptions),
-        formatStat(seasonSummary.avgPassRating)
+        formatStat(seasonStats.totalPassCompletions),
+        formatStat(seasonStats.totalPassAttempts),
+        formatStat(seasonStats.totalPassYards),
+        formatStat(seasonStats.totalPassTouchdowns),
+        formatStat(seasonStats.totalPassInterceptions),
+        formatStat(seasonStats.avgPassRating)
       );
     }
     
     if (statCategories.rushing) {
       summary.push(
-        formatStat(seasonSummary.totalRushAttempts),
-        formatStat(seasonSummary.totalRushYards),
-        formatStat(seasonSummary.totalRushTouchdowns)
+        formatStat(seasonStats.totalRushAttempts),
+        formatStat(seasonStats.totalRushYards),
+        formatStat(seasonStats.totalRushTouchdowns)
       );
     }
     
     if (statCategories.receiving) {
       summary.push(
-        formatStat(seasonSummary.totalReceivingTargets),
-        formatStat(seasonSummary.totalReceivingReceptions),
-        formatStat(seasonSummary.totalReceivingYards),
-        formatStat(seasonSummary.totalReceivingTouchdowns)
+        formatStat(seasonStats.totalReceivingTargets),
+        formatStat(seasonStats.totalReceivingReceptions),
+        formatStat(seasonStats.totalReceivingYards),
+        formatStat(seasonStats.totalReceivingTouchdowns)
       );
     }
     
     if (statCategories.fumbles) {
       summary.push(
-        formatStat(seasonSummary.totalFumblesTotal),
-        formatStat(seasonSummary.totalFumblesLost)
+        formatStat(seasonStats.totalFumblesTotal),
+        formatStat(seasonStats.totalFumblesLost)
       );
     }
     
@@ -716,7 +716,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build defensive summary row
   const buildDefensiveSummaryRow = () => {
-    if (!seasonSummary) return null;
+    if (!seasonStats) return null;
     
     const summary = ['SEASON TOTAL'];
     
@@ -725,12 +725,12 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     if (statCategories.defensive) {
       summary.push(
-        formatStat(seasonSummary.totalDefensiveTacklesCombined),
-        formatStat(seasonSummary.totalDefensiveTacklesSolo),
-        formatStat(seasonSummary.totalDefensiveTacklesAssists),
-        formatStat(seasonSummary.totalDefensiveSacks),
-        formatStat(seasonSummary.totalDefensiveInterceptions),
-        formatStat(seasonSummary.totalDefensivePassesDefended)
+        formatStat(seasonStats.totalDefensiveTacklesCombined),
+        formatStat(seasonStats.totalDefensiveTacklesSolo),
+        formatStat(seasonStats.totalDefensiveTacklesAssists),
+        formatStat(seasonStats.totalDefensiveSacks),
+        formatStat(seasonStats.totalDefensiveInterceptions),
+        formatStat(seasonStats.totalDefensivePassesDefended)
       );
     }
     
@@ -739,7 +739,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build special teams summary row
   const buildSpecialTeamsSummaryRow = () => {
-    if (!seasonSummary) return null;
+    if (!seasonStats) return null;
     
     const summary = ['SEASON TOTAL'];
     
@@ -748,28 +748,28 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     
     if (statCategories.kicking) {
       summary.push(
-        formatStat(seasonSummary.totalFieldGoalsMade),
-        formatStat(seasonSummary.totalFieldGoalsAttempted),
-        formatStat(seasonSummary.totalExtraPointsMade),
-        formatStat(seasonSummary.totalExtraPointsAttempted)
+        formatStat(seasonStats.totalFieldGoalsMade),
+        formatStat(seasonStats.totalFieldGoalsAttempted),
+        formatStat(seasonStats.totalExtraPointsMade),
+        formatStat(seasonStats.totalExtraPointsAttempted)
       );
     }
     
     if (statCategories.punting) {
       summary.push(
-        formatStat(seasonSummary.totalPunts),
-        formatStat(seasonSummary.totalPuntYards)
+        formatStat(seasonStats.totalPunts),
+        formatStat(seasonStats.totalPuntYards)
       );
     }
     
     if (statCategories.returns) {
       summary.push(
-        formatStat(seasonSummary.totalKickReturns),
-        formatStat(seasonSummary.totalKickReturnYards),
-        formatStat(seasonSummary.totalKickReturnTouchdowns),
-        formatStat(seasonSummary.totalPuntReturns),
-        formatStat(seasonSummary.totalPuntReturnYards),
-        formatStat(seasonSummary.totalPuntReturnTouchdowns)
+        formatStat(seasonStats.totalKickReturns),
+        formatStat(seasonStats.totalKickReturnYards),
+        formatStat(seasonStats.totalKickReturnTouchdowns),
+        formatStat(seasonStats.totalPuntReturns),
+        formatStat(seasonStats.totalPuntReturnYards),
+        formatStat(seasonStats.totalPuntReturnTouchdowns)
       );
     }
     
