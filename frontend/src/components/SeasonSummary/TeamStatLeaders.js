@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
-import { fetchTeamsStatsBySeason } from '../../api/fetches';
+import { fetchTeamsBySeason } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 
 function TeamStatLeaders({ year }) {
@@ -15,7 +15,7 @@ function TeamStatLeaders({ year }) {
 
       try {
         setLoading(true);
-        const stats = await fetchTeamsStatsBySeason(year);
+        const stats = await fetchTeamsBySeason(year);
         if (stats && Array.isArray(stats)) {
           setTeamStats(stats);
         }

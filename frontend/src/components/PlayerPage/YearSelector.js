@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './YearSelector.module.css';
+import { fetchPlayerAvailableSeasons } from '../../api/fetches';
 
 function YearSelector({ playerId, selectedYear, onYearChange }) {
   const [availableSeasons, setAvailableSeasons] = useState([]);
@@ -7,22 +8,15 @@ function YearSelector({ playerId, selectedYear, onYearChange }) {
 
   // Fetch available seasons for this player
   useEffect(() => {
-    async function fetchAvailableSeasons() {
+    async function loadAvailableSeasons() {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/api/season-stats/player/${playerId}/seasons`);
+        const seasons = await fetchPlayerAvailableSeasons(playerId);
+        setAvailableSeasons(seasons);
         
-        if (response.ok) {
-          const seasons = await response.json();
-          setAvailableSeasons(seasons);
-          
-          // Set default to most recent season if no year is selected
-          if (seasons.length > 0 && !selectedYear) {
-            onYearChange(seasons[0]);
-          }
-        } else {
-          console.error('Failed to fetch available seasons');
-          setAvailableSeasons([]);
+        // Set default to most recent season if no year is selected
+        if (seasons.length > 0 && !selectedYear) {
+          onYearChange(seasons[0]);
         }
       } catch (error) {
         console.error('Error fetching available seasons:', error);
@@ -33,7 +27,7 @@ function YearSelector({ playerId, selectedYear, onYearChange }) {
     }
 
     if (playerId) {
-      fetchAvailableSeasons();
+      loadAvailableSeasons();
     }
   }, [playerId, selectedYear, onYearChange]);
 

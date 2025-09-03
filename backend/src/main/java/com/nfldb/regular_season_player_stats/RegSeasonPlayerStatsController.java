@@ -23,13 +23,14 @@ public class RegSeasonPlayerStatsController {
         return gamePlayerStatsService.getTeamBySeason(seasonYear, teamId);
     }
     
-    @GetMapping("/player/{playerId}/seasons")
-    public List<Integer> getPlayerSeasons(@PathVariable String playerId) {
-        return gamePlayerStatsService.getPlayerSeasons(playerId);
-    }
     
     @GetMapping("/season")
     public List<RegSeasonPlayerStats> getAllPlayersBySeason(@RequestParam Integer seasonYear) {
         return gamePlayerStatsService.getAllPlayersBySeason(seasonYear);
+    }
+    
+    @GetMapping("/available-seasons")
+    public List<Integer> getPlayerSeasons(@RequestParam String playerId) {
+        return gamePlayerStatsService.getPlayerSeasons(playerId);
     }
 }

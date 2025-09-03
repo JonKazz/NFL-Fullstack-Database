@@ -2,8 +2,8 @@ package com.nfldb.game_player_stats;
 
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,15 +13,19 @@ import lombok.Setter;
 @Table(name = "game_player_stats")
 public class GamePlayerStats {
 
-    // 1. Composite Key (game_id, player_id)
-    @EmbeddedId
-    private GamePlayerStatsId id;
+    // 1. Primary Key
+    @Id
+    @Column(name = "id")
+    private String id;
 
-
+    @Column(name = "game_id")
+    private String gameId;
+    @Column(name = "player_id")
+    private String playerId;
     @Column(name = "team_id")
     private String teamId;
-
-    // Position
+    @Column(name = "player_name")
+    private String playerName;
     @Column(name = "position")
     private String position;
 

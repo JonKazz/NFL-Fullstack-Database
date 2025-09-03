@@ -1,5 +1,9 @@
-// Utility to fetch team info from the backend
-export async function fetchTeamInfo(teamId, year) {
+/*
+------------------------------------------------------------------------------------------------
+SEASON TEAM INFO
+------------------------------------------------------------------------------------------------
+*/
+export async function fetchTeam(teamId, year) {
   const params = new URLSearchParams({ teamId, year });
   const response = await fetch(`http://localhost:8080/api/teams/info?${params}`);
   if (!response.ok) {
@@ -8,7 +12,6 @@ export async function fetchTeamInfo(teamId, year) {
   return response.json();
 }
 
-// Fetch all teams for a specific season
 export async function fetchTeamsBySeason(year) {
   const response = await fetch(`http://localhost:8080/api/teams/season/${year}`);
   if (!response.ok) {
@@ -17,63 +20,79 @@ export async function fetchTeamsBySeason(year) {
   return response.json();
 }
 
-// Fetch all teams' stats for a specific season (for ranking calculations)
-export async function fetchTeamsStatsBySeason(year) {
-  const response = await fetch(`http://localhost:8080/api/teams/season/${year}/stats`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch teams stats by season (api)');
-  }
-  return response.json();
-}
 
-// Fetch available seasons from the database
+
+/*
+------------------------------------------------------------------------------------------------
+SEASON INFO
+------------------------------------------------------------------------------------------------
+*/
 export async function fetchAvailableSeasons() {
-  const response = await fetch(`http://localhost:8080/api/season-info/seasons`);
+  const response = await fetch(`http://localhost:8080/api/season/years-list`);
   if (!response.ok) {
     throw new Error('Failed to fetch available seasons (api)');
   }
   return response.json();
 }
 
-// Fetch playoff games for a specific season
-export async function fetchPlayoffGames(year) {
-  const response = await fetch(`http://localhost:8080/api/game-info/playoffs/${year}`);
+export async function fetchSeasonInfo(year) {
+  const response = await fetch(`http://localhost:8080/api/season/${year}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch season info (api)');
+  }
+  return response.json();
+}
+
+
+
+/*
+------------------------------------------------------------------------------------------------
+GAME INFO
+------------------------------------------------------------------------------------------------
+*/
+export async function fetchPlayoffGamesInfo(seasonYear) {
+  const params = new URLSearchParams({ seasonYear });
+  const response = await fetch(`http://localhost:8080/api/game-info/playoffs?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch playoff games (api)');
   }
   return response.json();
 }
 
-
-export async function fetchGame(gameId) {
+export async function fetchGameInfo(gameId) {
   const params = new URLSearchParams({ gameId });
-  const response = await fetch(`http://localhost:8080/api/games/game?${params}`);
+  const response = await fetch(`http://localhost:8080/api/game-info/game?${params}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch games with stats (api)');
+    throw new Error('Failed to fetch game info (api)');
   }
   return response.json();
 }
 
-export async function fetchFullSeason(teamId, year) {
-  const params = new URLSearchParams({ teamId, seasonYear: year });
-  const response = await fetch(`http://localhost:8080/api/games/fullseason?${params}`);
+export async function fetchTeamSeasonGamesInfo(teamId, seasonYear) {
+  const params = new URLSearchParams({ teamId, seasonYear });
+  const response = await fetch(`http://localhost:8080/api/game-info/fullseason?${params}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch games with stats (api)');
+    throw new Error('Failed to fetch team season games (api)');
   }
   return response.json();
 }
 
-// Fetch player statistics for a team in a season (using new regular_season_player_stats)
-export async function fetchTeamPlayerStats(teamId, year) {
-  const params = new URLSearchParams({ teamId, seasonYear: year });
-  const response = await fetch(`http://localhost:8080/api/season-stats/team?${params}`);
+
+
+/*
+------------------------------------------------------------------------------------------------
+GAME PLAYER STATS
+------------------------------------------------------------------------------------------------
+*/
+export async function fetchPlayerStatsFromGame(gameId) {
+  const params = new URLSearchParams({ gameId });
+  const response = await fetch(`http://localhost:8080/api/game-player-stats/game?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player stats (api)');
   }
   return response.json();
 }
 
-// Fetch individual player stats for a specific game
 export async function fetchPlayerGameStats(gameId, playerId) {
   const params = new URLSearchParams({ gameId, playerId });
   const response = await fetch(`http://localhost:8080/api/game-player-stats/player?${params}`);
@@ -83,16 +102,80 @@ export async function fetchPlayerGameStats(gameId, playerId) {
   return response.json();
 }
 
-// Fetch season information including awards and stat leaders
-export async function fetchSeasonInfo(year) {
-  const response = await fetch(`http://localhost:8080/api/season-info/${year}`);
+export async function fetchPlayerStatsBySeason(playerId, seasonYear) {
+  const params = new URLSearchParams({ playerId, seasonYear });
+  const response = await fetch(`http://localhost:8080/api/game-player-stats/season?${params}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch season info (api)');
+    throw new Error('Failed to fetch player stats by season (api)');
   }
   return response.json();
 }
 
-// Fetch drive data for a specific game
+
+
+/*
+------------------------------------------------------------------------------------------------
+GAME TEAM STATS
+------------------------------------------------------------------------------------------------
+*/
+export async function fetchGameTeamStats(gameId) {
+  const params = new URLSearchParams({ gameId });
+  const response = await fetch(`http://localhost:8080/api/game-team-stats/game?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch game stats (api)');
+  }
+  return response.json();
+}
+
+
+
+/*
+------------------------------------------------------------------------------------------------
+REGULAR SEASON PLAYERSTATS
+------------------------------------------------------------------------------------------------
+*/
+export async function fetchTeamPlayerStats(teamId, year) {
+  const params = new URLSearchParams({ teamId, seasonYear: year });
+  const response = await fetch(`http://localhost:8080/api/season-stats/team?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player stats (api)');
+  }
+  return response.json();
+}
+
+export async function fetchPlayerSeasonStats(playerId, seasonYear) {
+  const params = new URLSearchParams({ playerId, seasonYear });
+  const response = await fetch(`http://localhost:8080/api/season-stats/player?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player season summary (api)');
+  }
+  return response.json();
+}
+
+export async function fetchSeasonStatsByYear(seasonYear) {
+  const params = new URLSearchParams({ seasonYear });
+  const response = await fetch(`http://localhost:8080/api/season-stats/season?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player season stats (api)');
+  }
+  return response.json();
+}
+
+export async function fetchPlayerAvailableSeasons(playerId) {
+  const params = new URLSearchParams({ playerId });
+  const response = await fetch(`http://localhost:8080/api/season-stats/available-seasons?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player available seasons (api)');
+  }
+  return response.json();
+}
+
+
+/*
+------------------------------------------------------------------------------------------------
+GAME DRIVES
+------------------------------------------------------------------------------------------------
+*/
 export async function fetchGameDrives(gameId) {
   const response = await fetch(`http://localhost:8080/api/game-drives/game?gameId=${gameId}`);
   if (!response.ok) {
@@ -101,11 +184,21 @@ export async function fetchGameDrives(gameId) {
   return response.json();
 }
 
-// Fetch player profile by player ID
+
+
+/*
+------------------------------------------------------------------------------------------------
+PLAYER PROFILES
+------------------------------------------------------------------------------------------------
+*/
 export async function fetchPlayerProfile(playerId) {
-  const response = await fetch(`http://localhost:8080/api/player-profiles/player?playerId=${playerId}`);
+  const response = await fetch(`http://localhost:8080/api/player-profiles/${playerId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player profile (api)');
   }
   return response.json();
 }
+
+
+
+

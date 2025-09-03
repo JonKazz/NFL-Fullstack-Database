@@ -3,7 +3,7 @@ import styles from './PlayerStats.module.css';
 import { Link } from 'react-router-dom';
 import { fetchPlayerProfile } from '../../api/fetches';
 
-function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
+function PlayerStats({ gamePlayerStats, teams }) {
   const [playerProfiles, setPlayerProfiles] = useState({});
   const [sortConfig, setSortConfig] = useState({
     passing: { column: 'passYds', direction: 'desc' },
@@ -52,19 +52,19 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
       if (!gamePlayerStats || gamePlayerStats.length === 0) return;
 
       const profiles = {};
-      const uniquePlayerIds = [...new Set(gamePlayerStats.map(player => 
-        player.id?.playerId || player.playerId
+      const uniquePlayerNames = [...new Set(gamePlayerStats.map(player => 
+        player.playerName
       ))];
 
-      for (const playerId of uniquePlayerIds) {
+      for (const playerName of uniquePlayerNames) {
         try {
-          const profile = await fetchPlayerProfile(playerId);
+          const profile = await fetchPlayerProfile(playerName);
           if (profile && profile.name) {
-            profiles[playerId] = profile.name;
+            profiles[playerName] = profile.name;
           }
         } catch (error) {
-          console.warn(`Failed to fetch profile for player ${playerId}:`, error);
-          profiles[playerId] = playerId; // Fallback to player ID if profile fetch fails
+          console.warn(`Failed to fetch profile for player ${playerName}:`, error);
+          profiles[playerName] = playerName; // Fallback to player name if profile fetch fails
         }
       }
       
@@ -74,9 +74,9 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
     fetchPlayerProfiles();
   }, [gamePlayerStats]);
 
-  // Get player name from profiles or fallback to player ID
-  const getPlayerName = (playerId) => {
-    return playerProfiles[playerId] || playerId;
+  // Get player name from profiles or fallback to player name
+  const getPlayerName = (playerName) => {
+    return playerProfiles[playerName] || playerName;
   };
 
   // Process player stats by position
@@ -92,7 +92,8 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
     players.forEach(player => {
       // Map the backend field names to the expected format
       const mappedPlayer = {
-        playerId: player.id?.playerId || player.playerId,
+        playerName: player.playerName,
+        playerId: player.playerId,
         position: player.position,
         teamId: player.teamId,
         // Passing stats
@@ -202,8 +203,8 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th onClick={() => handleSort('passing', 'playerId')} style={{ cursor: 'pointer' }}>
-                  Player{getSortIndicator('passing', 'playerId')}
+                <th onClick={() => handleSort('passing', 'playerName')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('passing', 'playerName')}
                 </th>
                 <th onClick={() => handleSort('passing', 'teamId')} style={{ cursor: 'pointer' }}>
                   Team{getSortIndicator('passing', 'teamId')}
@@ -261,7 +262,7 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                       to={`/player/${player.playerId}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {player.playerName}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -291,8 +292,8 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th onClick={() => handleSort('rushing', 'playerId')} style={{ cursor: 'pointer' }}>
-                  Player{getSortIndicator('rushing', 'playerId')}
+                <th onClick={() => handleSort('rushing', 'playerName')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('rushing', 'playerName')}
                 </th>
                 <th onClick={() => handleSort('rushing', 'teamId')} style={{ cursor: 'pointer' }}>
                   Team{getSortIndicator('rushing', 'teamId')}
@@ -341,7 +342,7 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                       to={`/player/${player.playerId}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {player.playerName}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -368,8 +369,8 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th onClick={() => handleSort('receiving', 'playerId')} style={{ cursor: 'pointer' }}>
-                  Player{getSortIndicator('receiving', 'playerId')}
+                <th onClick={() => handleSort('receiving', 'playerName')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('receiving', 'playerName')}
                 </th>
                 <th onClick={() => handleSort('receiving', 'teamId')} style={{ cursor: 'pointer' }}>
                   Team{getSortIndicator('receiving', 'teamId')}
@@ -424,7 +425,7 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                       to={`/player/${player.playerId}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {player.playerName}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -468,10 +469,10 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                 <tr key={index}>
                   <td>
                     <Link 
-                      to={`/player/${player.playerId}`} 
+                      to={`/player/${player.playerName}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {getPlayerName(player.playerName)}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -510,7 +511,7 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                       to={`/player/${player.playerId}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {player.playerName}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>
@@ -531,8 +532,8 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
           <table className={styles['player-table']}>
             <thead>
               <tr>
-                <th onClick={() => handleSort('defense', 'playerId')} style={{ cursor: 'pointer' }}>
-                  Player{getSortIndicator('defense', 'playerId')}
+                <th onClick={() => handleSort('defense', 'playerName')} style={{ cursor: 'pointer' }}>
+                  Player{getSortIndicator('defense', 'playerName')}
                 </th>
                 <th onClick={() => handleSort('defense', 'teamId')} style={{ cursor: 'pointer' }}>
                   Team{getSortIndicator('defense', 'teamId')}
@@ -593,7 +594,7 @@ function PlayerStats({ gamePlayerStats, teams, homeTeamId, awayTeamId }) {
                       to={`/player/${player.playerId}`} 
                       className={styles['player-link']}
                     >
-                      {getPlayerName(player.playerId)}
+                      {player.playerName}
                     </Link>
                   </td>
                   <td>{getTeamName(player.teamId)}</td>

@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -20,6 +21,9 @@ public class RegSeasonPlayerStats {
     @Column(name = "player_id")
     private String playerId;
 
+    @Column(name = "player_name")
+    private String playerName;
+
     @Column(name = "season_year")
     private Integer seasonYear;
 
@@ -28,6 +32,7 @@ public class RegSeasonPlayerStats {
 
     @Column(name = "position")
     private String position;
+    
     @Column(name = "games_played")
     private Integer gamesPlayed;
 
@@ -43,7 +48,7 @@ public class RegSeasonPlayerStats {
     @Column(name = "passing_interceptions")
     private Integer passingInterceptions;
     @Column(name = "passer_rating")
-    private Double passerRating;
+    private BigDecimal passerRating;
 
     // Rushing stats
     @Column(name = "rushing_attempts")
@@ -51,7 +56,7 @@ public class RegSeasonPlayerStats {
     @Column(name = "rushing_yards")
     private Integer rushingYards;
     @Column(name = "rushing_yards_per_attempt")
-    private Double rushingYardsPerAttempt;
+    private BigDecimal rushingYardsPerAttempt;
     @Column(name = "rushing_touchdowns")
     private Integer rushingTouchdowns;
 
@@ -69,7 +74,7 @@ public class RegSeasonPlayerStats {
     @Column(name = "receiving_touchdowns")
     private Integer receivingTouchdowns;
     @Column(name = "receiving_yards_per_reception")
-    private Double receivingYardsPerReception;
+    private BigDecimal receivingYardsPerReception;
 
     // Defensive stats
     @Column(name = "defensive_interceptions")
@@ -103,5 +108,5 @@ public class RegSeasonPlayerStats {
     @Column(name = "punt_yards")
     private Integer puntYards;
     @Column(name = "punt_yards_per_punt")
-    private Double puntYardsPerPunt;
+    private BigDecimal puntYardsPerPunt;
 }

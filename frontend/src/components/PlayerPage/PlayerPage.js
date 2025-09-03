@@ -4,6 +4,7 @@ import styles from './PlayerPage.module.css';
 import PlayerHeader from './PlayerHeader';
 import ProfileNotFoundBanner from './ProfileNotFoundBanner';
 import PlayerStatsTable from './PlayerStatsTable';
+import { fetchPlayerProfile, fetchPlayerStatsBySeason, fetchPlayerSeasonStats } from '../../api/fetches';
 
 function PlayerPage() {
   const { playerId } = useParams();
@@ -17,16 +18,10 @@ function PlayerPage() {
 
   // Fetch player profile
   useEffect(() => {
-    async function fetchPlayerProfile() {
+    async function loadPlayerProfile() {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/api/player-profiles/${playerId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch player profile');
-        }
-        
-        const data = await response.json();
+        const data = await fetchPlayerProfile(playerId);
         
         if (data.exists) {
           setPlayerProfile(data.profile);
@@ -44,29 +39,25 @@ function PlayerPage() {
     }
 
     if (playerId) {
-      fetchPlayerProfile();
+      loadPlayerProfile();
     }
   }, [playerId]);
 
   // Fetch player game stats when year changes
   useEffect(() => {
-    async function fetchPlayerStats() {
+    async function loadPlayerStats() {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/api/game-player-stats/player/${playerId}?seasonYear=${selectedYear}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch player stats');
-        }
-        
-        const stats = await response.json();
+        const stats = await fetchPlayerStatsBySeason(playerId, selectedYear);
         setGameStats(stats);
         
         // Fetch season summary
-        const summaryResponse = await fetch(`http://localhost:8080/api/game-player-stats/player/${playerId}/season/${selectedYear}/summary`);
-        if (summaryResponse.ok) {
-          const summary = await summaryResponse.json();
+        try {
+          const summary = await fetchPlayerSeasonStats(playerId, selectedYear);
           setSeasonSummary(summary);
+        } catch (summaryErr) {
+          console.warn('Could not fetch season summary:', summaryErr);
+          setSeasonSummary(null);
         }
       } catch (err) {
         console.error('Error fetching player stats:', err);
@@ -77,7 +68,7 @@ function PlayerPage() {
     }
 
     if (playerId && selectedYear) {
-      fetchPlayerStats();
+      loadPlayerStats();
     }
   }, [playerId, selectedYear]);
 

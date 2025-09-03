@@ -12,15 +12,11 @@ public class SeasonTeamInfoService {
         this.repository = repository;
     }
 
-    public Optional<SeasonTeamInfo> getTeamInfo(String teamId, Integer year) {
-        return repository.findFirstByTeamIdAndSeasonYear(teamId, year);
+    public Optional<SeasonTeamInfo> getTeam(String teamId, Integer year) {
+        return Optional.ofNullable(repository.findFirstByTeamIdAndSeasonYear(teamId, year));
     }
 
     public List<SeasonTeamInfo> getTeamsBySeason(Integer year) {
-        return repository.findBySeasonYear(year);
-    }
-
-    public List<SeasonTeamInfo> getTeamsStatsBySeason(Integer year) {
         return repository.findBySeasonYear(year);
     }
 }

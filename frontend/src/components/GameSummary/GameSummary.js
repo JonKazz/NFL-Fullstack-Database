@@ -6,7 +6,7 @@ import TeamStatsComparison from './TeamStatsComparison';
 import ScoringProgression from './ScoringProgression';
 import PlayerStats from './PlayerStats';
 import DownConversionRates from './DownConversionRates';
-import { fetchTeamsBySeason } from '../../api/fetches';
+import { fetchTeamsBySeason, fetchGameInfo, fetchGameTeamStats, fetchPlayerStatsFromGame } from '../../api/fetches';
 import { getTeamColorsForGame } from '../../utils';
 
 function GameSummary() {
@@ -20,20 +20,12 @@ function GameSummary() {
   useEffect(() => {
     async function getData() {
       try {
-        // Fetch data from individual tables
-        const [gameInfoResult, gameStatsResult, gamePlayerStatsResult] = await Promise.all([
-          fetch(`http://localhost:8080/api/game-info/game?gameId=${gameId}`),
-          fetch(`http://localhost:8080/api/gamestats/game-all?gameId=${gameId}`),
-          fetch(`http://localhost:8080/api/game-player-stats/players?gameId=${gameId}`)
+        // Fetch data using centralized fetch functions
+        const [gameInfoData, gameStatsData, gamePlayerStatsData] = await Promise.all([
+          fetchGameInfo(gameId),
+          fetchGameTeamStats(gameId),
+          fetchPlayerStatsFromGame(gameId)
         ]);
-
-        if (!gameInfoResult.ok || !gameStatsResult.ok || !gamePlayerStatsResult.ok) {
-          throw new Error('Failed to fetch game data');
-        }
-
-        const gameInfoData = await gameInfoResult.json();
-        const gameStatsData = await gameStatsResult.json();
-        const gamePlayerStatsData = await gamePlayerStatsResult.json();
 
         setGameInfo(gameInfoData);
         setGameStats(gameStatsData);
@@ -122,8 +114,6 @@ function GameSummary() {
         <PlayerStats 
           gamePlayerStats={gamePlayerStats} 
           teams={teams}
-          homeTeamId={homeTeamId}
-          awayTeamId={awayTeamId}
         />
       </div>
     </div>

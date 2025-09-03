@@ -13,7 +13,7 @@ public class GameDrives {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Integer id;
 
     @Column(name = "game_id", nullable = false)
     private String gameId;

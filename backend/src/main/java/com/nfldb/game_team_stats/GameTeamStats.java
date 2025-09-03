@@ -1,4 +1,4 @@
-package com.nfldb.gamestats;
+package com.nfldb.game_team_stats;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "game_stats")
-public class GameStats {
+@Table(name = "game_team_stats")
+public class GameTeamStats {
 
     // 1. Composite Key (game_id, team_id)
     @EmbeddedId
-    private GameStatsId id;
+    private GameTeamStatsId id;
 
     // 2. Points
     @Column(name = "points_q1")

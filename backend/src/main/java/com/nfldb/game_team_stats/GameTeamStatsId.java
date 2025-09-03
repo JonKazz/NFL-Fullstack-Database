@@ -1,4 +1,4 @@
-package com.nfldb.gamestats;
+package com.nfldb.game_team_stats;
 
 import jakarta.persistence.Column;
 import java.io.Serializable;
@@ -6,17 +6,17 @@ import java.util.Objects;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class GameStatsId implements Serializable {
+public class GameTeamStatsId implements Serializable {
     @Column(name = "game_id")
     private String gameId;
     
     @Column(name = "team_id")
     private String teamId;
 
-    public GameStatsId() {
+    public GameTeamStatsId() {
     }
     
-    public GameStatsId(String gameId, String teamId) {
+    public GameTeamStatsId(String gameId, String teamId) {
         this.gameId = gameId;
         this.teamId = teamId;
     }
@@ -32,7 +32,7 @@ public class GameStatsId implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        GameStatsId gameId1 = (GameStatsId) o;
+        GameTeamStatsId gameId1 = (GameTeamStatsId) o;
         return Objects.equals(gameId, gameId1.teamId) &&
                 Objects.equals(gameId, gameId1.teamId);
     }

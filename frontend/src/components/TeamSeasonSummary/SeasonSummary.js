@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
-import { fetchFullSeason, fetchTeamInfo, fetchTeamPlayerStats, fetchTeamsStatsBySeason } from '../../api/fetches';
+import { fetchTeamSeasonGamesInfo, fetchTeam, fetchTeamPlayerStats, fetchTeamsBySeason } from '../../api/fetches';
 import { TEAM_MAP, getTeamPrimaryColor } from '../../utils';
 import Games from './Games';
 import SeasonHeader from './SeasonHeader';
@@ -12,9 +12,8 @@ import TeamRoster from './TeamRoster';
 
 function SeasonSummaryVisualization() {
   const params = useParams();
-  const navigate = useNavigate();
   const teamId = params.teamId;
-  const year = params.year;
+  const year = parseInt(params.year);
   const [teamInfo, setTeamInfo] = useState(null);
   const [games, setGames] = useState(null);
   const [playerStats, setPlayerStats] = useState(null);
@@ -62,10 +61,10 @@ function SeasonSummaryVisualization() {
       setError(null);
       try {
         const [teamInfoResult, gamesResult, playerStatsResult, teamStatsResult] = await Promise.allSettled([
-          fetchTeamInfo(teamId, year),
-          fetchFullSeason(teamId, year),
+          fetchTeam(teamId, year),
+          fetchTeamSeasonGamesInfo(teamId, year),
           fetchTeamPlayerStats(teamId, year),
-          fetchTeamsStatsBySeason(year)
+          fetchTeamsBySeason(year)
         ]);
 
         if (teamInfoResult.status === 'fulfilled') {
@@ -75,8 +74,10 @@ function SeasonSummaryVisualization() {
         }
 
         if (gamesResult.status === 'fulfilled') {
+          console.log('Games fetched successfully:', gamesResult.value);
           setGames(gamesResult.value);
         } else {
+          console.error('Failed to fetch games:', gamesResult.reason);
           setError('Failed to fetch game info');
         }
 
@@ -121,15 +122,17 @@ function SeasonSummaryVisualization() {
   return (
     <div className={styles.pageBackground}>
       <div className={styles.container}>
+        {/* Season Header */}
         <SeasonHeader teamInfo={teamInfo} teamId={teamId} year={year} />
 
         {/* Games Section */}
         <Games sortedGames={sortedGames} teamId={teamId} />
 
-
-
+        {/* Team Statistics Section */}
         <TeamStatistics teamInfo={teamInfo} teamStats={teamStats} teamId={teamId} />
-                            <TeamRoster playerStats={playerStats} />
+        
+        {/* Team Roster Section */}
+        <TeamRoster playerStats={playerStats} />
       </div>
     </div>
   );

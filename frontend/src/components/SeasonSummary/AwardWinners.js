@@ -15,9 +15,9 @@ function AwardWinners({ awards }) {
       for (const award of awards) {
         if (award.playerId) {
           try {
-            const profile = await fetchPlayerProfile(award.playerId);
-            if (profile && profile.img) {
-              profiles[award.playerId] = profile.img;
+            const response = await fetchPlayerProfile(award.playerId);
+            if (response.exists && response.profile && response.profile.img) {
+              profiles[award.playerId] = response.profile.img;
             }
           } catch (error) {
             console.warn(`Failed to fetch profile for player ${award.playerId}:`, error);

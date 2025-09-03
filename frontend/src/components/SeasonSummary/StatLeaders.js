@@ -1,59 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
-import { fetchPlayerProfile } from '../../api/fetches';
+import { fetchSeasonStatsByYear } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 
 function StatLeaders({ year }) {
   const [seasonStats, setSeasonStats] = useState({});
-  const [playerProfiles, setPlayerProfiles] = useState({});
 
   // Fetch season player stats for stat leaders
   useEffect(() => {
-    const fetchSeasonStats = async () => {
+    const loadSeasonStats = async () => {
       if (!year) return;
 
       try {
-        // Fetch stats for all teams in the season
-        const response = await fetch(`http://localhost:8080/api/season-stats/season?seasonYear=${year}`);
-        if (response.ok) {
-          const stats = await response.json();
-          setSeasonStats(stats);
-        }
+        const stats = await fetchSeasonStatsByYear(year);
+        setSeasonStats(stats);
       } catch (error) {
         console.warn('Failed to fetch season stats:', error);
       }
     };
 
-    fetchSeasonStats();
+    loadSeasonStats();
   }, [year]);
 
-  // Fetch player profiles for stat leaders
-  useEffect(() => {
-    const fetchPlayerProfiles = async () => {
-      if (!seasonStats || !Array.isArray(seasonStats)) return;
 
-      const profiles = {};
-      const uniquePlayerIds = [...new Set(seasonStats.map(player => player.id?.playerId))];
-      
-      for (const playerId of uniquePlayerIds) {
-        if (playerId) {
-          try {
-            const profile = await fetchPlayerProfile(playerId);
-            if (profile && profile.name) {
-              profiles[playerId] = profile.name;
-            }
-          } catch (error) {
-            console.warn(`Failed to fetch profile for stat player ${playerId}:`, error);
-          }
-        }
-      }
-      
-      setPlayerProfiles(profiles);
-    };
-
-    fetchPlayerProfiles();
-  }, [seasonStats]);
 
   // Get top 10 players for a specific stat
   const getTopPlayers = (statField, limit = 10) => {
@@ -66,8 +36,9 @@ function StatLeaders({ year }) {
   };
 
   // Helper function to get player name as a link
-  const getPlayerNameLink = (playerId) => {
-    const playerName = playerProfiles[playerId] || playerId || 'N/A';
+  const getPlayerNameLink = (player) => {
+    const playerName = player.playerName || player.playerId || 'N/A';
+    const playerId = player.playerId;
     return (
       <Link to={`/player/${playerId}`} className={styles['player-link']}>
         {playerName}
@@ -76,8 +47,8 @@ function StatLeaders({ year }) {
   };
 
   // Helper function to get player name
-  const getPlayerName = (playerId) => {
-    return playerProfiles[playerId] || playerId || 'N/A';
+  const getPlayerName = (player) => {
+    return player.playerName || player.playerId || 'N/A';
   };
 
   // Helper function to get team city
@@ -108,8 +79,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('passingYards').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.passingYards}</td>
                   </tr>
                 ))}
@@ -132,8 +103,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('passingAttempts').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.passingAttempts}</td>
                   </tr>
                 ))}
@@ -156,8 +127,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('passingTouchdowns').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.passingTouchdowns}</td>
                   </tr>
                 ))}
@@ -180,8 +151,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('passingInterceptions').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.passingInterceptions}</td>
                   </tr>
                 ))}
@@ -210,8 +181,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('rushingYards').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.rushingYards}</td>
                   </tr>
                 ))}
@@ -234,8 +205,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('rushingTouchdowns').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.rushingTouchdowns}</td>
                   </tr>
                 ))}
@@ -264,8 +235,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('receivingYards').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.receivingYards}</td>
                   </tr>
                 ))}
@@ -288,8 +259,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('receivingTouchdowns').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.receivingTouchdowns}</td>
                   </tr>
                 ))}
@@ -312,8 +283,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('receivingTargets').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.receivingTargets}</td>
                   </tr>
                 ))}
@@ -336,8 +307,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('receivingReceptions').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.receivingReceptions}</td>
                   </tr>
                 ))}
@@ -366,8 +337,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('defensiveTacklesCombined').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.defensiveTacklesCombined}</td>
                   </tr>
                 ))}
@@ -390,8 +361,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('defensivePressures').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.defensivePressures}</td>
                   </tr>
                 ))}
@@ -414,8 +385,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('defensiveSacks').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.defensiveSacks}</td>
                   </tr>
                 ))}
@@ -438,8 +409,8 @@ function StatLeaders({ year }) {
                 {getTopPlayers('defensiveInterceptions').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{getPlayerNameLink(player.id?.playerId)}</td>
-                    <td>{getTeamCity(player.id?.teamId)}</td>
+                    <td>{getPlayerNameLink(player)}</td>
+                    <td>{getTeamCity(player.teamId)}</td>
                     <td>{player.defensiveInterceptions}</td>
                   </tr>
                 ))}

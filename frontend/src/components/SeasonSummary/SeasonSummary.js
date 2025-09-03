@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchTeamsBySeason, fetchPlayoffGames, fetchSeasonInfo } from '../../api/fetches';
+import { fetchTeamsBySeason, fetchPlayoffGamesInfo, fetchSeasonInfo } from '../../api/fetches';
 import styles from './SeasonSummary.module.css';
 import Standings from './Standings';
 import PlayoffBracket from './PlayoffBracket';
@@ -30,7 +30,7 @@ function SeasonSummary() {
         setTeams(teamsData);
         
         // Fetch playoff games from backend
-        const playoffGamesData = await fetchPlayoffGames(year);
+        const playoffGamesData = await fetchPlayoffGamesInfo(year);
         setPlayoffs(playoffGamesData);
 
         // Fetch season info including awards and stat leaders

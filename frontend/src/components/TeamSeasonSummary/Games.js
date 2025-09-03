@@ -12,39 +12,33 @@ function Games({ sortedGames, teamId }) {
 
   // Filter regular season games
   const regularSeasonGames = sortedGames.filter(game => {
-    return game?.gameInfo?.playoffGame === null || game?.gameInfo?.playoffGame === undefined;
+    return game?.playoffGame === null || game?.playoffGame === undefined;
   });
 
   // Filter playoff games
   const playoffGames = sortedGames.filter(game => {
-    return game?.gameInfo?.playoffGame !== null && game?.gameInfo?.playoffGame !== undefined;
+    return game?.playoffGame !== null && game?.playoffGame !== undefined;
   });
 
   const renderGameCard = (game, idx, isPlayoff = false) => {
     // Safety check - ensure game has required properties
-    if (!game || !game.gameInfo || !game.gameStats || !Array.isArray(game.gameStats)) {
+    if (!game) {
       return null;
     }
     
-    const { gameInfo, gameStats } = game;
-    const myStats = gameStats.find(gs => gs && gs.id && gs.id.teamId === teamId);
-    const oppStats = gameStats.find(gs => gs && gs.id && gs.id.teamId !== teamId);
-    
-    // Safety check - if stats are not found or pointsTotal is undefined, skip this game
-    if (!myStats || !oppStats || typeof myStats.pointsTotal === 'undefined' || typeof oppStats.pointsTotal === 'undefined') {
-      return null;
-    }
-    
-    const isHome = gameInfo.homeTeamId === teamId;
-    const isWin = myStats.pointsTotal > oppStats.pointsTotal;
+    // For basic game info, we'll show the game but without detailed stats
+    const isHome = game.homeTeamId === teamId;
+    const isWin = game.homeTeamId === teamId ? 
+      (game.homePoints > game.awayPoints) : 
+      (game.awayPoints > game.homePoints);
 
     const gameCardClass = `${styles['game-card']} ${isPlayoff ? styles.playoff : ''} ${isWin ? styles.win : styles.loss}`;
 
     return (
       <div
         className={gameCardClass}
-        onClick={() => handleGameClick(gameInfo.gameId)}
-        key={gameInfo.gameId || idx}
+        onClick={() => handleGameClick(game.gameId)}
+        key={game.gameId || idx}
       >
         {/* Game Header */}
         <div className={styles['game-header']}>
@@ -52,14 +46,14 @@ function Games({ sortedGames, teamId }) {
             <div className={styles['week-date-row']}>
               {isPlayoff ? (
                 <div className={styles['playoff-game-text']}>
-                  {gameInfo.playoffGame === 'Conference Championship' ? 'Conference' : gameInfo.playoffGame}
+                  {game.playoffGame === 'Conference Championship' ? 'Conference' : game.playoffGame}
                 </div>
               ) : (
                 <div className={styles.week}>
-                  Week {gameInfo.seasonWeek}
+                  Week {game.seasonWeek}
                 </div>
               )}
-              <div className={styles['game-date']}>{gameInfo.date}</div>
+              <div className={styles['game-date']}>{game.date}</div>
             </div>
           </div>
           <div className={styles['game-result']}>
@@ -73,14 +67,14 @@ function Games({ sortedGames, teamId }) {
           <div className={styles['team-section']}>
             <div className={styles['team-info']}>
               <div className={`${styles['team-name']} ${isWin ? styles['winner-text'] : ''}`}>
-                {TEAM_MAP[myStats.id.teamId]?.city}
+                {TEAM_MAP[teamId]?.city}
               </div>
               <div className={styles['team-record']}>
                 {/* Could add team record here if available */}
               </div>
             </div>
             <div className={`${styles['team-score']} ${isWin ? styles['winner-score'] : ''}`}>
-              {myStats.pointsTotal}
+              {isHome ? game.homePoints : game.awayPoints}
             </div>
           </div>
 
@@ -93,14 +87,14 @@ function Games({ sortedGames, teamId }) {
           <div className={styles['team-section']}>
             <div className={styles['team-info']}>
               <div className={`${styles['team-name']} ${!isWin ? styles['winner-text'] : ''}`}>
-                {TEAM_MAP[oppStats.id.teamId]?.city}
+                {TEAM_MAP[isHome ? game.awayTeamId : game.homeTeamId]?.city}
               </div>
               <div className={styles['team-record']}>
                 {/* Could add team record here if available */}
               </div>
             </div>
             <div className={`${styles['team-score']} ${!isWin ? styles['winner-score'] : ''}`}>
-              {oppStats.pointsTotal}
+              {isHome ? game.awayPoints : game.homePoints}
             </div>
           </div>
         </div>

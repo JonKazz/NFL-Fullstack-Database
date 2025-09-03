@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './PlayerStatsTable.module.css';
 import { getTeamPrimaryColor, TEAM_MAP } from '../../utils';
+import { fetchPlayerAvailableSeasons } from '../../api/fetches';
 
   // Helper function to darken hex colors for dark theme
   const darkenColor = (hexColor, amount = 0.6) => {
@@ -27,18 +28,15 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Fetch available seasons for this player and set default season
   useEffect(() => {
-    async function fetchAvailableSeasons() {
+    async function loadAvailableSeasons() {
       try {
-        const response = await fetch(`http://localhost:8080/api/season-stats/player/${playerId}/seasons`);
-        if (response.ok) {
-          const seasons = await response.json();
-          setAvailableSeasons(seasons);
-          
-          // Set default to most recent season if no year is selected
-          if (seasons.length > 0 && !selectedYear) {
-            console.log('Setting default season to:', seasons[0], 'from available seasons:', seasons);
-            onYearChange(seasons[0]); // seasons[0] should be the most recent (sorted in backend)
-          }
+        const seasons = await fetchPlayerAvailableSeasons(playerId);
+        setAvailableSeasons(seasons);
+        
+        // Set default to most recent season if no year is selected
+        if (seasons.length > 0 && !selectedYear) {
+          console.log('Setting default season to:', seasons[0], 'from available seasons:', seasons);
+          onYearChange(seasons[0]); // seasons[0] should be the most recent (sorted in backend)
         }
       } catch (error) {
         console.error('Error fetching available seasons:', error);
@@ -46,7 +44,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     }
 
     if (playerId) {
-      fetchAvailableSeasons();
+      loadAvailableSeasons();
     }
   }, [playerId, selectedYear, onYearChange]);
 
@@ -72,34 +70,36 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     };
     
     games.forEach(game => {
+      const stats = game.playerStats;
+      
       // Passing stats
-      if (game.passAttempts && game.passAttempts > 0) categories.passing = true;
+      if (stats.passAttempts && stats.passAttempts > 0) categories.passing = true;
       
       // Rushing stats
-      if (game.rushAttempts && game.rushAttempts > 0) categories.rushing = true;
+      if (stats.rushAttempts && stats.rushAttempts > 0) categories.rushing = true;
       
       // Receiving stats
-      if (game.receivingTargets && game.receivingTargets > 0) categories.receiving = true;
+      if (stats.receivingTargets && stats.receivingTargets > 0) categories.receiving = true;
       
       // Defensive stats
-      if (game.defensiveTacklesCombined && game.defensiveTacklesCombined > 0) categories.defensive = true;
-      if (game.defensiveSacks && game.defensiveSacks > 0) categories.defensive = true;
-      if (game.defensiveInterceptions && game.defensiveInterceptions > 0) categories.defensive = true;
-      if (game.defensivePassesDefended && game.defensivePassesDefended > 0) categories.defensive = true;
+      if (stats.defensiveTacklesCombined && stats.defensiveTacklesCombined > 0) categories.defensive = true;
+      if (stats.defensiveSacks && stats.defensiveSacks > 0) categories.defensive = true;
+      if (stats.defensiveInterceptions && stats.defensiveInterceptions > 0) categories.defensive = true;
+      if (stats.defensivePassesDefended && stats.defensivePassesDefended > 0) categories.defensive = true;
       
       // Kicking stats
-      if (game.fieldGoalsAttempted && game.fieldGoalsAttempted > 0) categories.kicking = true;
-      if (game.extraPointsAttempted && game.extraPointsAttempted > 0) categories.kicking = true;
+      if (stats.fieldGoalsAttempted && stats.fieldGoalsAttempted > 0) categories.kicking = true;
+      if (stats.extraPointsAttempted && stats.extraPointsAttempted > 0) categories.kicking = true;
       
       // Punting stats
-      if (game.punts && game.punts > 0) categories.punting = true;
+      if (stats.punts && stats.punts > 0) categories.punting = true;
       
       // Return stats
-      if (game.kickReturns && game.kickReturns > 0) categories.returns = true;
-      if (game.puntReturns && game.puntReturns > 0) categories.returns = true;
+      if (stats.kickReturns && stats.kickReturns > 0) categories.returns = true;
+      if (stats.puntReturns && stats.puntReturns > 0) categories.returns = true;
       
       // Fumbles
-      if (game.fumblesTotal && game.fumblesTotal > 0) categories.fumbles = true;
+      if (stats.fumblesTotal && stats.fumblesTotal > 0) categories.fumbles = true;
     });
     
     return categories;
@@ -216,57 +216,63 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build offensive row data for a specific game
   const buildOffensiveRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Format date by removing week name (take everything after first space)
-    const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
+    const formattedDate = gameInfo.date ? gameInfo.date.split(' ').slice(1).join(' ') : '';
     
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.seasonWeek || '-',
+      gameInfo.seasonWeek || '-',
       formattedDate,
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.passing) {
       row.push(
-        formatStat(game.passCompletions),
-        formatStat(game.passAttempts),
-        formatStat(game.passYards),
-        formatStat(game.passTouchdowns),
-        formatStat(game.passInterceptions),
-        formatStat(game.passRating)
+        formatStat(stats.passCompletions),
+        formatStat(stats.passAttempts),
+        formatStat(stats.passYards),
+        formatStat(stats.passTouchdowns),
+        formatStat(stats.passInterceptions),
+        formatStat(stats.passRating)
       );
     }
     
     if (statCategories.rushing) {
       row.push(
-        formatStat(game.rushAttempts),
-        formatStat(game.rushYards),
-        formatStat(game.rushTouchdowns)
+        formatStat(stats.rushAttempts),
+        formatStat(stats.rushYards),
+        formatStat(stats.rushTouchdowns)
       );
     }
     
     if (statCategories.receiving) {
       row.push(
-        formatStat(game.receivingTargets),
-        formatStat(game.receivingReceptions),
-        formatStat(game.receivingYards),
-        formatStat(game.receivingTouchdowns)
+        formatStat(stats.receivingTargets),
+        formatStat(stats.receivingReceptions),
+        formatStat(stats.receivingYards),
+        formatStat(stats.receivingTouchdowns)
       );
     }
     
     if (statCategories.fumbles) {
       row.push(
-        formatStat(game.fumblesTotal),
-        formatStat(game.fumblesLost)
+        formatStat(stats.fumblesTotal),
+        formatStat(stats.fumblesLost)
       );
     }
     
@@ -275,53 +281,59 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build offensive row data for playoff games (includes playoff_game column)
   const buildPlayoffOffensiveRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.playoffGame || '-', // Playoff column first
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      gameInfo.playoffGame || '-', // Playoff column first
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.passing) {
       row.push(
-        formatStat(game.passCompletions),
-        formatStat(game.passAttempts),
-        formatStat(game.passYards),
-        formatStat(game.passTouchdowns),
-        formatStat(game.passInterceptions),
-        formatStat(game.passRating)
+        formatStat(stats.passCompletions),
+        formatStat(stats.passAttempts),
+        formatStat(stats.passYards),
+        formatStat(stats.passTouchdowns),
+        formatStat(stats.passInterceptions),
+        formatStat(stats.passRating)
       );
     }
     
     if (statCategories.rushing) {
       row.push(
-        formatStat(game.rushAttempts),
-        formatStat(game.rushYards),
-        formatStat(game.rushTouchdowns)
+        formatStat(stats.rushAttempts),
+        formatStat(stats.rushYards),
+        formatStat(stats.rushTouchdowns)
       );
     }
     
     if (statCategories.receiving) {
       row.push(
-        formatStat(game.receivingTargets),
-        formatStat(game.receivingReceptions),
-        formatStat(game.receivingYards),
-        formatStat(game.receivingTouchdowns)
+        formatStat(stats.receivingTargets),
+        formatStat(stats.receivingReceptions),
+        formatStat(stats.receivingYards),
+        formatStat(stats.receivingTouchdowns)
       );
     }
     
     if (statCategories.fumbles) {
       row.push(
-        formatStat(game.fumblesTotal),
-        formatStat(game.fumblesLost)
+        formatStat(stats.fumblesTotal),
+        formatStat(stats.fumblesLost)
       );
     }
     
@@ -330,33 +342,39 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build defensive row data for a specific game
   const buildDefensiveRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Format date by removing week name (take everything after first space)
-    const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
+    const formattedDate = gameInfo.date ? gameInfo.date.split(' ').slice(1).join(' ') : '';
     
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.seasonWeek || '-',
+      gameInfo.seasonWeek || '-',
       formattedDate,
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.defensive) {
       row.push(
-        formatStat(game.defensiveTacklesCombined),
-        formatStat(game.defensiveTacklesSolo),
-        formatStat(game.defensiveTacklesAssists),
-        formatStat(game.defensiveSacks),
-        formatStat(game.defensiveInterceptions),
-        formatStat(game.defensivePassesDefended)
+        formatStat(stats.defensiveTacklesCombined),
+        formatStat(stats.defensiveTacklesSolo),
+        formatStat(stats.defensiveTacklesAssists),
+        formatStat(stats.defensiveSacks),
+        formatStat(stats.defensiveInterceptions),
+        formatStat(stats.defensivePassesDefended)
       );
     }
     
@@ -365,29 +383,35 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build defensive row data for playoff games (includes playoff_game column)
   const buildPlayoffDefensiveRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.playoffGame || '-', // Playoff column first
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      gameInfo.playoffGame || '-', // Playoff column first
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.defensive) {
       row.push(
-        formatStat(game.defensiveTacklesCombined),
-        formatStat(game.defensiveTacklesSolo),
-        formatStat(game.defensiveTacklesAssists),
-        formatStat(game.defensiveSacks),
-        formatStat(game.defensiveInterceptions),
-        formatStat(game.defensivePassesDefended)
+        formatStat(stats.defensiveTacklesCombined),
+        formatStat(stats.defensiveTacklesSolo),
+        formatStat(stats.defensiveTacklesAssists),
+        formatStat(stats.defensiveSacks),
+        formatStat(stats.defensiveInterceptions),
+        formatStat(stats.defensivePassesDefended)
       );
     }
     
@@ -396,49 +420,55 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build special teams row data for a specific game
   const buildSpecialTeamsRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Format date by removing week name (take everything after first space)
-    const formattedDate = game.date ? game.date.split(' ').slice(1).join(' ') : '';
+    const formattedDate = gameInfo.date ? gameInfo.date.split(' ').slice(1).join(' ') : '';
     
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.seasonWeek || '-',
+      gameInfo.seasonWeek || '-',
       formattedDate,
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.kicking) {
       row.push(
-        formatStat(game.fieldGoalsMade),
-        formatStat(game.fieldGoalsAttempted),
-        formatStat(game.extraPointsMade),
-        formatStat(game.extraPointsAttempted)
+        formatStat(stats.fieldGoalsMade),
+        formatStat(stats.fieldGoalsAttempted),
+        formatStat(stats.extraPointsMade),
+        formatStat(stats.extraPointsAttempted)
       );
     }
     
     if (statCategories.punting) {
       row.push(
-        formatStat(game.punts),
-        formatStat(game.puntYards)
+        formatStat(stats.punts),
+        formatStat(stats.puntYards)
       );
     }
     
     if (statCategories.returns) {
       row.push(
-        formatStat(game.kickReturns),
-        formatStat(game.kickReturnYards),
-        formatStat(game.kickReturnTouchdowns),
-        formatStat(game.puntReturns),
-        formatStat(game.puntReturnYards),
-        formatStat(game.puntReturnTouchdowns)
+        formatStat(stats.kickReturns),
+        formatStat(stats.kickReturnYards),
+        formatStat(stats.kickReturnTouchdowns),
+        formatStat(stats.puntReturns),
+        formatStat(stats.puntReturnYards),
+        formatStat(stats.puntReturnTouchdowns)
       );
     }
     
@@ -447,45 +477,51 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
 
   // Build special teams row data for playoff games (includes playoff_game column)
   const buildPlayoffSpecialTeamsRow = (game) => {
+    const gameInfo = game.gameInfo;
+    const stats = game.playerStats;
+    
     // Determine if player's team won
-    const isWinner = game.winningTeamId === game.teamId;
+    const isWinner = gameInfo.winningTeamId === stats.teamId;
     const winLoss = isWinner ? 'W' : 'L';
     
     // Format score (team score - opponent score)
-    const score = `${game.teamId === game.homeTeamId ? game.homeScore : game.awayScore} - ${game.teamId === game.homeTeamId ? game.awayScore : game.homeScore}`;
+    const score = `${stats.teamId === gameInfo.homeTeamId ? gameInfo.homePoints : gameInfo.awayPoints} - ${stats.teamId === gameInfo.homeTeamId ? gameInfo.awayPoints : gameInfo.homePoints}`;
+    
+    // Get opponent team ID
+    const opponent = stats.teamId === gameInfo.homeTeamId ? gameInfo.awayTeamId : gameInfo.homeTeamId;
     
     const row = [
-      game.playoffGame || '-', // Playoff column first
-      TEAM_MAP[game.teamId]?.city || game.teamId,
-      TEAM_MAP[game.opponent]?.city || game.opponent,
+      gameInfo.playoffGame || '-', // Playoff column first
+      TEAM_MAP[stats.teamId]?.city || stats.teamId,
+      TEAM_MAP[opponent]?.city || opponent,
       score,
       winLoss
     ];
     
     if (statCategories.kicking) {
       row.push(
-        formatStat(game.fieldGoalsMade),
-        formatStat(game.fieldGoalsAttempted),
-        formatStat(game.extraPointsMade),
-        formatStat(game.extraPointsAttempted)
+        formatStat(stats.fieldGoalsMade),
+        formatStat(stats.fieldGoalsAttempted),
+        formatStat(stats.extraPointsMade),
+        formatStat(stats.extraPointsAttempted)
       );
     }
     
     if (statCategories.punting) {
       row.push(
-        formatStat(game.punts),
-        formatStat(game.puntYards)
+        formatStat(stats.punts),
+        formatStat(stats.puntYards)
       );
     }
     
     if (statCategories.returns) {
       row.push(
-        formatStat(game.kickReturns),
-        formatStat(game.kickReturnYards),
-        formatStat(game.kickReturnTouchdowns),
-        formatStat(game.puntReturns),
-        formatStat(game.puntReturnYards),
-        formatStat(game.puntReturnTouchdowns)
+        formatStat(stats.kickReturns),
+        formatStat(stats.kickReturnYards),
+        formatStat(stats.kickReturnTouchdowns),
+        formatStat(stats.puntReturns),
+        formatStat(stats.puntReturnYards),
+        formatStat(stats.puntReturnTouchdowns)
       );
     }
     
@@ -621,7 +657,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     let losses = 0;
     
     gameStats.forEach(game => {
-      if (game.winningTeamId === game.teamId) {
+      if (game.gameInfo.winningTeamId === game.playerStats.teamId) {
         wins++;
       } else {
         losses++;
@@ -752,14 +788,14 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
   // Separate regular season and playoff games
   const regularSeasonGames = gameStats ? gameStats.filter(game => {
     // A game is regular season if playoffGame is null, undefined, or empty string
-    return !game.playoffGame || game.playoffGame === '' || game.playoffGame === null;
+    return !game.gameInfo.playoffGame || game.gameInfo.playoffGame === '' || game.gameInfo.playoffGame === null;
   }).sort((a, b) => {
-    return (a.seasonWeek || 0) - (b.seasonWeek || 0);
+    return (a.gameInfo.seasonWeek || 0) - (b.gameInfo.seasonWeek || 0);
   }) : [];
   
   const playoffGames = gameStats ? gameStats.filter(game => {
     // A game is playoff if playoffGame has a non-empty string value
-    return game.playoffGame && game.playoffGame !== '' && game.playoffGame !== null;
+    return game.gameInfo.playoffGame && game.gameInfo.playoffGame !== '' && game.gameInfo.playoffGame !== null;
   }).sort((a, b) => {
     // Sort playoff games by playoff type (Wild Card, Divisional, Conference Championship, Superbowl)
     const playoffOrder = { 
@@ -768,14 +804,14 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
       'Conference Championship': 3, 
       'Superbowl': 4 
     };
-    return (playoffOrder[a.playoffGame] || 0) - (playoffOrder[b.playoffGame] || 0);
+    return (playoffOrder[a.gameInfo.playoffGame] || 0) - (playoffOrder[b.gameInfo.playoffGame] || 0);
   }) : [];
 
   // Debug logging
   console.log('All gameStats:', gameStats);
   console.log('Regular season games:', regularSeasonGames);
   console.log('Playoff games:', playoffGames);
-  console.log('Sample game playoffGame field:', gameStats?.[0]?.playoffGame);
+  console.log('Sample game playoffGame field:', gameStats?.[0]?.gameInfo?.playoffGame);
   console.log('Sample game keys:', gameStats?.[0] ? Object.keys(gameStats[0]) : 'No games');
   console.log('Sample game full object:', gameStats?.[0]);
   
@@ -784,12 +820,12 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
     console.log('=== PLAYOFF GAME VALUES FOR EACH GAME ===');
     gameStats.forEach((game, index) => {
       console.log(`Game ${index + 1}:`, {
-        gameId: game.gameId,
-        date: game.date,
-        seasonWeek: game.seasonWeek,
-        playoffGame: game.playoffGame,
-        playoffGameType: typeof game.playoffGame,
-        isPlayoff: game.playoffGame && game.playoffGame !== '' && game.playoffGame !== null
+        gameId: game.gameInfo.gameId,
+        date: game.gameInfo.date,
+        seasonWeek: game.gameInfo.seasonWeek,
+        playoffGame: game.gameInfo.playoffGame,
+        playoffGameType: typeof game.gameInfo.playoffGame,
+        isPlayoff: game.gameInfo.playoffGame && game.gameInfo.playoffGame !== '' && game.gameInfo.playoffGame !== null
       });
     });
     console.log('=== END PLAYOFF GAME VALUES ===');
@@ -885,7 +921,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {regularSeasonGames.map((game, gameIndex) => {
                           const gameRow = buildOffensiveRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={gameIndex} 
@@ -966,7 +1002,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {playoffGames.map((game, gameIndex) => {
                           const gameRow = buildPlayoffOffensiveRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={`playoff-offensive-${gameIndex}`} 
@@ -1041,7 +1077,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {regularSeasonGames.map((game, gameIndex) => {
                           const gameRow = buildDefensiveRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={gameIndex} 
@@ -1122,7 +1158,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {playoffGames.map((game, gameIndex) => {
                           const gameRow = buildPlayoffDefensiveRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={`playoff-defensive-${gameIndex}`} 
@@ -1197,7 +1233,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {regularSeasonGames.map((game, gameIndex) => {
                           const gameRow = buildSpecialTeamsRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={gameIndex} 
@@ -1278,7 +1314,7 @@ function PlayerStatsTable({ playerId, selectedYear, gameStats, seasonSummary, on
                       <tbody>
                         {playoffGames.map((game, gameIndex) => {
                           const gameRow = buildPlayoffSpecialTeamsRow(game);
-                          const teamColor = darkenColor(getTeamPrimaryColor(game.teamId));
+                          const teamColor = darkenColor(getTeamPrimaryColor(game.playerStats.teamId));
                           return (
                             <tr 
                               key={`playoff-special-${gameIndex}`} 

@@ -23,8 +23,8 @@ public class GameInfoController {
         return gameInfoService.getGamesByYear(teamId, seasonYear);
     }
 
-    @GetMapping("/playoffs/{seasonYear}")
-    public List<GameInfo> getPlayoffGames(@PathVariable Integer seasonYear) {
+    @GetMapping("/playoffs")
+    public List<GameInfo> getPlayoffGames(@RequestParam Integer seasonYear) {
         return gameInfoService.getPlayoffGamesBySeason(seasonYear);
     }
 }
