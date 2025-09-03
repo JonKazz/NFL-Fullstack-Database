@@ -13,9 +13,9 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins(
-                            "http://localhost:3000",
-                            "https://nfl-fullstack-database-4sab9swr2-jonkazzs-projects.vercel.app"
+                        .allowedOriginPatterns(
+                            "http://localhost:*",
+                            "https://nfl-fullstack-database-*.vercel.app"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
