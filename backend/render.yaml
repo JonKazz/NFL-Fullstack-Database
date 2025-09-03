@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: nfl-backend
+    env: java
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/quickstart-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: nfl-database
+          property: connectionString
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JAVA_HOME
+        value: /opt/render/project/.jdk
