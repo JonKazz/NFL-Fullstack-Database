@@ -15,7 +15,9 @@ public class WebConfig {
                 registry.addMapping("/api/**")
                         .allowedOriginPatterns(
                             "http://localhost:*",
-                            "https://nfl-fullstack-database-*.vercel.app"
+                            "https://nfl-fullstack-database-*.vercel.app",
+                            "https://www.nfl-stathead.com",
+                            "https://nfl-stathead.com"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
