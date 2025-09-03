@@ -13,7 +13,15 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000");
+                        .allowedOrigins(
+                            "http://localhost:3000",
+                            "https://nfl-fullstack-database-jrjzv1dm1-jonkazzs-projects.vercel.app",
+                            "https://nfl-fullstack-database-8nw2w8hsl-jonkazzs-projects.vercel.app",
+                            "https://nfl-fullstack-database-r1snpqfk7-jonkazzs-projects.vercel.app"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
