@@ -1,0 +1,13 @@
+{
+  "name": "nfl-fullstack-database",
+  "version": "1.0.0",
+  "description": "NFL Fullstack Database Application",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "install-deps": "cd frontend && npm install"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
