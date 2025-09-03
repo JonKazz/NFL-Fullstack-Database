@@ -6,7 +6,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/game-drives")
-@CrossOrigin(origins = "*")
 public class GameDrivesController {
 
     private final GameDrivesService gameDrivesService;
