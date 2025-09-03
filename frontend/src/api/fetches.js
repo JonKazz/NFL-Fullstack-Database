@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../config/api.js';
+
 /*
 ------------------------------------------------------------------------------------------------
 SEASON TEAM INFO
@@ -5,7 +7,7 @@ SEASON TEAM INFO
 */
 export async function fetchTeam(teamId, year) {
   const params = new URLSearchParams({ teamId, year });
-  const response = await fetch(`http://localhost:8080/api/teams/info?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/teams/info?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch team info (api)');
   }
@@ -13,7 +15,7 @@ export async function fetchTeam(teamId, year) {
 }
 
 export async function fetchTeamsBySeason(year) {
-  const response = await fetch(`http://localhost:8080/api/teams/season/${year}`);
+  const response = await fetch(`${API_BASE_URL}/api/teams/season/${year}`);
   if (!response.ok) {
     throw new Error('Failed to fetch teams by season (api)');
   }
@@ -28,7 +30,7 @@ SEASON INFO
 ------------------------------------------------------------------------------------------------
 */
 export async function fetchAvailableSeasons() {
-  const response = await fetch(`http://localhost:8080/api/season/years-list`);
+  const response = await fetch(`${API_BASE_URL}/api/season/years-list`);
   if (!response.ok) {
     throw new Error('Failed to fetch available seasons (api)');
   }
@@ -36,7 +38,7 @@ export async function fetchAvailableSeasons() {
 }
 
 export async function fetchSeasonInfo(year) {
-  const response = await fetch(`http://localhost:8080/api/season/${year}`);
+  const response = await fetch(`${API_BASE_URL}/api/season/${year}`);
   if (!response.ok) {
     throw new Error('Failed to fetch season info (api)');
   }
@@ -52,7 +54,7 @@ GAME INFO
 */
 export async function fetchPlayoffGamesInfo(seasonYear) {
   const params = new URLSearchParams({ seasonYear });
-  const response = await fetch(`http://localhost:8080/api/game-info/playoffs?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-info/playoffs?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch playoff games (api)');
   }
@@ -61,7 +63,7 @@ export async function fetchPlayoffGamesInfo(seasonYear) {
 
 export async function fetchGameInfo(gameId) {
   const params = new URLSearchParams({ gameId });
-  const response = await fetch(`http://localhost:8080/api/game-info/game?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-info/game?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch game info (api)');
   }
@@ -70,7 +72,7 @@ export async function fetchGameInfo(gameId) {
 
 export async function fetchTeamSeasonGamesInfo(teamId, seasonYear) {
   const params = new URLSearchParams({ teamId, seasonYear });
-  const response = await fetch(`http://localhost:8080/api/game-info/fullseason?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-info/fullseason?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch team season games (api)');
   }
@@ -86,7 +88,7 @@ GAME PLAYER STATS
 */
 export async function fetchPlayerStatsFromGame(gameId) {
   const params = new URLSearchParams({ gameId });
-  const response = await fetch(`http://localhost:8080/api/game-player-stats/game?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-player-stats/game?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player stats (api)');
   }
@@ -95,7 +97,7 @@ export async function fetchPlayerStatsFromGame(gameId) {
 
 export async function fetchPlayerGameStats(gameId, playerId) {
   const params = new URLSearchParams({ gameId, playerId });
-  const response = await fetch(`http://localhost:8080/api/game-player-stats/player?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-player-stats/player?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player game stats (api)');
   }
@@ -104,7 +106,7 @@ export async function fetchPlayerGameStats(gameId, playerId) {
 
 export async function fetchPlayerStatsBySeason(playerId, seasonYear) {
   const params = new URLSearchParams({ playerId, seasonYear });
-  const response = await fetch(`http://localhost:8080/api/game-player-stats/season?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-player-stats/season?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player stats by season (api)');
   }
@@ -120,7 +122,7 @@ GAME TEAM STATS
 */
 export async function fetchGameTeamStats(gameId) {
   const params = new URLSearchParams({ gameId });
-  const response = await fetch(`http://localhost:8080/api/game-team-stats/game?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-team-stats/game?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch game stats (api)');
   }
@@ -136,7 +138,7 @@ REGULAR SEASON PLAYERSTATS
 */
 export async function fetchTeamPlayerStats(teamId, year) {
   const params = new URLSearchParams({ teamId, seasonYear: year });
-  const response = await fetch(`http://localhost:8080/api/season-stats/team?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/season-stats/team?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player stats (api)');
   }
@@ -145,7 +147,7 @@ export async function fetchTeamPlayerStats(teamId, year) {
 
 export async function fetchPlayerSeasonStats(playerId, seasonYear) {
   const params = new URLSearchParams({ playerId, seasonYear });
-  const response = await fetch(`http://localhost:8080/api/season-stats/player?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/season-stats/player?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player season summary (api)');
   }
@@ -154,7 +156,7 @@ export async function fetchPlayerSeasonStats(playerId, seasonYear) {
 
 export async function fetchSeasonStatsByYear(seasonYear) {
   const params = new URLSearchParams({ seasonYear });
-  const response = await fetch(`http://localhost:8080/api/season-stats/season?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/season-stats/season?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player season stats (api)');
   }
@@ -163,7 +165,7 @@ export async function fetchSeasonStatsByYear(seasonYear) {
 
 export async function fetchPlayerAvailableSeasons(playerId) {
   const params = new URLSearchParams({ playerId });
-  const response = await fetch(`http://localhost:8080/api/season-stats/available-seasons?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/season-stats/available-seasons?${params}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player available seasons (api)');
   }
@@ -177,7 +179,7 @@ GAME DRIVES
 ------------------------------------------------------------------------------------------------
 */
 export async function fetchGameDrives(gameId) {
-  const response = await fetch(`http://localhost:8080/api/game-drives/game?gameId=${gameId}`);
+  const response = await fetch(`${API_BASE_URL}/api/game-drives/game?gameId=${gameId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch game drives (api)');
   }
@@ -192,7 +194,7 @@ PLAYER PROFILES
 ------------------------------------------------------------------------------------------------
 */
 export async function fetchPlayerProfile(playerId) {
-  const response = await fetch(`http://localhost:8080/api/player-profiles/${playerId}`);
+  const response = await fetch(`${API_BASE_URL}/api/player-profiles/${playerId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player profile (api)');
   }
