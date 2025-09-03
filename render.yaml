@@ -7,9 +7,5 @@ services:
     dockerfilePath: ./Dockerfile
     buildCommand: ./mvnw clean package -DskipTests
     envVars:
-      - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: nfl-database
-          property: connectionString
       - key: SPRING_PROFILES_ACTIVE
         value: production
