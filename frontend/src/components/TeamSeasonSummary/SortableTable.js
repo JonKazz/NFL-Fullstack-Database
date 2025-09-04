@@ -88,7 +88,7 @@ function SortableTable({ players, columns }) {
     const value = player[column.key];
     
     // Handle special cases
-    if (column.key === 'playerId') {
+    if (column.key === 'playerName') {
       return <PlayerNameCell playerId={player.playerId} />;
     }
     

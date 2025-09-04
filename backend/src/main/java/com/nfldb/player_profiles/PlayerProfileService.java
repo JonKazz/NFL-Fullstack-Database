@@ -14,8 +14,8 @@ public class PlayerProfileService {
     public PlayerProfile getPlayerProfile(String playerId) {
         return repository.findByPlayerId(playerId);
     }
-
-    public PlayerProfile savePlayerProfile(PlayerProfile playerProfile) {
-        return repository.save(playerProfile);
+    
+    public Long getTotalPlayerProfilesCount() {
+        return repository.countAllPlayerProfiles();
     }
 } 

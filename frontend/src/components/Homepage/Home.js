@@ -1,47 +1,50 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAvailableSeasons } from '../../api/fetches';
+import { fetchAvailableSeasons, fetchGameInfoCount, fetchPlayerProfilesCount } from '../../api/fetches';
 import styles from './Home.module.css';
 
 function Home() {
-  const [selectedYear, setSelectedYear] = useState(null);
   const [seasons, setSeasons] = useState([]);
+  const [gameInfoCount, setGameInfoCount] = useState(0);
+  const [playerProfilesCount, setPlayerProfilesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadSeasons = async () => {
+    const loadData = async () => {
       try {
-        const availableSeasons = await fetchAvailableSeasons();
+        const [availableSeasons, gameCount, playerCount] = await Promise.all([
+          fetchAvailableSeasons(),
+          fetchGameInfoCount(),
+          fetchPlayerProfilesCount()
+        ]);
         setSeasons(availableSeasons);
-        // Set the first available season as default selected
-        if (availableSeasons.length > 0) {
-          setSelectedYear(availableSeasons[0]);
-        }
+        setGameInfoCount(gameCount);
+        setPlayerProfilesCount(playerCount);
       } catch (error) {
-        console.error('Failed to fetch seasons:', error);
-        // Fallback to hardcoded seasons if API fails
-        const fallbackSeasons = [2023, 2024];
+        console.error('Failed to fetch data:', error);
+        // Fallback to hardcoded values if API fails
+        const fallbackSeasons = [2024];
         setSeasons(fallbackSeasons);
-        setSelectedYear(fallbackSeasons[0]);
+        setGameInfoCount(2800); // Fallback count
+        setPlayerProfilesCount(13000); // Fallback count
       } finally {
         setLoading(false);
       }
     };
 
-    loadSeasons();
+    loadData();
   }, []);
 
-  const handleExploreSeason = () => {
-    if (!selectedYear) return;
-    navigate(`/season/${selectedYear}`);
+  const handleNavigateToSeason = (year) => {
+    navigate(`/season/${year}`);
   };
 
   if (loading) {
     return (
       <div className={styles.pageBackground}>
         <div className={styles.container}>
-          <div className={styles.loading}>Loading seasons...</div>
+          <div className={styles.loading}>Loading...</div>
         </div>
       </div>
     );
@@ -53,110 +56,70 @@ function Home() {
         {/* Header Section */}
         <div className={styles.header}>
           <div className={styles['header-background']}>
-            <div className={styles['nfl-logo-bg']}>
-              <div className={styles['nfl-logo-placeholder']}>NFL</div>
+            <div className={styles['logo-container']}>
+              <img src="/icons/sh-logo.png" alt="NFL Logo" className={styles.logo} />
             </div>
-          </div>
-          <div className={styles['header-content']}>
-            <div className={styles['main-title']}>
-              <h1>Kazmaier's NFL Database</h1>
-              <p>Discover team performance, player statistics, and game results</p>
+            <div className={styles['header-stats']}>
+              <div className={styles['header-stat']}><span className={styles.number}>{seasons.length}</span>&nbsp;&nbsp;SEASONS</div>
+              <div className={styles['header-stat']}><span className={styles.number}>{gameInfoCount.toLocaleString()}</span>&nbsp;&nbsp;GAMES</div>
+              <div className={styles['header-stat']}><span className={styles.number}>{playerProfilesCount.toLocaleString()}</span>&nbsp;&nbsp;PLAYER PROFILES</div>
             </div>
           </div>
         </div>
 
-        {/* Season Selection Section */}
+        {/* Quick Navigation Section */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Select Season</h2>
+          <h2 className={styles['section-title']}>Explore Seasons</h2>
           
-          <div className={styles['selection-container']}>
-            <div className={styles['year-selection']}>
-              <label className={styles.label}>Choose Season</label>
-              <div className={styles['year-grid']}>
-                {seasons.map(year => (
-                  <button
-                    key={year}
-                    className={`${styles['year-box']} ${selectedYear === year ? styles['year-box-selected'] : ''}`}
-                    onClick={() => setSelectedYear(year)}
-                  >
-                    <span className={styles['year-number']}>{year}</span>
-                    <span className={styles['year-label']}>Season</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Explore Button */}
-          <div className={styles['button-container']}>
-            <button 
-              onClick={handleExploreSeason}
-              className={styles.searchButton}
-              disabled={!selectedYear}
-            >
-              Explore Season
-            </button>
+          <div className={styles['season-grid']}>
+            {seasons.map(year => (
+              <button
+                key={year}
+                className={styles['season-button']}
+                onClick={() => handleNavigateToSeason(year)}
+              >
+                <span className={styles['season-year']}>{year}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Database Stats Section */}
-        <div className={styles.section}>
-          <h2 className={styles['section-title']}>My Database</h2>
-          
-          <div className={styles['stats-overview']}>
-            <div className={styles['stat-overview-item']}>
-              <div className={styles['stat-overview-number']}>{seasons.length}</div>
-              <div className={styles['stat-overview-label']}>Years</div>
-              <div className={styles['stat-overview-detail']}>{seasons.length > 0 ? `${Math.min(...seasons)}-${Math.max(...seasons)}` : 'N/A'}</div>
-            </div>
-            
-            <div className={styles['stat-overview-item']}>
-              <div className={styles['stat-overview-number']}>32</div>
-              <div className={styles['stat-overview-label']}>Teams</div>
-              <div className={styles['stat-overview-detail']}>NFL Franchises</div>
-            </div>
-            
-            <div className={styles['stat-overview-item']}>
-              <div className={styles['stat-overview-number']}>6,800</div>
-              <div className={styles['stat-overview-label']}>Games</div>
-              <div className={styles['stat-overview-label']}>Total Seasons</div>
-            </div>
-            
-            <div className={styles['stat-overview-item']}>
-              <div className={styles['stat-overview-number']}>42,400</div>
-              <div className={styles['stat-overview-label']}>Player Profiles</div>
-              <div className={styles['stat-overview-detail']}>All Positions</div>
-            </div>
-          </div>
-        </div>
 
         {/* Features Section */}
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>What You'll Discover</h2>
+          <h2 className={styles['section-title']}>Comprehensive Data Coverage</h2>
           
           <div className={styles['features-grid']}>
             <div className={styles['feature-card']}>
-              <div className={styles['feature-icon']}>🏆</div>
-              <h3>Season Standings</h3>
-              <p>Complete team rankings, division standings, and playoff results</p>
+              <div className={styles['feature-icon']}>
+                <img src="/icons/crown.png" alt="Crown" className={styles['icon-image']} />
+              </div>
+              <h3>Seasonal Analysis</h3>
+              <p>League leaders in all statistical categories, award winners, and team performance rankings</p>
             </div>
             
             <div className={styles['feature-card']}>
-              <div className={styles['feature-icon']}>👑</div>
-              <h3>Award Winners</h3>
-              <p>MVP, Offensive/Defensive Player of the Year, and other honors</p>
-            </div>
-            
-            <div className={styles['feature-card']}>
-              <div className={styles['feature-icon']}>📊</div>
-              <h3>Stat Leaders</h3>
-              <p>League leaders in passing, rushing, receiving, and defensive stats</p>
-            </div>
-            
-            <div className={styles['feature-card']}>
-              <div className={styles['feature-icon']}>🏈</div>
+              <div className={styles['feature-icon']}>
+                <img src="/icons/stadium.png" alt="Stadium" className={styles['icon-image']} />
+              </div>
               <h3>Team Analysis</h3>
-              <p>Detailed team performance, schedules, and player rosters</p>
+              <p>Full seasonal games, comprehensive statistical categories, and detailed roster with performance metrics</p>
+            </div>
+            
+            <div className={styles['feature-card']}>
+              <div className={styles['feature-icon']}>
+                <img src="/icons/fb_icon.png" alt="Football" className={styles['icon-image']} />
+              </div>
+              <h3>Game Analysis</h3>
+              <p>Complete drive-by-drive analysis, every player metric, and comprehensive team statistical comparisons</p>
+            </div>
+            
+            <div className={styles['feature-card']}>
+              <div className={styles['feature-icon']}>
+                <img src="/icons/player.png" alt="Player" className={styles['icon-image']} />
+              </div>
+              <h3>Player Analysis</h3>
+              <p>100+ statistical metrics per game including passing, rushing, receiving, defensive, and special teams data</p>
             </div>
           </div>
         </div>

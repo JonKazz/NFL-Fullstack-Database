@@ -657,11 +657,16 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     let losses = 0;
     
     gameStats.forEach(game => {
-      if (game.gameInfo.winningTeamId === game.playerStats.teamId && game.gameInfo.playoffGame === null) {
-        wins++;
-      } else {
-        losses++;
-      }
+      const isWinningTeam = game.gameInfo.winningTeamId === game.playerStats.teamId;
+      const isNotPlayoff = !game.gameInfo.playoffGame;
+
+      if (isNotPlayoff) {
+        if (isWinningTeam) {
+          wins++;
+        } else {
+          losses++;
+        }
+      } 
     });
     
     return `${wins}-${losses}`;
@@ -678,37 +683,35 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     
     if (statCategories.passing) {
       summary.push(
-        formatStat(seasonStats.totalPassCompletions),
-        formatStat(seasonStats.totalPassAttempts),
-        formatStat(seasonStats.totalPassYards),
-        formatStat(seasonStats.totalPassTouchdowns),
-        formatStat(seasonStats.totalPassInterceptions),
-        formatStat(seasonStats.avgPassRating)
+        formatStat(seasonStats.passingCompletions),
+        formatStat(seasonStats.passingAttempts),
+        formatStat(seasonStats.passingYards),
+        formatStat(seasonStats.passingTouchdowns),
+        formatStat(seasonStats.passingInterceptions),
+        formatStat(seasonStats.passerRating)
       );
     }
     
     if (statCategories.rushing) {
       summary.push(
-        formatStat(seasonStats.totalRushAttempts),
-        formatStat(seasonStats.totalRushYards),
-        formatStat(seasonStats.totalRushTouchdowns)
+        formatStat(seasonStats.rushingAttempts),
+        formatStat(seasonStats.rushingYards),
+        formatStat(seasonStats.rushingTouchdowns)
       );
     }
     
     if (statCategories.receiving) {
       summary.push(
-        formatStat(seasonStats.totalReceivingTargets),
-        formatStat(seasonStats.totalReceivingReceptions),
-        formatStat(seasonStats.totalReceivingYards),
-        formatStat(seasonStats.totalReceivingTouchdowns)
+        formatStat(seasonStats.receivingTargets),
+        formatStat(seasonStats.receivingReceptions),
+        formatStat(seasonStats.receivingYards),
+        formatStat(seasonStats.receivingTouchdowns)
       );
     }
     
     if (statCategories.fumbles) {
-      summary.push(
-        formatStat(seasonStats.totalFumblesTotal),
-        formatStat(seasonStats.totalFumblesLost)
-      );
+      // Only fumblesLost is available in season stats
+      summary.push('-', formatStat(seasonStats.fumblesLost));
     }
     
     return summary;
@@ -725,12 +728,12 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     
     if (statCategories.defensive) {
       summary.push(
-        formatStat(seasonStats.totalDefensiveTacklesCombined),
-        formatStat(seasonStats.totalDefensiveTacklesSolo),
-        formatStat(seasonStats.totalDefensiveTacklesAssists),
-        formatStat(seasonStats.totalDefensiveSacks),
-        formatStat(seasonStats.totalDefensiveInterceptions),
-        formatStat(seasonStats.totalDefensivePassesDefended)
+        formatStat(seasonStats.defensiveTacklesCombined),
+        '-', // defensiveTacklesSolo not available in season stats
+        '-', // defensiveTacklesAssists not available in season stats
+        formatStat(seasonStats.defensiveSacks),
+        formatStat(seasonStats.defensiveInterceptions),
+        formatStat(seasonStats.defensivePassesDefended)
       );
     }
     
@@ -748,29 +751,23 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     
     if (statCategories.kicking) {
       summary.push(
-        formatStat(seasonStats.totalFieldGoalsMade),
-        formatStat(seasonStats.totalFieldGoalsAttempted),
-        formatStat(seasonStats.totalExtraPointsMade),
-        formatStat(seasonStats.totalExtraPointsAttempted)
+        formatStat(seasonStats.fieldGoalsMade),
+        formatStat(seasonStats.fieldGoalsAttempted),
+        formatStat(seasonStats.extraPointsMade),
+        formatStat(seasonStats.extraPointsAttempted)
       );
     }
     
     if (statCategories.punting) {
       summary.push(
-        formatStat(seasonStats.totalPunts),
-        formatStat(seasonStats.totalPuntYards)
+        formatStat(seasonStats.punts),
+        formatStat(seasonStats.puntYards)
       );
     }
     
     if (statCategories.returns) {
-      summary.push(
-        formatStat(seasonStats.totalKickReturns),
-        formatStat(seasonStats.totalKickReturnYards),
-        formatStat(seasonStats.totalKickReturnTouchdowns),
-        formatStat(seasonStats.totalPuntReturns),
-        formatStat(seasonStats.totalPuntReturnYards),
-        formatStat(seasonStats.totalPuntReturnTouchdowns)
-      );
+      // Return stats are not available in season stats, so we'll show dashes
+      summary.push('-', '-', '-', '-', '-', '-');
     }
     
     return summary;
@@ -806,30 +803,6 @@ import { fetchPlayerAvailableSeasons } from '../../api/fetches';
     };
     return (playoffOrder[a.gameInfo.playoffGame] || 0) - (playoffOrder[b.gameInfo.playoffGame] || 0);
   }) : [];
-
-  // Debug logging
-  console.log('All gameStats:', gameStats);
-  console.log('Regular season games:', regularSeasonGames);
-  console.log('Playoff games:', playoffGames);
-  console.log('Sample game playoffGame field:', gameStats?.[0]?.gameInfo?.playoffGame);
-  console.log('Sample game keys:', gameStats?.[0] ? Object.keys(gameStats[0]) : 'No games');
-  console.log('Sample game full object:', gameStats?.[0]);
-  
-  // Log playoffGame value for each game
-  if (gameStats && gameStats.length > 0) {
-    console.log('=== PLAYOFF GAME VALUES FOR EACH GAME ===');
-    gameStats.forEach((game, index) => {
-      console.log(`Game ${index + 1}:`, {
-        gameId: game.gameInfo.gameId,
-        date: game.gameInfo.date,
-        seasonWeek: game.gameInfo.seasonWeek,
-        playoffGame: game.gameInfo.playoffGame,
-        playoffGameType: typeof game.gameInfo.playoffGame,
-        isPlayoff: game.gameInfo.playoffGame && game.gameInfo.playoffGame !== '' && game.gameInfo.playoffGame !== null
-      });
-    });
-    console.log('=== END PLAYOFF GAME VALUES ===');
-  }
 
   return (
     <div className={styles['stats-table-container']}>

@@ -79,6 +79,14 @@ export async function fetchTeamSeasonGamesInfo(teamId, seasonYear) {
   return response.json();
 }
 
+export async function fetchGameInfoCount() {
+  const response = await fetch(`${API_BASE_URL}/api/game-info/count`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch game info count (api)');
+  }
+  return response.json();
+}
+
 
 
 /*
@@ -197,6 +205,14 @@ export async function fetchPlayerProfile(playerId) {
   const response = await fetch(`${API_BASE_URL}/api/player-profiles/${playerId}`);
   if (!response.ok) {
     throw new Error('Failed to fetch player profile (api)');
+  }
+  return response.json();
+}
+
+export async function fetchPlayerProfilesCount() {
+  const response = await fetch(`${API_BASE_URL}/api/player-profiles/count`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player profiles count (api)');
   }
   return response.json();
 }

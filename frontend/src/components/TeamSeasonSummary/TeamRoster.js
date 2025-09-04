@@ -28,7 +28,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={quarterbacks} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'passingCompletions', label: 'Cmp' },
                 { key: 'passingAttempts', label: 'Att' },
                 { key: 'passingYards', label: 'Yards' },
@@ -49,7 +49,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={runningBacks} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'rushingYards', label: 'Yards' },
                 { key: 'rushingAttempts', label: 'Attempts' },
                 { key: 'rushingYardsPerAttempt', label: 'YPA' },
@@ -71,7 +71,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={receivers} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'position', label: 'Pos' },
                 { key: 'receivingYards', label: 'Yards' },
                 { key: 'receivingTouchdowns', label: 'TD' },
@@ -92,7 +92,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={defensiveLine} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'position', label: 'Pos' },
                 { key: 'defensiveTacklesCombined', label: 'Tackles' },
                 { key: 'defensiveTacklesLoss', label: 'TFL' },
@@ -114,7 +114,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={linebackers} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'position', label: 'Pos' },
                 { key: 'defensiveTacklesCombined', label: 'Tackles' },
                 { key: 'defensiveTacklesLoss', label: 'TFL' },
@@ -136,7 +136,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={defensiveBacks} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'position', label: 'Pos' },
                 { key: 'defensiveTacklesCombined', label: 'Tackles' },
                 { key: 'defensiveInterceptions', label: 'INT' },
@@ -155,7 +155,7 @@ function TeamRoster({ playerStats }) {
             <SortableTable 
               players={specialTeams} 
               columns={[
-                { key: 'playerId', label: 'Player' },
+                { key: 'playerName', label: 'Player' },
                 { key: 'position', label: 'Position' },
                 { key: 'fieldGoalsMade', label: 'FG Made' },
                 { key: 'fieldGoalsAttempted', label: 'FG Att' },

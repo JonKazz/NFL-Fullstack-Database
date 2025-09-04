@@ -8,9 +8,22 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   color: #e5e7eb;
-  min-height: 100vh;
+  height: 100vh;
   line-height: 1.6;
   padding: 20px;
+  overflow: hidden;
+}
+
+/* Force background on body and html when this component is active */
+.pageBackground::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  z-index: -1;
 }
 
 .container {
@@ -21,15 +34,18 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   overflow: hidden;
   padding: 20px;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: linear-gradient(90deg, #a10d03 0%, #d61a0f 100%);
   border-radius: 8px;
   padding: 0;
   margin-bottom: 30px;
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  box-shadow: 0 4px 16px rgba(161, 13, 3, 0.3);
+  border: 1px solid rgba(161, 13, 3, 0.2);
   position: relative;
   overflow: hidden;
   min-height: 200px;
@@ -44,26 +60,50 @@
   z-index: 1;
 }
 
-.nfl-logo-bg {
+.logo-container {
   position: absolute;
-  left: -50px;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.15;
-  z-index: 1;
-}
-
-.nfl-logo-placeholder {
-  width: 300px;
-  height: 300px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 120px;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.3);
+  z-index: 10;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.2);
+}
+
+.header-stats {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+}
+
+.header-stat {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+  line-height: 1.3;
+  font-family: 'Bebas Neue Pro', sans-serif;
+  font-style: italic;
+}
+
+.header-stat .number {
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
 }
 
 .header-content {
@@ -91,7 +131,7 @@
 }
 
 .section {
-  background: #3a3a3a;
+  background: #1a1a1a;
   border-radius: 8px;
   padding: 30px;
   margin-bottom: 30px;
@@ -142,17 +182,7 @@
   min-width: 300px;
 }
 
-/* Remove team grid styles that are no longer needed */
-.team-grid,
-.team-logo-item,
-.team-logo-item:hover,
-.team-logo-item.selected,
-.team-logo-container,
-.team-logo,
-.team-logo-fallback,
-.team-name {
-  /* These styles are no longer used on the homepage */
-}
+/* Removed unused team grid styles */
 
 .label {
   font-size: 1.1rem;
@@ -161,67 +191,45 @@
   text-align: center;
 }
 
-.year-grid {
+.season-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 15px;
   margin-top: 20px;
-  max-width: 800px;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.year-box {
-  background: #2d2d2d;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+.season-button {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border: none;
   border-radius: 8px;
-  padding: 20px 15px;
+  padding: 15px 10px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100px;
+  min-height: 60px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
 }
 
-.year-box:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: #333333;
+.season-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
 }
 
-.year-box-selected {
-  border-color: #dc2626;
-  background: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+.season-button:active {
+  transform: translateY(-1px);
 }
 
-.year-box-selected:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
-}
-
-.year-number {
-  font-size: 1.8rem;
+.season-year {
+  font-size: 1.4rem;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 5px;
   display: block;
-}
-
-.year-label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.year-box-selected .year-number,
-.year-box-selected .year-label {
-  color: #ffffff;
 }
 
 .button-container {
@@ -276,15 +284,14 @@
   transition: all 0.3s ease;
 }
 
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  border-color: rgba(220, 38, 38, 0.3);
-}
 
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
+
+
+.icon-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 5px;
 }
 
 .feature-card h3 {
@@ -364,32 +371,9 @@
     font-size: 1rem;
   }
   
-  .selection-container {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .team-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-  
-  .team-logo-item {
-    padding: 12px 8px;
-  }
-  
-  .team-logo-container {
-    width: 45px;
-    height: 45px;
-  }
-  
-  .team-logo-fallback {
-    font-size: 14px;
-  }
-  
-  .team-name {
-    font-size: 0.75rem;
+  .season-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
   
   .features-grid {
@@ -421,27 +405,9 @@
     font-size: 2rem;
   }
   
-  .team-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 10px;
-  }
-  
-  .team-logo-item {
-    padding: 10px 6px;
-  }
-  
-  .team-logo-container {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .team-logo-fallback {
-    font-size: 12px;
-  }
-  
-  .team-name {
-    font-size: 0.7rem;
+  .season-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
   
   .stats-overview {

@@ -22,4 +22,8 @@ public class GameInfoService {
     public List<GameInfo> getPlayoffGamesBySeason(Integer seasonYear) {
         return repository.findPlayoffGamesBySeason(seasonYear);
     }
+    
+    public Long getTotalGameInfoCount() {
+        return repository.countAllGameInfo();
+    }
 }

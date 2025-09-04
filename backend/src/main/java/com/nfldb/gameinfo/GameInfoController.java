@@ -27,4 +27,9 @@ public class GameInfoController {
     public List<GameInfo> getPlayoffGames(@RequestParam Integer seasonYear) {
         return gameInfoService.getPlayoffGamesBySeason(seasonYear);
     }
+    
+    @GetMapping("/count")
+    public Long getTotalGameInfoCount() {
+        return gameInfoService.getTotalGameInfoCount();
+    }
 }

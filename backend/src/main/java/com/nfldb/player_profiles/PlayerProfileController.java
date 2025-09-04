@@ -33,4 +33,9 @@ public class PlayerProfileController {
             "profile", profile
         );
     }
+    
+    @GetMapping("/count")
+    public Long getTotalPlayerProfilesCount() {
+        return playerProfileService.getTotalPlayerProfilesCount();
+    }
 } 

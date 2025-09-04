@@ -13,4 +13,7 @@ public interface GameInfoRepository extends JpaRepository<GameInfo, String> {
 
     @Query("SELECT g FROM GameInfo g WHERE g.seasonYear = :seasonYear AND g.playoffGame IS NOT NULL ORDER BY g.seasonWeek")
     List<GameInfo> findPlayoffGamesBySeason(@Param("seasonYear") Integer seasonYear);
+    
+    @Query("SELECT COUNT(g) FROM GameInfo g")
+    Long countAllGameInfo();
 }
