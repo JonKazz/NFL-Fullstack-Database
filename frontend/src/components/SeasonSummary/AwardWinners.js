@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './SeasonSummary.module.css';
+import styles from './AwardWinners.module.css';
 import { fetchPlayerProfile } from '../../api/fetches';
 
 function AwardWinners({ awards }) {

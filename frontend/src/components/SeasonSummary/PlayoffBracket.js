@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './SeasonSummary.module.css';
+import styles from './PlayoffBracket.module.css';
 import { getTeamPrimaryColor } from '../../utils';
 
 function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
@@ -27,20 +27,6 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
     <div className={styles.section}>
       <h2 className={styles['section-title']}>Super Bowl Champion</h2>
       
-      {/* Super Bowl Champion Display */}
-      {seasonInfo?.sbChamp && (
-        <div 
-          className={styles['champion-display']}
-          style={{ 
-            backgroundColor: getTeamPrimaryColor(seasonInfo.sbChamp),
-            borderColor: getTeamPrimaryColor(seasonInfo.sbChamp)
-          }}
-        >
-          <h3>{teams.find(t => t.teamId === seasonInfo.sbChamp)?.name || seasonInfo.sbChamp}</h3>
-        </div>
-      )}
-      
-
       <div className={styles['playoff-bracket']}>
         <div className={styles['bracket-container']}>
           {/* Group playoff games by round using the new playoffGame field */}
@@ -98,36 +84,40 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
                         {afcWildCard.map((game, index) => {
                           const homeTeamWon = (game.homePoints || 0) > (game.awayPoints || 0);
                           return (
-                            <div key={game.gameId} className={`${styles['bracket-matchup']} ${styles['afc-game']}`}>
-                              <div className={`${styles['team-section']} ${!homeTeamWon ? styles['losing-team'] : ''}`}>
-                                <div className={styles['team-logo']}>
-                                  <img 
-                                    src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
-                                    alt={game.homeTeamId}
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                  />
-                                  <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                            <React.Fragment key={game.gameId}>
+                              <div className={`${styles['bracket-matchup']} ${styles['afc-game']}`}>
+                                <div className={`${styles['team-section']} ${!homeTeamWon ? styles['losing-team'] : ''}`}>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                      alt={game.homeTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                  </div>
+                                  <div className={styles['team-score']}>{game.homePoints || 0}</div>
                                 </div>
-                                <div className={styles['team-score']}>{game.homePoints || 0}</div>
-                              </div>
-                              <div className={`${styles['team-section']} ${homeTeamWon ? styles['losing-team'] : ''}`}>
-                                <div className={styles['team-logo']}>
-                                  <img 
-                                    src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
-                                    alt={game.awayTeamId}
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                  />
-                                  <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                <div className={`${styles['team-section']} ${homeTeamWon ? styles['losing-team'] : ''}`}>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                      alt={game.awayTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                  </div>
+                                  <div className={styles['team-score']}>{game.awayPoints || 0}</div>
                                 </div>
-                                <div className={styles['team-score']}>{game.awayPoints || 0}</div>
                               </div>
-                            </div>
+                              {/* Add placeholder gap after first game when there are only 2 games */}
+                              {afcWildCard.length === 2 && index === 0 && <div className={styles['bracket-matchup-placeholder']}></div>}
+                            </React.Fragment>
                           );
                         })}
                       </div>
@@ -225,7 +215,20 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
                   </div>
 
                   {/* Super Bowl - Center */}
-                  <div className={styles['super-bowl']}>
+                  <div className={styles['super-bowl-container']}>
+                    {/* Champion Display - Above Super Bowl */}
+                    {seasonInfo?.sbChamp && (
+                      <div 
+                        className={styles['champion-display-compact']}
+                        style={{ 
+                          borderColor: getTeamPrimaryColor(seasonInfo.sbChamp)
+                        }}
+                      >
+                        <h4>{teams.find(t => t.teamId === seasonInfo.sbChamp)?.name || seasonInfo.sbChamp}</h4>
+                      </div>
+                    )}
+                    
+                    <div className={styles['super-bowl']}>
                     {superBowlGames.map((game, index) => {
                       // Determine which team is AFC vs NFC
                       const homeTeam = teams.find(t => t.teamId === game.homeTeamId);
@@ -303,6 +306,7 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
                         </div>
                       );
                     })}
+                    </div>
                   </div>
 
                   {/* NFC Side - Right */}
@@ -403,40 +407,43 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
                         {nfcWildCard.map((game, index) => {
                           const homeTeamWon = (game.homePoints || 0) > (game.awayPoints || 0);
                           return (
-                            <div 
-                              key={game.gameId} 
-                              className={`${styles['bracket-matchup']} ${styles['nfc-game']}`}
-                              onClick={() => navigate(`/game/${game.gameId}`)}
-                            >
-                              <div className={`${styles['team-section']} ${!homeTeamWon ? styles['losing-team'] : ''}`}>
-                                <div className={styles['team-score']}>{game.homePoints || 0}</div>
-                                <div className={styles['team-logo']}>
-                                  <img 
-                                    src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
-                                    alt={game.homeTeamId}
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                  />
-                                  <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                            <React.Fragment key={game.gameId}>
+                              <div 
+                                className={`${styles['bracket-matchup']} ${styles['nfc-game']}`}
+                                onClick={() => navigate(`/game/${game.gameId}`)}
+                              >
+                                <div className={`${styles['team-section']} ${!homeTeamWon ? styles['losing-team'] : ''}`}>
+                                  <div className={styles['team-score']}>{game.homePoints || 0}</div>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.homeTeamId)?.logo || ''} 
+                                      alt={game.homeTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.homeTeamId}</div>
+                                  </div>
+                                </div>
+                                <div className={`${styles['team-section']} ${homeTeamWon ? styles['losing-team'] : ''}`}>
+                                  <div className={styles['team-score']}>{game.awayPoints || 0}</div>
+                                  <div className={styles['team-logo']}>
+                                    <img 
+                                      src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
+                                      alt={game.awayTeamId}
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'flex';
+                                      }}
+                                    />
+                                    <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className={`${styles['team-section']} ${homeTeamWon ? styles['losing-team'] : ''}`}>
-                                <div className={styles['team-score']}>{game.awayPoints || 0}</div>
-                                <div className={styles['team-logo']}>
-                                  <img 
-                                    src={teams.find(t => t.teamId === game.awayTeamId)?.logo || ''} 
-                                    alt={game.awayTeamId}
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                      e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                  />
-                                  <div className={styles['team-logo-fallback']}>{game.awayTeamId}</div>
-                                </div>
-                              </div>
-                            </div>
+                              {/* Add placeholder gap after first game when there are only 2 games */}
+                              {nfcWildCard.length === 2 && index === 0 && <div className={styles['bracket-matchup-placeholder']}></div>}
+                            </React.Fragment>
                           );
                         })}
                       </div>

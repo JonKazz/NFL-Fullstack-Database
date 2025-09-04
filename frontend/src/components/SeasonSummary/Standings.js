@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './SeasonSummary.module.css';
+import styles from './Standings.module.css';
 
 function Standings({ teams, year }) {
   const navigate = useNavigate();

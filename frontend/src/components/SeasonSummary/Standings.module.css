@@ -1,0 +1,194 @@
+/* Standings Component Styles */
+
+.section {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.standings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* padding-right: 300px; */
+}
+
+/* Conference labels above the standings */
+.conference-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 0 15px;
+}
+
+.conference-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Position AFC label above left side */
+.conference-label:first-child {
+  text-align: right;
+  padding-right: 30px;
+  color: #D50A0A;
+}
+
+/* Position NFC label above right side */
+.conference-label:last-child {
+  text-align: left;
+  padding-left: 30px;
+  color: #2563eb;
+}
+
+/* Division groups */
+.division-group {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 6px;
+  align-items: start;
+  margin-bottom: 4px;
+}
+
+/* Division labels within each division group */
+.division-label {
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 6px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  margin: 6px 0;
+  align-self: center;
+  height: 100%;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  gap: 5px;
+}
+
+.division {
+  margin-bottom: 0;
+}
+
+.standings-table {
+  background: #0f0f0f;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* AFC tables - Red outline */
+.division-group .division:first-child .standings-table {
+  border: 2px solid #D50A0A;
+}
+
+/* NFC tables - Blue outline */
+.division-group .division:last-child .standings-table {
+  border: 2px solid #2563eb;
+}
+
+.standings-row {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  align-items: center;
+  padding: 8px 12px;
+  background: #2a2a2a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.standings-row:hover {
+  background: #4a4a4a;
+}
+
+.standings-row:last-child {
+  border-bottom: none;
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rank {
+  background: #dc2626;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* AFC ranking numbers - Red background */
+.division-group .division:first-child .rank {
+  background: #D50A0A;
+}
+
+/* NFC ranking numbers - Blue background */
+.division-group .division:last-child .rank {
+  background: #2563eb;
+}
+
+.team-logo-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 1px;
+}
+
+.team-record {
+  font-weight: 600;
+  color: #ffffff;
+  text-align: right;
+  min-width: 60px;
+  font-size: 0.85rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .standings-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .standings-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .team-info {
+    justify-content: center;
+  }
+}

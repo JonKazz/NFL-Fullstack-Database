@@ -1,0 +1,439 @@
+/* PlayoffBracket Component Styles */
+
+.section {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.section-title {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-align: center;
+  position: relative;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+  border-radius: 2px;
+}
+
+.champion-display {
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.champion-display h3 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 0;
+}
+
+.champion-display-compact {
+  text-align: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 3px solid;
+  margin-bottom: 15px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 10px rgba(128, 128, 128, 0.2), 0 0 20px rgba(128, 128, 128, 0.1);
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+  background: #1d1d1d;
+}
+
+.champion-display-compact h4 {
+  font-size: 1.2rem;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin: 0;
+  font-weight: 600;
+}
+
+.no-playoffs {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.no-playoffs p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  margin: 0;
+}
+
+.playoff-bracket {
+  background: #2a2a2a;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bracket-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  max-width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+.bracket-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.conference-side {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  position: relative;
+}
+
+.bracket-matchups {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  position: relative;
+}
+
+.bracket-matchup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: #1d1d1d;
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  min-width: 90px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* AFC games - Red outline */
+.bracket-matchup.afc-game {
+  border: 2px solid #D50A0A;
+}
+
+/* NFC games - Blue outline */
+.bracket-matchup.nfc-game {
+  border: 2px solid #2563eb;
+}
+
+.bracket-matchup:hover {
+  background: #4a4a4a;
+  transform: scale(1.01) translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bracket-matchup-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: transparent;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  position: relative;
+  min-width: 90px;
+  height: 120px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* AFC games hover - Red border */
+.bracket-matchup.afc-game:hover {
+  border-color: #ff4444;
+  box-shadow: 0 0 0 3px #ff4444;
+}
+
+/* NFC games hover - Blue border */
+.bracket-matchup.nfc-game:hover {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px #4a90e2;
+}
+
+/* Team section containing logo and score */
+.team-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-score {
+  font-size: 14px;
+  font-weight: bold;
+  color: #e5e7eb;
+  background: #4a4a4a;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 20px;
+  text-align: center;
+}
+
+.team-section.losing-team {
+  opacity: 0.6;
+  filter: grayscale(30%);
+}
+
+.team-section.losing-team .team-logo {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.team-section.losing-team .team-score {
+  background: #3a3a3a;
+  color: #9ca3af;
+}
+
+.playoff-bracket .team-logo {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.playoff-bracket .team-logo:hover {
+  transform: none;
+}
+
+.playoff-bracket .team-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.playoff-bracket .team-logo-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+.playoff-bracket .team-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+  flex: 1;
+  text-align: center;
+}
+
+/* Super Bowl Container - Center between AFC and NFC */
+.super-bowl-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 160px;
+  height: 100%;
+  margin-top: -6%;
+}
+
+/* Super Bowl section - Center between AFC and NFC */
+.super-bowl {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(#1d1d1d, #1d1d1d) padding-box,
+    linear-gradient(to right, #D50A0A 0%, #D50A0A 50%, #2563eb 50%, #2563eb 100%) border-box;
+  min-width: 160px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.super-bowl:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 6px solid transparent;
+  background: 
+    linear-gradient(#2a2a2a, #2a2a2a) padding-box,
+    linear-gradient(to right, #ff4444 0%, #ff4444 50%, #4a90e2 50%, #4a90e2 100%) border-box;
+}
+
+.super-bowl-matchup {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  justify-content: center;
+}
+
+.super-bowl-scores {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.super-bowl-scores .team-score {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e5e7eb;
+  background: #4a4a4a;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 25px;
+  text-align: center;
+}
+
+.super-bowl-scores .team-score.losing-score {
+  opacity: 0.6;
+  filter: grayscale(30%);
+  background: #3a3a3a;
+  color: #9ca3af;
+}
+
+.super-bowl-matchup .team-logo {
+  width: 55px;
+  height: 55px;
+}
+
+.super-bowl-matchup .team-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e5e7eb;
+}
+
+.champion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.champion-logo {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  border: 8px solid;
+  overflow: hidden;
+  box-shadow: 0 0 20px currentColor, 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.champion-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.champion-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bracket-top-row {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .conference-side {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .bracket-round {
+    gap: 20px;
+  }
+  
+  .bracket-matchups {
+    gap: 30px;
+  }
+  
+  .section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bracket-matchup {
+    min-width: 160px;
+    padding: 10px;
+  }
+  
+  .team-logo {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .super-bowl-matchup .team-logo {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .champion-logo {
+    width: 100px;
+    height: 100px;
+  }
+}

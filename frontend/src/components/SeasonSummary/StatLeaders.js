@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './SeasonSummary.module.css';
+import styles from './StatLeaders.module.css';
 import { fetchSeasonStatsByYear } from '../../api/fetches';
 import { TEAM_MAP } from '../../utils';
 

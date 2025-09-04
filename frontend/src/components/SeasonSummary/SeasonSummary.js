@@ -84,8 +84,10 @@ function SeasonSummary() {
       <div className={styles.container}>
         {/* Header */}
         <div className={styles.header}>
-          <h1>{year} NFL Season</h1>
-          <p>League Overview, Standings, and Statistics</p>
+          <div className={styles['header-content']}>
+            <img src="/icons/sh-logo.png" alt="NFL Logo" className={styles['header-logo']} />
+            <h1>{year} NFL Season</h1>
+          </div>
         </div>
 
 
