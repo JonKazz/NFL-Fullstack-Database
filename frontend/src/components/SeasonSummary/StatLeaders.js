@@ -344,23 +344,23 @@ function StatLeaders({ year }) {
           </div>
 
           <div className={styles['stat-category']}>
-            <h4>Pressures</h4>
+            <h4>QB Hits</h4>
             <table className={styles['leader-table']}>
               <thead>
                 <tr>
                   <th>Rank</th>
                   <th>Player</th>
                   <th>Team</th>
-                  <th>Pressures</th>
+                  <th>QB Hits</th>
                 </tr>
               </thead>
               <tbody>
-                {getTopPlayers('defensivePressures').map((player, index) => (
+                {getTopPlayers('defensiveQbHits').map((player, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{getPlayerNameLink(player)}</td>
                     <td>{getTeamCity(player.teamId)}</td>
-                    <td>{player.defensivePressures}</td>
+                    <td>{player.defensiveQbHits}</td>
                   </tr>
                 ))}
               </tbody>

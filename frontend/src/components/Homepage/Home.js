@@ -86,7 +86,7 @@ function Home() {
 
 
         {/* Features Section */}
-        <div className={styles.section}>
+        <div className={styles['features-section']}>
           <h2 className={styles['section-title']}>Comprehensive Data Coverage</h2>
           
           <div className={styles['features-grid']}>
