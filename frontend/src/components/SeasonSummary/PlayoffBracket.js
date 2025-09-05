@@ -85,7 +85,11 @@ function PlayoffBracket({ playoffs, teams, year, seasonInfo }) {
                           const homeTeamWon = (game.homePoints || 0) > (game.awayPoints || 0);
                           return (
                             <React.Fragment key={game.gameId}>
-                              <div className={`${styles['bracket-matchup']} ${styles['afc-game']}`}>
+                              <div 
+                                className={`${styles['bracket-matchup']} ${styles['afc-game']}`}
+                                onClick={() => navigate(`/game/${game.gameId}`)}
+                                style={{ cursor: 'pointer' }}
+                              >
                                 <div className={`${styles['team-section']} ${!homeTeamWon ? styles['losing-team'] : ''}`}>
                                   <div className={styles['team-logo']}>
                                     <img 
