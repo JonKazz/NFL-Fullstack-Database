@@ -101,7 +101,7 @@ function SeasonSummary() {
         {/* Awards and Stats */}
         {awards.length > 0 ? (
           <>
-            <AwardWinners awards={awards} />
+            <AwardWinners awards={awards} seasonYear={parseInt(year)} />
             <StatLeaders year={year} />
             <TeamStatLeaders year={year} />
           </>

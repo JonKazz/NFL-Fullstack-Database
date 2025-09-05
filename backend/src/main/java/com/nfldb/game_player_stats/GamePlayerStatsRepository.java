@@ -11,4 +11,7 @@ public interface GamePlayerStatsRepository extends JpaRepository<GamePlayerStats
     
     @Query("SELECT gps FROM GamePlayerStats gps JOIN GameInfo gi ON gps.gameId = gi.gameId WHERE gps.playerId = :playerId AND gi.seasonYear = :seasonYear")
     List<GamePlayerStats> findByPlayerIdAndSeasonYear(@Param("playerId") String playerId, @Param("seasonYear") String seasonYear);
+    
+    @Query("SELECT gps FROM GamePlayerStats gps JOIN GameInfo gi ON gps.gameId = gi.gameId WHERE gps.playerId = :playerId AND gi.seasonYear = :seasonYear ORDER BY gi.seasonWeek DESC, gi.date DESC")
+    List<GamePlayerStats> findByPlayerIdAndSeasonYearOrderByLastGame(@Param("playerId") String playerId, @Param("seasonYear") Integer seasonYear);
 }

@@ -28,4 +28,9 @@ public class GamePlayerStatsController {
     public List<PlayerStatsWithGameInfoDTO> getGamesByPlayerSeason(@RequestParam String playerId, @RequestParam String seasonYear) {
         return gamePlayerStatsService.getGamesByPlayerSeason(playerId, seasonYear);
     }
+
+    @GetMapping("/player-team")
+    public String getPlayerTeamBySeason(@RequestParam String playerId, @RequestParam Integer seasonYear) {
+        return gamePlayerStatsService.getPlayerTeamBySeason(playerId, seasonYear);
+    }
 }

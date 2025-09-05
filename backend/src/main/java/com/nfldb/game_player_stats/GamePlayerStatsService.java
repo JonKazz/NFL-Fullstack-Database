@@ -38,4 +38,15 @@ public class GamePlayerStatsService {
         
         return result;
     }
+
+    public String getPlayerTeamBySeason(String playerId, Integer seasonYear) {
+        List<GamePlayerStats> playerStats = repository.findByPlayerIdAndSeasonYearOrderByLastGame(playerId, seasonYear);
+        
+        if (playerStats.isEmpty()) {
+            return null; // Player not found in that season
+        }
+        
+        // Return the team from the first (most recent) game
+        return playerStats.get(0).getTeamId();
+    }
 }

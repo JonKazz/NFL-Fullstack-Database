@@ -121,6 +121,15 @@ export async function fetchPlayerStatsBySeason(playerId, seasonYear) {
   return response.json();
 }
 
+export async function fetchPlayerTeamBySeason(playerId, seasonYear) {
+  const params = new URLSearchParams({ playerId, seasonYear });
+  const response = await fetch(`${API_BASE_URL}/api/game-player-stats/player-team?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch player team by season (api)');
+  }
+  return response.text(); // Returns a string (team ID)
+}
+
 
 
 /*
