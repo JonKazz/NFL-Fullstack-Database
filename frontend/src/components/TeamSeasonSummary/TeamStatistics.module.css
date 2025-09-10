@@ -19,6 +19,43 @@
   border-radius: 2px;
 }
 
+.stats-container {
+  --team-primary-color: #E31837;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  margin: 0;
+  box-sizing: border-box;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.stats-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #f9fafb;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.stats-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
 .stats-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -26,7 +63,7 @@
 }
 
 .stats-category {
-  background: #3a3a3a;
+  background: #252525;
   border-radius: 6px;
   padding: 25px;
   border: 1px solid #4a4a4a;
@@ -40,8 +77,6 @@
   color: #f9fafb;
   font-weight: 600;
   text-align: center;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #dc2626;
 }
 
 /* Main Stats Grid - Prominent Display */
@@ -58,18 +93,10 @@
   align-items: flex-start;
   gap: 8px;
   padding: 15px;
-  background: #4a4a4a;
+  background: #1a1a1a;
   border-radius: 6px;
   border: 2px solid #5a5a5a;
-  transition: all 0.3s ease;
   position: relative;
-}
-
-.main-stat-item:hover {
-  background: #5a5a5a;
-  border-color: #6a6a6a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .main-stat-header {
@@ -81,29 +108,28 @@
 
 .main-stat-rank {
   background: #6a6a6a;
-  color: white;
+  color: #fff; /* Default white text for all rankings */
   font-weight: bold;
-  font-size: 0.9rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  min-width: 30px;
-  height: 25px;
+  font-size: 1.1rem; /* Slightly larger text */
+  padding: 10px; /* Slightly more padding */
+  border-radius: 6px;
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  min-width: 44px; /* Slightly larger box */
+  width: 44px; /* Slightly larger box */
+  height: 44px; /* Slightly larger box */
 }
 
-.main-stat-item:hover .main-stat-rank {
-  transform: scale(1.05);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-}
+
 
 .main-stat-name {
-  font-size: 0.8rem;
-  color: #d1d5db;
-  font-weight: 600;
+  font-size: 0.9rem; /* Larger font size */
+  color: #ffffff; /* Brighter white text */
+  font-weight: 600; /* Slightly bolder */
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -124,7 +150,7 @@
 .misc-stats-table {
   width: 100%;
   border-collapse: collapse;
-  background: #4a4a4a;
+  background: #1a1a1a;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
@@ -142,9 +168,125 @@
   border-right: 1px solid #5a5a5a;
 }
 
+/* Shared ranking color styles for both main stats and table cells */
+.main-stat-rank[data-rank],
+.rank-cell[data-rank] {
+  background: #6a6a6a; /* Default for unknown ranks */
+}
+
+/* Gold positions (1-3) */
+.main-stat-rank[data-rank="1"],
+.main-stat-rank[data-rank="2"],
+.main-stat-rank[data-rank="3"],
+.rank-cell[data-rank="1"],
+.rank-cell[data-rank="2"],
+.rank-cell[data-rank="3"] {
+  background: #e0a100; /* Gold for top 3 */
+}
+
+/* Muted blue groups (4-17) - progressively darker */
+/* Group 1: 4-6 */
+.main-stat-rank[data-rank="4"],
+.main-stat-rank[data-rank="5"],
+.main-stat-rank[data-rank="6"],
+.rank-cell[data-rank="4"],
+.rank-cell[data-rank="5"],
+.rank-cell[data-rank="6"] {
+  background: #8bb3d9; /* Lightest muted blue */
+}
+
+/* Group 2: 7-9 */
+.main-stat-rank[data-rank="7"],
+.main-stat-rank[data-rank="8"],
+.main-stat-rank[data-rank="9"],
+.rank-cell[data-rank="7"],
+.rank-cell[data-rank="8"],
+.rank-cell[data-rank="9"] {
+  background: #7c9ed1; /* Light muted blue */
+}
+
+/* Group 3: 10-12 */
+.main-stat-rank[data-rank="10"],
+.main-stat-rank[data-rank="11"],
+.main-stat-rank[data-rank="12"],
+.rank-cell[data-rank="10"],
+.rank-cell[data-rank="11"],
+.rank-cell[data-rank="12"] {
+  background: #5a7bb8; /* Medium muted blue */
+}
+
+/* Group 4: 13-15 */
+.main-stat-rank[data-rank="13"],
+.main-stat-rank[data-rank="14"],
+.main-stat-rank[data-rank="15"],
+.rank-cell[data-rank="13"],
+.rank-cell[data-rank="14"],
+.rank-cell[data-rank="15"] {
+  background: #3d5a9f; /* Darker muted blue */
+}
+
+/* Group 5: 16-17 */
+.main-stat-rank[data-rank="16"],
+.main-stat-rank[data-rank="17"],
+.rank-cell[data-rank="16"],
+.rank-cell[data-rank="17"] {
+  background: #2d4a8f; /* Darkest muted blue */
+}
+
+/* Red groups (18-32) - progressively darker */
+/* Group 1: 18-20 */
+.main-stat-rank[data-rank="18"],
+.main-stat-rank[data-rank="19"],
+.main-stat-rank[data-rank="20"],
+.rank-cell[data-rank="18"],
+.rank-cell[data-rank="19"],
+.rank-cell[data-rank="20"] {
+  background: #fca5a5; /* Lightest red for 18-20 */
+}
+
+/* Group 2: 21-24 */
+.main-stat-rank[data-rank="21"],
+.main-stat-rank[data-rank="22"],
+.main-stat-rank[data-rank="23"],
+.rank-cell[data-rank="21"],
+.rank-cell[data-rank="22"],
+.rank-cell[data-rank="23"] {
+  background: #f87171; /* Light red */
+}
+
+/* Group 3: 25-28 */
+.main-stat-rank[data-rank="24"],
+.main-stat-rank[data-rank="25"],
+.main-stat-rank[data-rank="26"],
+.rank-cell[data-rank="24"],
+.rank-cell[data-rank="25"],
+.rank-cell[data-rank="26"] {
+  background: #ef4444; /* Medium red */
+}
+
+/* Group 4: 29-32 */
+.main-stat-rank[data-rank="27"],
+.main-stat-rank[data-rank="28"],
+.main-stat-rank[data-rank="29"],
+.rank-cell[data-rank="27"],
+.rank-cell[data-rank="28"],
+.rank-cell[data-rank="29"] {
+  background: #dc2626; /* Dark red */
+}
+
+/* Group 4: 29-32 */
+.main-stat-rank[data-rank="30"],
+.main-stat-rank[data-rank="31"],
+.main-stat-rank[data-rank="32"],
+.rank-cell[data-rank="30"],
+.rank-cell[data-rank="31"],
+.rank-cell[data-rank="32"] {
+  background: #7f1d1d; /* Darkest red - worst rankings */
+}
+
 .stat-name-cell {
   padding: 6px 8px;
-  color: #f9fafb;
+  color: #ffffff;
   font-size: 0.8rem;
   font-weight: 500;
   border-right: 1px solid #5a5a5a;
@@ -152,7 +294,7 @@
 
 .stat-value-cell {
   padding: 6px 8px;
-  color: #fbbf24;
+  color: #ffffff;
   font-size: 0.8rem;
   font-weight: bold;
   text-align: right;
@@ -160,15 +302,15 @@
 }
 
 .misc-stats-table tr:nth-child(even) {
-  background: #4a4a4a;
+  background: #2a2a2a;
 }
 
 .misc-stats-table tr:nth-child(odd) {
-  background: #3a3a3a;
+  background: #1a1a1a;
 }
 
 .misc-stats-table tr:hover {
-  background: #5a5a5a;
+  background: #3a3a3a;
 }
 
 @media (max-width: 768px) {

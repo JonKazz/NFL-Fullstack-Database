@@ -67,7 +67,7 @@ function Games({ sortedGames, teamId }) {
           <div className={styles['team-section']}>
             <div className={styles['team-info']}>
               <div className={`${styles['team-name']} ${isWin ? styles['winner-text'] : ''}`}>
-                {TEAM_MAP[teamId]?.city}
+                {TEAM_MAP[teamId]?.name_short}
               </div>
               <div className={styles['team-record']}>
                 {/* Could add team record here if available */}
@@ -87,7 +87,7 @@ function Games({ sortedGames, teamId }) {
           <div className={styles['team-section']}>
             <div className={styles['team-info']}>
               <div className={`${styles['team-name']} ${!isWin ? styles['winner-text'] : ''}`}>
-                {TEAM_MAP[isHome ? game.awayTeamId : game.homeTeamId]?.city}
+                {TEAM_MAP[isHome ? game.awayTeamId : game.homeTeamId]?.name_short}
               </div>
               <div className={styles['team-record']}>
                 {/* Could add team record here if available */}
@@ -107,19 +107,25 @@ function Games({ sortedGames, teamId }) {
       {/* Regular Season Section */}
       {regularSeasonGames.length > 0 && (
         <div className={styles.section}>
-          <h2 className={styles['section-title']}>Regular Season</h2>
-          <div className={styles['games-grid']}>
-            {regularSeasonGames.map((game, idx) => renderGameCard(game, idx, false)).filter(Boolean)}
-          </div>
-        </div>
-      )}
-
-      {/* Playoffs Section - Only show if there are playoff games */}
-      {playoffGames.length > 0 && (
-        <div className={styles.section}>
-          <h2 className={styles['section-title']}>Playoffs</h2>
-          <div className={styles['games-grid']}>
-            {playoffGames.map((game, idx) => renderGameCard(game, idx, true)).filter(Boolean)}
+          <div className={styles['regular-season-container']}>
+            <h2 className={styles['regular-season-title']}>Regular Season</h2>
+            <div className={styles['games-wrapper']}>
+              <div className={styles['games-grid']}>
+                {regularSeasonGames.map((game, idx) => renderGameCard(game, idx, false)).filter(Boolean)}
+              </div>
+            </div>
+            
+            {/* Playoffs Section - Only show if there are playoff games */}
+            {playoffGames.length > 0 && (
+              <>
+                <h2 className={styles['playoff-title']}>Playoffs</h2>
+                <div className={styles['games-wrapper']}>
+                  <div className={styles['games-grid']}>
+                    {playoffGames.map((game, idx) => renderGameCard(game, idx, true)).filter(Boolean)}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

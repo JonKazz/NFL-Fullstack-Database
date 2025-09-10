@@ -8,6 +8,7 @@ import Games from './Games';
 import SeasonHeader from './SeasonHeader';
 import TeamStatistics from './TeamStatistics';
 import TeamRoster from './TeamRoster';
+import Coaches from './Coaches';
 
 
 
@@ -31,8 +32,12 @@ function SeasonSummaryVisualization() {
     if (!games) return [];
     
     return [...games].sort((a, b) => {
-      const weekA = a.gameInfo?.seasonWeek;
-      const weekB = b.gameInfo?.seasonWeek;
+      // Add safety checks for game objects
+      if (!a || !b) return 0;
+      
+      // seasonWeek is directly on the game object, not in gameInfo
+      const weekA = a.seasonWeek;
+      const weekB = b.seasonWeek;
       
       // Handle playoff weeks (they come after regular season)
       if (weekA === 'WC' || weekA === 'DIV' || weekA === 'CONF' || weekA === 'SB') {
@@ -147,6 +152,9 @@ function SeasonSummaryVisualization() {
 
         {/* Team Statistics Section */}
         <TeamStatistics teamInfo={teamInfo} teamStats={teamStats} teamId={teamId} />
+        
+        {/* Coaching Staff Section */}
+        <Coaches teamInfo={teamInfo} />
         
         {/* Team Roster Section */}
         <TeamRoster playerStats={playerStats} />

@@ -19,14 +19,105 @@
   border-radius: 2px;
 }
 
+.regular-season-container {
+  --team-primary-color: #E31837;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  margin: 0;
+  box-sizing: border-box;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.regular-season-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #f9fafb;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.regular-season-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.playoff-container {
+  --team-primary-color: #E31837;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  margin: 0;
+  box-sizing: border-box;
+  background: #212121;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.playoff-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #f9fafb;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  padding-top: 20px; /* Added top padding */
+  padding-bottom: 10px;
+}
+
+.playoff-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.games-wrapper {
+  --team-primary-color: #008E97;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  margin: 0;
+  box-sizing: border-box;
+  background: #252525;
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
 }
 
 .game-card {
-  background: #3a3a3a;
+  background: #202020;
   border-radius: 6px;
   padding: 8px;
   border: 2px solid var(--game-result-color);
@@ -144,14 +235,14 @@
 
 .week {
   font-size: 0.75rem;
-  color: #fbbf24;
+  color: #ffffff;
   font-weight: 600;
 }
 
 /* Style playoff game text the same as week numbers */
 .playoff-game-text {
   font-size: 0.75rem;
-  color: #fbbf24;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -165,14 +256,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 6px;
 }
 
 .team-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
   flex: 1;
   min-width: 0;
 }
@@ -185,8 +274,8 @@
 }
 
 .team-name {
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   color: #f9fafb;
   text-align: center;
   white-space: nowrap;
@@ -211,9 +300,9 @@
 }
 
 .vs-indicator {
-  font-size: 0.7rem;
-  color: #9ca3af;
-  font-weight: 500;
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .scores-row {
@@ -224,26 +313,28 @@
 }
 
 .team-score {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  color: #fbbf24;
+  color: #ffffff;
 }
 
 .score-separator {
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: #ffffff;
   font-weight: 500;
 }
 
 .winner-text {
   font-weight: 700;
   color: #ffffff;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 12px rgba(255, 255, 255, 0.2);
 }
 
 .winner-score {
   font-weight: 900;
-  color: #fcd34d;
+  color: #ffffff;
   font-size: 1.3rem;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 16px rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {

@@ -134,6 +134,8 @@ function SortableTable({ players, columns }) {
                 className={getClassNamesFor(column.key)}
                 onClick={() => requestSort(column.key)}
                 style={{ cursor: 'pointer' }}
+                title={column.fullName || column.label}
+                data-tooltip={column.fullName || column.label}
               >
                 {column.label}{getSortIndicator(column.key)}
               </th>

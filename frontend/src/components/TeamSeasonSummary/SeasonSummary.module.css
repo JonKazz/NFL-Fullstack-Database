@@ -21,6 +21,7 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   overflow: hidden;
   padding: 20px;
+  border: 1px solid var(--team-primary-color, #dc2626);
 }
 
 
@@ -194,49 +195,6 @@
 
 
 
-.coaches-section {
-  background: #3a3a3a;
-  border-radius: 8px;
-  padding: 15px;
-  border: 1px solid #4a4a4a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.coaches-section h3 {
-  color: #ffffff;
-  margin-bottom: 12px;
-  font-size: 1.2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 6px;
-}
-
-.coaches-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.coach-item {
-  background: #2d2d2d;
-  border-radius: 6px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
-}
-
-.coach-role {
-  font-size: 0.8rem;
-  color: #9ca3af;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.coach-name {
-  font-size: 0.9rem;
-  color: #ffffff;
-  font-weight: 600;
-}
 
 @media (max-width: 768px) {
   .pageWrapper {
@@ -272,8 +230,4 @@
   .misc-stats-table td {
     padding: 10px 8px;
   }
-
-
-
-
 }

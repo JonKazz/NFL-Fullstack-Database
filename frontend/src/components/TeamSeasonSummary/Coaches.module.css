@@ -1,0 +1,73 @@
+.section {
+  margin-bottom: 40px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #f9fafb;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  border-radius: 2px;
+}
+
+.coachInfo {
+  background: #252525;
+  border-radius: 8px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.coachingStaff {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.coachCard {
+  text-align: center;
+  padding: 15px;
+  background: #353535;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.coachName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f9fafb;
+  margin-bottom: 5px;
+}
+
+.coachTitle {
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .coachingStaff {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}

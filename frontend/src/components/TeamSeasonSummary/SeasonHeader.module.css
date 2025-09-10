@@ -1,204 +1,125 @@
+/* Header Section */
 .header {
   background: var(--team-primary-color, #dc2626);
   border-radius: 8px;
   padding: 0;
   margin-bottom: 20px;
-  border: 6px solid var(--team-border-color, rgba(220, 38, 38, 0.2));
   position: relative;
   overflow: hidden;
-  min-height: 150px;
+  height: 200px;
+  display: flex;
+  align-items: stretch;
 }
 
-.header-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-}
-
-.team-logo-bg {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+/* Logo Container - Square with low opacity primary color background */
+.logoContainer {
   width: 200px;
-  background: var(--team-logo-bg-color, rgba(255, 255, 255, 0.1));
+  height: 100%;
+  background: color-mix(in srgb, var(--team-primary-color, #dc2626) 85%, white);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  flex-shrink: 0;
+  position: relative;
 }
 
-.team-logo-background {
+/* Team Logo - White circle background */
+.teamLogo {
   width: 150px;
   height: 150px;
   object-fit: contain;
   background: white;
   border-radius: 50%;
   padding: 15px;
-  border: 3px solid var(--team-border-color, rgba(255, 255, 255, 0.3));
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 2;
 }
 
-.team-logo-placeholder {
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+/* Logo Placeholder for missing logos */
+.logoPlaceholder {
+  width: 150px;
+  height: 150px;
+  background: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 80px;
+  font-size: 50px;
   font-weight: bold;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.header-content {
+  color: rgba(98, 0, 255, 1);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   position: relative;
   z-index: 2;
-  padding: 25px;
-  padding-left: 180px;
+}
+
+/* Team Info Container */
+.teamInfo {
+  margin-left: 30px;
+  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
 }
 
-.team-info {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 0;
-}
-
-.team-details {
-  text-align: right;
-}
-
-.team-details h1 {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.team-stats {
-  display: flex;
-  gap: 20px;
-  justify-content: flex-end;
-}
-
-.stat-item-header {
-  text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 10px 15px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.stat-value-header {
-  font-size: 1.4rem;
+/* Team Name - Large font */
+.teamName {
+  font-size: 3rem;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: 3px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  line-height: 1.1;
 }
 
-.playoffs-value-header {
-  font-size: 1.2rem;
-}
-
-.stat-label-header {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.section {
-  margin-bottom: 40px;
-}
-
-.coach-info {
-  background: #3a3a3a;
-  border-radius: 6px;
-  padding: 25px;
-  border: 1px solid #4a4a4a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  margin-bottom: 30px;
-}
-
-.coaching-staff {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.coach-card {
-  text-align: center;
-  padding: 15px;
-  background: #4a4a4a;
-  border-radius: 6px;
-  border: 1px solid #5a5a5a;
-}
-
-.coach-name {
-  font-size: 1.2rem;
+/* Team Record - Under the name */
+.teamRecord {
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #f9fafb;
-  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  margin: 0;
 }
 
-.coach-title {
-  color: #fbbf24;
+/* Team Playoffs - Under the record */
+.teamPlayoffs {
+  font-size: 1.2rem;
   font-weight: 500;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  margin: 0;
 }
 
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .team-info {
+  .header {
     flex-direction: column;
-    text-align: center;
-  }
-  
-  .team-details h1 {
-    font-size: 2rem;
-  }
-  
-  .header-content {
+    min-height: 150px;
     padding: 20px;
-    padding-left: 20px;
-    justify-content: center;
   }
   
-  .team-logo-bg {
-    position: relative;
+  .logoContainer {
     width: 100%;
-    height: 100px;
+    height: 80px;
     margin-bottom: 15px;
   }
   
-  .team-logo-background,
-  .team-logo-placeholder {
+  .teamLogo,
+  .logoPlaceholder {
     width: 80px;
     height: 80px;
-    font-size: 40px;
+    font-size: 30px;
   }
   
-  .team-stats {
-    justify-content: center;
-    gap: 15px;
+  .teamName {
+    font-size: 2.2rem;
+    margin-left: 0;
+    text-align: center;
   }
   
-  .stat-item-header {
-    padding: 8px 12px;
-  }
-  
-  .stat-value-header {
-    font-size: 1.2rem;
-  }
-  
-  .coaching-staff {
+  .coachingStaff {
     grid-template-columns: 1fr;
     gap: 15px;
   }

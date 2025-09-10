@@ -5,8 +5,9 @@ import { calculateTeamRanking } from '../../utils';
 function TeamStatistics({ teamInfo, teamStats, teamId }) {
   return (
     <div className={styles.section}>
-      <h2 className={styles['section-title']}>Team Statistics</h2>
-      <div className={styles['stats-section']}>
+      <div className={styles['stats-container']}>
+        <h2 className={styles['stats-title']}>Team Statistics</h2>
+        <div className={styles['stats-section']}>
         
         {/* Offensive Statistics */}
         <div className={styles['stats-category']}>
@@ -16,7 +17,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
           <div className={styles['main-stats-grid']}>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'totalYardsFor', 'desc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'totalYardsFor', 'desc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Total Offense</div>
@@ -27,7 +28,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             </div>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'passYardsFor', 'desc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passYardsFor', 'desc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Passing Offense</div>
@@ -38,7 +39,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             </div>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'rushYardsFor', 'desc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushYardsFor', 'desc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Rushing Offense</div>
@@ -54,16 +55,16 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             <table className={styles['misc-stats-table']}>
               <tbody>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'pointsFor', 'desc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'pointsFor', 'desc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Points Per Game</td>
                   <td className={styles['stat-value-cell']}>
-                    {teamInfo?.pointsFor ? `${Math.round(teamInfo.pointsFor / 17)} PPG` : 'N/A'}
+                    {teamInfo?.pointsFor ? `${Math.round(teamInfo.pointsFor / 17)}` : 'N/A'}
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'passTdFor', 'desc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passTdFor', 'desc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Passing Touchdowns</td>
@@ -72,7 +73,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'rushTdFor', 'desc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushTdFor', 'desc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Rushing Touchdowns</td>
@@ -81,7 +82,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'turnovers', 'asc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'turnovers', 'asc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Turnovers</td>
@@ -90,7 +91,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'penaltiesFor', 'asc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'penaltiesFor', 'asc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Penalties</td>
@@ -111,7 +112,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
           <div className={styles['main-stats-grid']}>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'totalYardsAgainst', 'asc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'totalYardsAgainst', 'asc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Total Defense</div>
@@ -122,7 +123,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             </div>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'passYardsAgainst', 'asc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passYardsAgainst', 'asc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Passing Defense</div>
@@ -133,7 +134,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             </div>
             <div className={styles['main-stat-item']}>
               <div className={styles['main-stat-header']}>
-                <div className={styles['main-stat-rank']}>
+                <div className={styles['main-stat-rank']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'rushYardsAgainst', 'asc') : null}>
                   {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushYardsAgainst', 'asc')}` : '#N/A'}
                 </div>
                 <div className={styles['main-stat-name']}>Rushing Defense</div>
@@ -149,16 +150,16 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
             <table className={styles['misc-stats-table']}>
               <tbody>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'pointsAgainst', 'asc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'pointsAgainst', 'asc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Points Allowed</td>
                   <td className={styles['stat-value-cell']}>
-                    {teamInfo?.pointsAgainst ? `${Math.round(teamInfo.pointsAgainst / 17)} PPG` : 'N/A'}
+                    {teamInfo?.pointsAgainst ? `${Math.round(teamInfo.pointsAgainst / 17)}` : 'N/A'}
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'passTdAgainst', 'asc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passTdAgainst', 'asc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Passing TDs Allowed</td>
@@ -167,7 +168,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'rushTdAgainst', 'asc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'rushTdAgainst', 'asc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Rushing TDs Allowed</td>
@@ -176,7 +177,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'passInts', 'desc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'passInts', 'desc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Interceptions</td>
@@ -185,7 +186,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
                   </td>
                 </tr>
                 <tr>
-                  <td className={styles['rank-cell']}>
+                  <td className={styles['rank-cell']} data-rank={teamStats ? calculateTeamRanking(teamStats, teamId, 'forcedTurnovers', 'desc') : null}>
                     {teamStats ? `#${calculateTeamRanking(teamStats, teamId, 'forcedTurnovers', 'desc')}` : '#N/A'}
                   </td>
                   <td className={styles['stat-name-cell']}>Forced Turnovers</td>
@@ -196,6 +197,7 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </div>
     </div>

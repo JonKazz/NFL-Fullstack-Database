@@ -29,13 +29,13 @@ function TeamRoster({ playerStats }) {
               players={quarterbacks} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'passingCompletions', label: 'Cmp' },
-                { key: 'passingAttempts', label: 'Att' },
-                { key: 'passingYards', label: 'Yards' },
-                { key: 'passingTouchdowns', label: 'TD' },
-                { key: 'passingInterceptions', label: 'INT' },
+                { key: 'passingCompletions', label: 'Cmp', fullName: 'Completions' },
+                { key: 'passingAttempts', label: 'Att', fullName: 'Attempts' },
+                { key: 'passingYards', label: 'YDS', fullName: 'Yards' },
+                { key: 'passingTouchdowns', label: 'TD', fullName: 'Touchdowns' },
+                { key: 'passingInterceptions', label: 'INT', fullName: 'Interceptions' },
                 { key: 'passerRating', label: 'Rating' },
-                { key: 'fumblesLost', label: 'Fumbles Lost' },
+                { key: 'fumblesLost', label: 'FL', fullName: 'Fumbles Lost' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -50,14 +50,14 @@ function TeamRoster({ playerStats }) {
               players={runningBacks} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'rushingYards', label: 'Yards' },
-                { key: 'rushingAttempts', label: 'Attempts' },
-                { key: 'rushingYardsPerAttempt', label: 'YPA' },
-                { key: 'rushingTouchdowns', label: 'TD' },
-                { key: 'fumblesLost', label: 'Fumbles Lost' },
-                { key: 'receivingReceptions', label: 'REC' },
-                { key: 'receivingYards', label: 'Rec YDS' },
-                { key: 'receivingTouchdowns', label: 'Rec TD' },
+                { key: 'rushingYards', label: 'YDS', fullName: 'Yards' },
+                { key: 'rushingAttempts', label: 'Att', fullName: 'Attempts' },
+                { key: 'rushingYardsPerAttempt', label: 'YPA', fullName: 'Yards Per Attempt' },
+                { key: 'rushingTouchdowns', label: 'TD', fullName: 'Touchdowns' },
+                { key: 'fumblesLost', label: 'FL', fullName: 'Fumbles Lost' },
+                { key: 'receivingReceptions', label: 'REC', fullName: 'Receptions' },
+                { key: 'receivingYards', label: 'Rec YDS', fullName: 'Receiving Yards' },
+                { key: 'receivingTouchdowns', label: 'Rec TD', fullName: 'Receiving Touchdowns' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -72,13 +72,13 @@ function TeamRoster({ playerStats }) {
               players={receivers} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'position', label: 'Pos' },
-                { key: 'receivingYards', label: 'Yards' },
-                { key: 'receivingTouchdowns', label: 'TD' },
-                { key: 'receivingTargets', label: 'Targets' },
-                { key: 'receivingReceptions', label: 'REC' },
-                { key: 'receivingYardsPerReception', label: 'YPR' },
-                { key: 'fumblesLost', label: 'Fumbles Lost' },
+                { key: 'position', label: 'Pos', fullName: 'Position' },
+                { key: 'receivingYards', label: 'YDS', fullName: 'Yards' },
+                { key: 'receivingTouchdowns', label: 'TD', fullName: 'Touchdowns' },
+                { key: 'receivingTargets', label: 'TGT', fullName: 'Targets' },
+                { key: 'receivingReceptions', label: 'REC', fullName: 'Receptions' },
+                { key: 'receivingYardsPerReception', label: 'YPR', fullName: 'Yards Per Reception' },
+                { key: 'fumblesLost', label: 'FL', fullName: 'Fumbles Lost' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -93,14 +93,14 @@ function TeamRoster({ playerStats }) {
               players={defensiveLine} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'position', label: 'Pos' },
-                { key: 'defensiveTacklesCombined', label: 'Tackles' },
-                { key: 'defensiveTacklesLoss', label: 'TFL' },
-                { key: 'defensiveSacks', label: 'Sacks' },
-                { key: 'defensiveQbHits', label: 'QB Hits' },
-                { key: 'defensivePressures', label: 'Pressures' },
-                { key: 'defensivePassesDefended', label: 'PD' },
-                { key: 'defensiveInterceptions', label: 'INT' },
+                { key: 'position', label: 'Pos', fullName: 'Position' },
+                { key: 'defensiveTacklesCombined', label: 'TKL', fullName: 'Tackles' },
+                { key: 'defensiveTacklesLoss', label: 'TFL', fullName: 'Tackles For Loss' },
+                { key: 'defensiveSacks', label: 'SACK', fullName: 'Sacks' },
+                { key: 'defensiveQbHits', label: 'QBH', fullName: 'Quarterback Hits' },
+                { key: 'defensivePressures', label: 'PRES', fullName: 'Pressures' },
+                { key: 'defensivePassesDefended', label: 'PD', fullName: 'Passes Defended' },
+                { key: 'defensiveInterceptions', label: 'INT', fullName: 'Interceptions' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -115,14 +115,14 @@ function TeamRoster({ playerStats }) {
               players={linebackers} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'position', label: 'Pos' },
-                { key: 'defensiveTacklesCombined', label: 'Tackles' },
-                { key: 'defensiveTacklesLoss', label: 'TFL' },
-                { key: 'defensiveSacks', label: 'Sacks' },
-                { key: 'defensiveQbHits', label: 'QB Hits' },
-                { key: 'defensivePressures', label: 'Pressures' },
-                { key: 'defensivePassesDefended', label: 'PD' },
-                { key: 'defensiveInterceptions', label: 'INT' },
+                { key: 'position', label: 'Pos', fullName: 'Position' },
+                { key: 'defensiveTacklesCombined', label: 'TKL', fullName: 'Tackles' },
+                { key: 'defensiveTacklesLoss', label: 'TFL', fullName: 'Tackles For Loss' },
+                { key: 'defensiveSacks', label: 'SACK', fullName: 'Sacks' },
+                { key: 'defensiveQbHits', label: 'QBH', fullName: 'Quarterback Hits' },
+                { key: 'defensivePressures', label: 'PRES', fullName: 'Pressures' },
+                { key: 'defensivePassesDefended', label: 'PD', fullName: 'Passes Defended' },
+                { key: 'defensiveInterceptions', label: 'INT', fullName: 'Interceptions' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -137,11 +137,11 @@ function TeamRoster({ playerStats }) {
               players={defensiveBacks} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'position', label: 'Pos' },
-                { key: 'defensiveTacklesCombined', label: 'Tackles' },
-                { key: 'defensiveInterceptions', label: 'INT' },
-                { key: 'defensivePassesDefended', label: 'PD' },
-                { key: 'defensiveSacks', label: 'Sacks' },
+                { key: 'position', label: 'Pos', fullName: 'Position' },
+                { key: 'defensiveTacklesCombined', label: 'TKL', fullName: 'Tackles' },
+                { key: 'defensiveInterceptions', label: 'INT', fullName: 'Interceptions' },
+                { key: 'defensivePassesDefended', label: 'PD', fullName: 'Passes Defended' },
+                { key: 'defensiveSacks', label: 'SACK', fullName: 'Sacks' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />
@@ -156,14 +156,14 @@ function TeamRoster({ playerStats }) {
               players={specialTeams} 
               columns={[
                 { key: 'playerName', label: 'Player' },
-                { key: 'position', label: 'Position' },
-                { key: 'fieldGoalsMade', label: 'FG Made' },
-                { key: 'fieldGoalsAttempted', label: 'FG Att' },
-                { key: 'extraPointsMade', label: 'XP Made' },
-                { key: 'extraPointsAttempted', label: 'XP Att' },
+                { key: 'position', label: 'Pos', fullName: 'Position' },
+                { key: 'fieldGoalsMade', label: 'FGM', fullName: 'Field Goals Made' },
+                { key: 'fieldGoalsAttempted', label: 'FGA', fullName: 'Field Goals Attempted' },
+                { key: 'extraPointsMade', label: 'XPM', fullName: 'Extra Points Made' },
+                { key: 'extraPointsAttempted', label: 'XPA', fullName: 'Extra Points Attempted' },
                 { key: 'punts', label: 'Punts' },
-                { key: 'puntYards', label: 'Punt Yds' },
-                { key: 'puntYardsPerPunt', label: 'Punt Avg' },
+                { key: 'puntYards', label: 'Punt YDS', fullName: 'Punt Yards' },
+                { key: 'puntYardsPerPunt', label: 'Punt Avg', fullName: 'Punt Average' },
                 { key: 'gamesPlayed', label: 'Games' }
               ]}
             />

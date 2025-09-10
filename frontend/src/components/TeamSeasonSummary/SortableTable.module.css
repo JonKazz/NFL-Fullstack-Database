@@ -3,40 +3,60 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: #2a2a2a;
+  background: #1a1a1a;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   margin-top: 15px;
-  border: 1px solid #333333;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   min-width: 800px; /* Ensure minimum width for all columns */
 }
 
 .table-container {
   overflow-x: auto;
-  margin-top: 15px;
+  margin-top: 5px;
 }
 
 .table-header {
-  background: #dc2626;
+  background: transparent;
   color: #ffffff;
   padding: 6px 4px;
   text-align: left;
   font-weight: 600;
   font-size: 10px;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   letter-spacing: 0.2px;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  position: relative;
 }
 
 .table-header:hover {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.table-header[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333333;
+  margin-bottom: 5px;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .table-header:active {
@@ -46,11 +66,11 @@
 
 .table-row {
   transition: background-color 0.2s ease;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .table-row:hover {
-  background: #3a3a3a;
+  background: #353535;
 }
 
 .table-row:last-child {
@@ -58,11 +78,11 @@
 }
 
 .table-row:nth-child(even) {
-  background: #323232;
+  background: #252525;
 }
 
 .table-row:nth-child(even):hover {
-  background: #3a3a3a;
+  background: #353535;
 }
 
 .player-name-cell {
@@ -70,7 +90,7 @@
   color: #f9fafb;
   font-weight: 600;
   font-size: 0.9rem;
-  border-right: 1px solid #333333;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .player-link {
@@ -92,7 +112,7 @@
   font-weight: bold;
   font-size: 0.8rem;
   text-align: center;
-  border-right: 1px solid #333333;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   white-space: nowrap;
 }
 
