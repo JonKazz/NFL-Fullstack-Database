@@ -54,7 +54,7 @@ function TeamStatLeaders({ year }) {
     if (!teamInfo) return teamId || 'N/A';
     
     return (
-      <Link to={`/team-season/${year}/${teamId}`} className={styles['team-link']}>
+      <Link to={`/${teamId}/${year}`} className={styles['team-link']}>
         {teamInfo.name_short}
       </Link>
     );

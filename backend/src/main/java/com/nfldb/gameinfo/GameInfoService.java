@@ -26,4 +26,13 @@ public class GameInfoService {
     public Long getTotalGameInfoCount() {
         return repository.countAllGameInfo();
     }
+
+    /**
+     * Check if a game exists in the database
+     * @param gameId The ID of the game to check
+     * @return true if game exists, false otherwise
+     */
+    public boolean checkGameExists(String gameId) {
+        return repository.existsByGameId(gameId);
+    }
 }

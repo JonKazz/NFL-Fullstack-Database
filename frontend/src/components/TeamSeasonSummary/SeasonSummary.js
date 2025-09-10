@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
 import { fetchTeamSeasonGamesInfo, fetchTeam, fetchTeamPlayerStats, fetchTeamsBySeason } from '../../api/fetches';
+import { useTeamSeasonValidation } from '../../hooks/useDataValidation';
 import { TEAM_MAP, getTeamPrimaryColor } from '../../utils';
 import Games from './Games';
 import SeasonHeader from './SeasonHeader';
@@ -14,6 +15,10 @@ function SeasonSummaryVisualization() {
   const params = useParams();
   const teamId = params.teamId;
   const year = parseInt(params.year);
+  
+  // Validate that the team season exists
+  const { loading: validationLoading, dataExists: teamSeasonExists } = useTeamSeasonValidation(teamId, year);
+  
   const [teamInfo, setTeamInfo] = useState(null);
   const [games, setGames] = useState(null);
   const [playerStats, setPlayerStats] = useState(null);
@@ -56,6 +61,9 @@ function SeasonSummaryVisualization() {
   }, [games]);
 
   useEffect(() => {
+    // Only fetch data if team season validation passed
+    if (!teamSeasonExists || validationLoading) return;
+    
     async function fetchData() {
       setLoading(true);
       setError(null);
@@ -104,9 +112,20 @@ function SeasonSummaryVisualization() {
       const teamColor = getTeamPrimaryColor(teamId);
       document.documentElement.style.setProperty('--team-primary-color', teamColor);
     }
-  }, [teamId, year]);
+  }, [teamId, year, teamSeasonExists, validationLoading]);
 
-  if (loading) return <p>Loading...</p>;
+  if (validationLoading || loading) {
+    return (
+      <div className={styles.pageBackground}>
+        <div className={styles.container}>
+          <div className={styles.loading}>
+            {validationLoading ? 'Validating team season...' : `Loading ${teamId} ${year} Season Data...`}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (error) return <p className={styles['season-summary-error']}>{error}</p>;
   if (!teamInfo || !games) return <p>No data available</p>;
 

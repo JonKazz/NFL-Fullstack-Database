@@ -32,4 +32,14 @@ public class GameInfoController {
     public Long getTotalGameInfoCount() {
         return gameInfoService.getTotalGameInfoCount();
     }
+
+    /**
+     * Check if a game exists in the database
+     * @param gameId The ID of the game to check
+     * @return true if game exists, false otherwise
+     */
+    @GetMapping("/exists/{gameId}")
+    public boolean checkGameExists(@PathVariable String gameId) {
+        return gameInfoService.checkGameExists(gameId);
+    }
 }

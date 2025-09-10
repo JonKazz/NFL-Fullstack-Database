@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { fetchTeamsBySeason, fetchPlayoffGamesInfo, fetchSeasonInfo } from '../../api/fetches';
+import { useSeasonValidation } from '../../hooks/useDataValidation';
 import styles from './SeasonSummary.module.css';
 import Standings from './Standings';
 import PlayoffBracket from './PlayoffBracket';
@@ -10,16 +11,22 @@ import TeamStatLeaders from './TeamStatLeaders';
 
 function SeasonSummary() {
   const { year } = useParams();
+  
+  // Validate that the season exists
+  const { loading: validationLoading, dataExists: seasonExists } = useSeasonValidation(year);
+  
   const [teams, setTeams] = useState([]);
   const [playoffs, setPlayoffs] = useState([]);
   const [awards, setAwards] = useState([]);
-
   const [seasonInfo, setSeasonInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
 
 
   useEffect(() => {
+    // Only fetch data if season validation passed
+    if (!seasonExists || validationLoading) return;
+    
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -65,15 +72,17 @@ function SeasonSummary() {
     };
     
     fetchData();
-  }, [year]);
+  }, [year, seasonExists, validationLoading]);
 
 
 
-  if (loading) {
+  if (validationLoading || loading) {
     return (
       <div className={styles.pageBackground}>
         <div className={styles.container}>
-          <div className={styles.loading}>Loading {year} Season Data...</div>
+          <div className={styles.loading}>
+            {validationLoading ? 'Validating season...' : `Loading ${year} Season Data...`}
+          </div>
         </div>
       </div>
     );

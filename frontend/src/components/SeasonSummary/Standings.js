@@ -19,7 +19,7 @@ function Standings({ teams, year }) {
             <div 
               key={team.teamId} 
               className={styles['standings-row']}
-              onClick={() => navigate(`/team-season/${year}/${team.teamId}`)}
+              onClick={() => navigate(`/${team.teamId}/${year}`)}
               style={{ cursor: 'pointer' }}
             >
               <div className={styles['team-info']}>

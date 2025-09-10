@@ -16,4 +16,6 @@ public interface GameInfoRepository extends JpaRepository<GameInfo, String> {
     
     @Query("SELECT COUNT(g) FROM GameInfo g")
     Long countAllGameInfo();
+    
+    boolean existsByGameId(String gameId);
 }

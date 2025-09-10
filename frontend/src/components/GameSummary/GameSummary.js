@@ -8,9 +8,14 @@ import PlayerStats from './PlayerStats';
 import DownConversionRates from './DownConversionRates';
 import { fetchTeamsBySeason, fetchGameInfo, fetchGameTeamStats, fetchPlayerStatsFromGame } from '../../api/fetches';
 import { getTeamColorsForGame } from '../../utils';
+import { useGameValidation } from '../../hooks/useDataValidation';
 
 function GameSummary() {
   const { gameId } = useParams();
+  
+  // Validate that the game exists
+  const { loading: validationLoading, dataExists: gameExists, data: gameData } = useGameValidation(gameId);
+  
   const [gameInfo, setGameInfo] = useState(null);
   const [gameStats, setGameStats] = useState([]);
   const [gamePlayerStats, setGamePlayerStats] = useState([]);
@@ -18,6 +23,9 @@ function GameSummary() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Only fetch data if game validation passed
+    if (!gameExists || validationLoading) return;
+    
     async function getData() {
       try {
         // Fetch data using centralized fetch functions
@@ -41,13 +49,18 @@ function GameSummary() {
         setError('Failed to fetch game info');
       }
     }
-    if (gameId) {
-      getData();
-    }
-  }, [gameId]);
+    
+    getData();
+  }, [gameId, gameExists, validationLoading]);
 
   if (error) return <div className={styles['game-summary-container']}>{error}</div>;
-  if (!gameInfo || !gameStats.length) return <div className={styles['game-summary-container']}>Loading...</div>;
+  if (validationLoading || !gameInfo || !gameStats.length) {
+    return (
+      <div className={styles['game-summary-container']}>
+        {validationLoading ? 'Validating game...' : 'Loading...'}
+      </div>
+    );
+  }
 
   const { homeTeamId, awayTeamId } = gameInfo;
   const homeStats = gameStats.find(gs => gs.id.teamId === homeTeamId);

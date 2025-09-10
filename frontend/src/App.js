@@ -5,6 +5,7 @@ import SeasonSummary from './components/SeasonSummary/SeasonSummary';
 import TeamSeasonSummary from './components/TeamSeasonSummary/SeasonSummary';
 import GameSummary from './components/GameSummary/GameSummary';
 import PlayerPage from './components/PlayerPage/PlayerPage';
+import { NotFound, ServerError } from './components/ErrorPages';
 
 function App() {
   return (
@@ -15,9 +16,12 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/season/:year" element={<SeasonSummary />} />
-            <Route path="/team-season/:year/:teamId" element={<TeamSeasonSummary />} />
+            <Route path="/:teamId/:year" element={<TeamSeasonSummary />} />
             <Route path="/game/:gameId" element={<GameSummary />} />
             <Route path="/player/:playerId" element={<PlayerPage />} />
+            <Route path="/404" element={<NotFound />} />
+            <Route path="/500" element={<ServerError />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </div>
