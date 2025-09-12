@@ -39,7 +39,7 @@
   background: #171717;
   border-radius: 8px;
   padding: 25px;
-  border: 1px solid var(--team-neon-color, #FF1A5C);
+  border: 1px solid #4a4a4a;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   width: 100%;
 }
