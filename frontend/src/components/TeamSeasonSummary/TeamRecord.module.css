@@ -1,0 +1,182 @@
+.team-record-container {
+  --team-primary-color: #E31837;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #e5e7eb;
+  line-height: 1.6;
+  margin: 0;
+  box-sizing: border-box;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.record-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: nowrap;
+  min-width: 0;
+  background: #252525;
+  border-radius: 8px;
+  border: 1px solid var(--team-neon-color, #FF1A5C);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  overflow: hidden;
+}
+
+.content-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  background: transparent;
+  padding: 12px;
+  border-right: 1px solid var(--team-neon-color, #FF1A5C);
+  flex: 1;
+  white-space: nowrap;
+}
+
+.content-container:last-child {
+  border-right: none;
+}
+
+.record-label {
+  font-size: 1.1rem;
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.record-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-numbers {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f9fafb;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.game-circles {
+  display: flex;
+  gap: 3px;
+  flex-wrap: nowrap;
+  padding: 2px 0;
+  margin-left: 8px;
+  flex-shrink: 1;
+}
+
+.game-circles::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.division-value {
+  font-size: 1.2rem;
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.conference-value {
+  font-size: 1.2rem;
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.playoff-value {
+  font-size: 1.2rem;
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.game-circle {
+  width: clamp(12px, 2vw, 18px);
+  height: clamp(12px, 2vw, 18px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.4rem, 1.2vw, 0.6rem);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.game-circle.win {
+  background-color: #10b981;
+  color: white;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.game-circle.loss {
+  background-color: #ef4444;
+  color: white;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .team-record-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  
+  
+  .game-circles {
+    margin-left: 0;
+    max-width: unset;
+  }
+  
+  .division-content {
+    height: auto;
+    width: 100%;
+    margin-top: 8px;
+  }
+  
+  .record-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .content-container {
+    height: auto;
+    width: 100%;
+  }
+  
+  .content-container:last-child {
+    margin-top: 8px;
+  }
+  
+}
+
+@media (max-width: 480px) {
+  .team-record-container {
+    padding: 15px;
+  }
+  
+  .record-numbers {
+    font-size: 1.5rem;
+  }
+  
+  .game-circle {
+    width: 18px;
+    height: 18px;
+    font-size: 0.55rem;
+  }
+  
+  .standings-item {
+    padding: 6px 10px;
+  }
+}

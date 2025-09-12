@@ -1,0 +1,365 @@
+/* KeyPlayers Component Styles */
+
+.key-players-layout {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  height: 240px;
+}
+
+.all-players-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.awards-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Many Awards Layout - Horizontal layout for when there are more than 4 awards */
+.many-awards-layout {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+}
+
+.leaders-section {
+  flex: 0 0 auto;
+  min-width: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.leaders-section .players-grid {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  height: 100%;
+  flex-wrap: wrap;
+}
+
+.awards-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+  height: 100%;
+}
+
+.section-title {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.players-grid {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.player-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #171717;
+  border-radius: 8px;
+  padding: 5px;
+  width: 135px;
+  height: 100%;
+  border: 2px solid #383838;
+}
+
+.award-winner-card {
+  border: 2px solid #383838;
+}
+
+.player-title {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.1;
+  height: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 4px 0 0 0;
+}
+
+.award-winner-title {
+  color: #ffd700;
+}
+
+.player-image-container {
+  width: 100%;
+  height: 84%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 8px 4px;
+  position: relative;
+}
+
+.player-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid #5a5a5a;
+}
+
+.player-position {
+  position: absolute;
+  top: 7%;
+  right: 7%;
+  background: #000000;
+  color: #d5d5d5;
+  border: 1px solid #959595;
+  padding: 2px 3px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  z-index: 1;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-ranking {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #959595;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  z-index: 1;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.player-info {
+  text-align: center;
+  height: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-name {
+  color: #60a5fa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.1;
+  word-break: break-word;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0 0 4px 0;
+}
+
+.player-name:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .key-players-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .players-grid {
+    gap: 10px;
+  }
+  
+  .player-card {
+    min-width: 130px;
+    max-width: 150px;
+    height: 100%;
+    padding: 4px;
+  }
+  
+  .player-image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .player-name {
+    font-size: 0.7rem;
+  }
+  
+  .player-title {
+    font-size: 0.7rem;
+  }
+  
+  .section-title {
+    font-size: 1rem;
+  }
+}
+
+/* Awards List Styles */
+.awards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.award-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #171717;
+  border: 2px solid #383838;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.award-name-container {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.award-name {
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-size: 0.65rem;
+}
+
+.award-player-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 1px solid #666666;
+}
+
+.award-player-name {
+  color: #60a5fa;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 0.7rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.award-player-name:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.award-position-container {
+  width: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 1px solid #666666;
+}
+
+.award-position {
+  color: #cccccc;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-size: 0.65rem;
+  text-align: right;
+}
+
+/* Many Awards List */
+.many-awards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.many-award-row {
+  display: flex;
+  align-items: stretch;
+  background: #171717;
+  border: 2px solid #383838;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  flex: 1;
+}
+
+.award-winner-row {
+  border: 2px solid #383838;
+}
+
+.award-winner-row .award-name {
+  color: #ffd700;
+}
+
+/* Compact version for when container is at max height */
+.many-awards-list.compact .many-award-row {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  min-height: 24px;
+  gap: 2px;
+}
+
+.many-awards-list.compact .award-name {
+  font-size: 0.65rem;
+}
+
+.many-awards-list.compact .award-separator {
+  margin: 0 3px;
+  font-size: 0.55rem;
+}
+
+.many-awards-list.compact .award-player-name {
+  font-size: 0.65rem;
+}
+
+.many-awards-list.compact .award-position {
+  font-size: 0.6rem;
+}

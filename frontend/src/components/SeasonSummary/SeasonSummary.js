@@ -6,7 +6,7 @@ import styles from './SeasonSummary.module.css';
 import Standings from './Standings';
 import PlayoffBracket from './PlayoffBracket';
 import AwardWinners from './AwardWinners';
-import StatLeaders from './StatLeaders';
+import PlayerStatLeaders from './PlayerStatLeaders';
 import TeamStatLeaders from './TeamStatLeaders';
 
 function SeasonSummary() {
@@ -111,7 +111,7 @@ function SeasonSummary() {
         {awards.length > 0 ? (
           <>
             <AwardWinners awards={awards} seasonYear={parseInt(year)} />
-            <StatLeaders year={year} />
+            <PlayerStatLeaders year={year} />
             <TeamStatLeaders year={year} />
           </>
         ) : (

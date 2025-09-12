@@ -34,27 +34,6 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
-.stats-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: #f9fafb;
-  text-align: center;
-  font-weight: bold;
-  position: relative;
-  padding-bottom: 10px;
-}
-
-.stats-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #dc2626, #b91c1c);
-  border-radius: 2px;
-}
 
 .stats-section {
   display: grid;
@@ -63,7 +42,7 @@
 }
 
 .stats-category {
-  background: #252525;
+  background: #141414;
   border-radius: 6px;
   padding: 25px;
   border: 1px solid #4a4a4a;
@@ -72,8 +51,8 @@
 }
 
 .stats-category-title {
-  font-size: 1.4rem;
-  margin-bottom: 20px;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
   color: #f9fafb;
   font-weight: 600;
   text-align: center;

@@ -2,22 +2,6 @@
   margin-bottom: 40px;
 }
 
-.section-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: #f9fafb;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(45deg, #dc2626, #b91c1c);
-  border-radius: 2px;
-}
 
 .regular-season-container {
   --team-primary-color: #E31837;
@@ -28,20 +12,20 @@
   box-sizing: border-box;
   background: #1a1a1a;
   border-radius: 12px;
-  padding: 30px;
+  padding: 20px;
   margin-bottom: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
 .regular-season-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  font-size: 1.4rem;
   color: #f9fafb;
   text-align: center;
   font-weight: bold;
   position: relative;
-  padding-bottom: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
 }
 
 .regular-season-title::after {
@@ -51,68 +35,21 @@
   left: 50%;
   transform: translateX(-50%);
   width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  height: 2px;
+  background: var(--team-neon-color, #FF1A5C);
   border-radius: 2px;
 }
 
-.playoff-container {
-  --team-primary-color: #E31837;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #e5e7eb;
-  line-height: 1.6;
-  margin: 0;
-  box-sizing: border-box;
-  background: #212121;
-  border-radius: 12px;
-  padding: 30px;
-  margin-bottom: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-}
 
-.playoff-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: #f9fafb;
-  text-align: center;
-  font-weight: bold;
-  position: relative;
-  padding-top: 20px; /* Added top padding */
-  padding-bottom: 10px;
-}
 
-.playoff-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #dc2626, #b91c1c);
-  border-radius: 2px;
-}
 
 .games-wrapper {
-  --team-primary-color: #008E97;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #e5e7eb;
-  line-height: 1.6;
-  margin: 0;
-  box-sizing: border-box;
-  background: #252525;
-  border-radius: 15px;
-  padding: 25px;
-  margin-top: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  overflow-x: auto;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 20px 20px 20px;
 }
 
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 15px;
 }
 
@@ -143,47 +80,36 @@
   background: rgba(239, 68, 68, 0.15);
 }
 
+
+.playoff-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  gap: 65px;
+  flex-wrap: wrap;
+  background: #1f1f1f;
+  border-radius: 12px;
+  padding: 30px;
+  border: 1px solid rgba(164, 164, 164, 0.4);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
 .game-card.playoff {
-  /* Same grey background as regular season games */
+  /* Make all playoff cards bigger but keep the same style */
+  transform: scale(1.2);
+  z-index: 1;
+  width: 20%;
 }
 
-/* Create a 4-column grid specifically for playoff games */
-.games-grid:has(.game-card.playoff) {
-  grid-template-columns: repeat(4, 1fr);
-}
 
-/* Ensure win/loss colors take precedence over playoff colors */
-.game-card.playoff.win {
-  --game-result-color: #10b981;
-}
 
-.game-card.playoff.loss {
-  --game-result-color: #ef4444;
-}
-
-/* Subtle hover colors for playoff games */
-.game-card.playoff.win:hover {
-  background: rgba(16, 185, 129, 0.15);
-}
-
-.game-card.playoff.loss:hover {
-  background: rgba(239, 68, 68, 0.15);
-}
-
-.week.playoff {
-  background: linear-gradient(45deg, #8b5cf6, #7c3aed);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 0.8rem;
-}
 
 .game-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
 
 .game-meta {
@@ -217,21 +143,6 @@
   color: #ef4444;
 }
 
-.game-card.playoff .game-result {
-  background: rgba(139, 92, 246, 0.2);
-  color: #8b5cf6;
-}
-
-/* Override playoff game result colors with win/loss colors */
-.game-card.playoff.win .game-result {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-
-.game-card.playoff.loss .game-result {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-}
 
 .week {
   font-size: 0.75rem;
@@ -243,7 +154,11 @@
 .playoff-game-text {
   font-size: 0.75rem;
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 800;
+  background: #242424;
+  padding: 0px 6px;
+  border-radius: 4px;
+  border: 1px solid #484848;
 }
 
 .game-date {
@@ -275,7 +190,7 @@
 
 .team-name {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: #f9fafb;
   text-align: center;
   white-space: nowrap;
@@ -305,23 +220,10 @@
   font-weight: 600;
 }
 
-.scores-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
 .team-score {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: bold;
   color: #ffffff;
-}
-
-.score-separator {
-  font-size: 0.9rem;
-  color: #ffffff;
-  font-weight: 500;
 }
 
 .winner-text {
@@ -333,9 +235,10 @@
 .winner-score {
   font-weight: 900;
   color: #ffffff;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.3), 0 0 16px rgba(255, 255, 255, 0.2);
 }
+
 
 @media (max-width: 768px) {
   .games-grid {

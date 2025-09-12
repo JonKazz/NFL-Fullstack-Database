@@ -1,29 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './SortableTable.module.css';
-import { getPlayerName, formatNumber } from '../../utils';
-
-// Component to handle async player name fetching
-function PlayerNameCell({ playerId }) {
-  const [playerName, setPlayerName] = useState('Loading...');
-
-  useEffect(() => {
-    async function fetchPlayerName() {
-      const name = await getPlayerName(playerId);
-      setPlayerName(name);
-    }
-    
-    fetchPlayerName();
-  }, [playerId]);
-
-  return (
-    <td className={styles['player-name-cell']}>
-      <Link to={`/player/${playerId}`} className={styles['player-link']}>
-        {playerName}
-      </Link>
-    </td>
-  );
-}
+import { formatNumber } from '../../utils';
 
 // Hook for sorting functionality
 function useSortableData(data, config = null) {
@@ -89,7 +67,13 @@ function SortableTable({ players, columns }) {
     
     // Handle special cases
     if (column.key === 'playerName') {
-      return <PlayerNameCell playerId={player.playerId} />;
+      return (
+        <td className={styles['player-name-cell']}>
+          <Link to={`/player/${player.playerId}`} className={styles['player-link']}>
+            {player.playerName || 'Unknown Player'}
+          </Link>
+        </td>
+      );
     }
     
     if (column.key === 'passCmp') {

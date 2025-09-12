@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom';
 import styles from './SeasonSummary.module.css';
 import { fetchTeamSeasonGamesInfo, fetchTeam, fetchTeamPlayerStats, fetchTeamsBySeason } from '../../api/fetches';
 import { useTeamSeasonValidation } from '../../hooks/useDataValidation';
-import { TEAM_MAP, getTeamPrimaryColor } from '../../utils';
+import { getTeamPrimaryColor, getNeonTeamColor } from '../../utils';
 import Games from './Games';
 import SeasonHeader from './SeasonHeader';
+import TeamRecord from './TeamRecord';
 import TeamStatistics from './TeamStatistics';
 import TeamRoster from './TeamRoster';
 import Coaches from './Coaches';
@@ -65,6 +66,7 @@ function SeasonSummaryVisualization() {
     });
   }, [games]);
 
+
   useEffect(() => {
     // Only fetch data if team season validation passed
     if (!teamSeasonExists || validationLoading) return;
@@ -113,9 +115,13 @@ function SeasonSummaryVisualization() {
 
     if (teamId && year) {
       fetchData();
-      // Set team primary color for the header
+      // Set team primary color for the header background
       const teamColor = getTeamPrimaryColor(teamId);
       document.documentElement.style.setProperty('--team-primary-color', teamColor);
+      
+      // Set team neon color for the page border glow effects
+      const neonColor = getNeonTeamColor(teamId);
+      document.documentElement.style.setProperty('--team-neon-color', neonColor);
     }
   }, [teamId, year, teamSeasonExists, validationLoading]);
 
@@ -147,6 +153,15 @@ function SeasonSummaryVisualization() {
         {/* Season Header */}
         <SeasonHeader teamInfo={teamInfo} teamId={teamId} year={year} />
 
+        {/* Team Record and Standings */}
+        <TeamRecord 
+          games={sortedGames}
+          teamInfo={teamInfo}
+          playerStats={playerStats}
+          teamId={teamId}
+          year={year}
+        />
+
         {/* Games Section */}
         <Games sortedGames={sortedGames} teamId={teamId} />
 
@@ -154,10 +169,10 @@ function SeasonSummaryVisualization() {
         <TeamStatistics teamInfo={teamInfo} teamStats={teamStats} teamId={teamId} />
         
         {/* Coaching Staff Section */}
-        <Coaches teamInfo={teamInfo} />
+        <Coaches teamInfo={teamInfo} teamId={teamId} />
         
         {/* Team Roster Section */}
-        <TeamRoster playerStats={playerStats} />
+        <TeamRoster playerStats={playerStats} teamId={teamId} />
       </div>
     </div>
   );

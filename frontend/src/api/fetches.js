@@ -306,6 +306,7 @@ export async function fetchPlayerAvailableSeasons(playerId) {
 }
 
 
+
 /*
 ------------------------------------------------------------------------------------------------
 GAME DRIVES
@@ -358,4 +359,21 @@ export async function fetchPlayerProfilesCount() {
 
 
 
-
+/*
+------------------------------------------------------------------------------------------------
+AP TEAM VOTES
+------------------------------------------------------------------------------------------------
+*/
+/**
+ * Fetch AP team votes for a specific season and team
+ * @param {number} seasonYear - The year of the season
+ * @param {string} teamId - The ID of the team
+ * @returns {Promise<Array>} Array of AP team vote objects for the specified season and team
+ */
+export async function fetchApTeamVotes(seasonYear, teamId) {
+  const response = await fetch(`${API_BASE_URL}/api/ap-team-votes/${seasonYear}/${teamId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch AP team votes (api)');
+  }
+  return response.json();
+}

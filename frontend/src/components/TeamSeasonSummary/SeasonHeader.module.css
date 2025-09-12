@@ -6,14 +6,14 @@
   margin-bottom: 20px;
   position: relative;
   overflow: hidden;
-  height: 200px;
+  height: 120px;
   display: flex;
   align-items: stretch;
 }
 
 /* Logo Container - Square with low opacity primary color background */
 .logoContainer {
-  width: 200px;
+  width: 150px;
   height: 100%;
   background: color-mix(in srgb, var(--team-primary-color, #dc2626) 85%, white);
   display: flex;
@@ -25,30 +25,30 @@
 
 /* Team Logo - White circle background */
 .teamLogo {
-  width: 150px;
-  height: 150px;
+  width: 90px;
+  height: 90px;
   object-fit: contain;
   background: white;
   border-radius: 50%;
-  padding: 15px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
   z-index: 2;
 }
 
 /* Logo Placeholder for missing logos */
 .logoPlaceholder {
-  width: 150px;
-  height: 150px;
+  width: 90px;
+  height: 90px;
   background: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 50px;
+  font-size: 30px;
   font-weight: bold;
   color: rgba(98, 0, 255, 1);
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
   z-index: 2;
 }
@@ -65,7 +65,7 @@
 
 /* Team Name - Large font */
 .teamName {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: bold;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -73,23 +73,6 @@
   line-height: 1.1;
 }
 
-/* Team Record - Under the name */
-.teamRecord {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  margin: 0;
-}
-
-/* Team Playoffs - Under the record */
-.teamPlayoffs {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  margin: 0;
-}
 
 
 /* Mobile Responsive */

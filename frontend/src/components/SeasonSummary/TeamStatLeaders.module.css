@@ -73,7 +73,7 @@
   background: #171717;
   border-radius: 6px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid #3e3e3e;
 }
 
 /* Table with image layout */
@@ -94,8 +94,8 @@
   border-radius: 8px;
   object-fit: contain;
   border: 3px solid #dc2626;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   background-color: #ffffff;
+  filter: brightness(1.1) saturate(1.2);
 }
 
 /* Leader table - smaller */

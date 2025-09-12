@@ -133,20 +133,6 @@
   text-decoration: underline;
 }
 
-/* Player with image styling */
-.player-with-image {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.player-image {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
 
 /* Table with image layout */
 .table-with-image {

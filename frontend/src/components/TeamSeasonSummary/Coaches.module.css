@@ -2,19 +2,19 @@
   margin-bottom: 40px;
   background: #1a1a1a;
   border-radius: 12px;
-  padding: 30px;
+  padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
 .section-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
   color: #f9fafb;
   text-align: center;
   font-weight: bold;
   position: relative;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
 }
 
 .section-title::after {
@@ -24,17 +24,16 @@
   left: 50%;
   transform: translateX(-50%);
   width: 60px;
-  height: 3px;
-  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  height: 2px;
+  background: var(--team-neon-color, #FF1A5C);
   border-radius: 2px;
 }
 
 .coachInfo {
-  background: #252525;
+  background: #171717;
   border-radius: 8px;
   padding: 25px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #4a4a4a;
 }
 
 .coachingStaff {
@@ -46,7 +45,7 @@
 .coachCard {
   text-align: center;
   padding: 15px;
-  background: #353535;
+  background: #222222;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);

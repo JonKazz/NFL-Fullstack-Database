@@ -39,6 +39,9 @@ public class SeasonTeamInfo {
     private Integer pointsFor;
     @Column(name = "points_against")
     private Integer pointsAgainst;
+    @Column(name = "conference")
+    private String conference;
+    @Column(name = "division")
     private String division;
     @Column(name = "division_rank")
     private Integer divisionRank;

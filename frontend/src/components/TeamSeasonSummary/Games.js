@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Games.module.css';
-import { TEAM_MAP } from '../../utils';
+import { TEAM_MAP, getNeonTeamColor } from '../../utils';
 
 function Games({ sortedGames, teamId }) {
   const navigate = useNavigate();
@@ -10,17 +10,47 @@ function Games({ sortedGames, teamId }) {
     navigate(`/game/${gameId}`);
   };
 
-  // Filter regular season games
+  /**
+   * Formats a date string from "Sunday Dec 8, 2024" to "12/8/2024"
+   * @param {string} dateString - The date string to format
+   * @returns {string} - The formatted date string
+   */
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    try {
+      // Parse the date string and create a Date object
+      const date = new Date(dateString);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if parsing fails
+      }
+      
+      // Format as M/D/YYYY
+      const month = date.getMonth() + 1; // getMonth() returns 0-11
+      const day = date.getDate();
+      const year = date.getFullYear();
+      
+      return `${month}/${day}/${year}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString; // Return original if there's an error
+    }
+  };
+
+
+  // Filter regular season games only
   const regularSeasonGames = sortedGames.filter(game => {
     return game?.playoffGame === null || game?.playoffGame === undefined;
   });
 
-  // Filter playoff games
+  // Filter all playoff games (including Super Bowl)
   const playoffGames = sortedGames.filter(game => {
     return game?.playoffGame !== null && game?.playoffGame !== undefined;
   });
 
-  const renderGameCard = (game, idx, isPlayoff = false) => {
+  const renderGameCard = (game, idx, isPlayoff = false, isSuperBowl = false) => {
     // Safety check - ensure game has required properties
     if (!game) {
       return null;
@@ -32,7 +62,7 @@ function Games({ sortedGames, teamId }) {
       (game.homePoints > game.awayPoints) : 
       (game.awayPoints > game.homePoints);
 
-    const gameCardClass = `${styles['game-card']} ${isPlayoff ? styles.playoff : ''} ${isWin ? styles.win : styles.loss}`;
+    const gameCardClass = `${styles['game-card']} ${isPlayoff ? styles.playoff : ''} ${isSuperBowl ? styles.superbowl : ''} ${isWin ? styles.win : styles.loss}`;
 
     return (
       <div
@@ -46,14 +76,14 @@ function Games({ sortedGames, teamId }) {
             <div className={styles['week-date-row']}>
               {isPlayoff ? (
                 <div className={styles['playoff-game-text']}>
-                  {game.playoffGame === 'Conference Championship' ? 'Conference' : game.playoffGame}
+                  {isSuperBowl ? 'Super Bowl' : (game.playoffGame === 'Conference Championship' ? 'Conference' : game.playoffGame)}
                 </div>
               ) : (
                 <div className={styles.week}>
                   Week {game.seasonWeek}
                 </div>
               )}
-              <div className={styles['game-date']}>{game.date}</div>
+              <div className={styles['game-date']}>{formatDate(game.date)}</div>
             </div>
           </div>
           <div className={styles['game-result']}>
@@ -102,30 +132,37 @@ function Games({ sortedGames, teamId }) {
     );
   };
 
+
+  const neonColor = getNeonTeamColor(teamId);
+
   return (
     <>
-      {/* Regular Season Section */}
+      {/* Regular Season and Playoffs Section */}
       {regularSeasonGames.length > 0 && (
         <div className={styles.section}>
-          <div className={styles['regular-season-container']}>
-            <h2 className={styles['regular-season-title']}>Regular Season</h2>
+          <div 
+            className={styles['regular-season-container']}
+            style={{ '--team-neon-color': neonColor }}
+          >
+            <h2 className={styles['regular-season-title']}>Games</h2>
             <div className={styles['games-wrapper']}>
               <div className={styles['games-grid']}>
-                {regularSeasonGames.map((game, idx) => renderGameCard(game, idx, false)).filter(Boolean)}
+                {regularSeasonGames.map((game, idx) => {
+                  const isPlayoff = game?.playoffGame !== null && game?.playoffGame !== undefined;
+                  return renderGameCard(game, idx, isPlayoff);
+                }).filter(Boolean)}
               </div>
-            </div>
-            
-            {/* Playoffs Section - Only show if there are playoff games */}
-            {playoffGames.length > 0 && (
-              <>
-                <h2 className={styles['playoff-title']}>Playoffs</h2>
-                <div className={styles['games-wrapper']}>
-                  <div className={styles['games-grid']}>
-                    {playoffGames.map((game, idx) => renderGameCard(game, idx, true)).filter(Boolean)}
-                  </div>
+              
+              {/* Playoff games - outside the grid but inside the wrapper */}
+              {playoffGames.length > 0 && (
+                <div className={styles['playoff-container']}>
+                  {playoffGames.map((game, idx) => {
+                    const isSuperBowl = game?.playoffGame === 'Superbowl';
+                    return renderGameCard(game, idx, true, isSuperBowl); // true for isPlayoff, isSuperBowl based on game type
+                  }).filter(Boolean)}
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}

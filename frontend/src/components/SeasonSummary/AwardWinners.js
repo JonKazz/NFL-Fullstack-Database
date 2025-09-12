@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AwardWinners.module.css';
 import { fetchPlayerProfile, fetchPlayerTeamBySeason } from '../../api/fetches';
-import { getTeamPrimaryColor } from '../../utils';
+import { getNeonTeamColor } from '../../utils';
 
 function AwardWinners({ awards, seasonYear }) {
   const [playerProfiles, setPlayerProfiles] = useState({});
@@ -46,7 +46,7 @@ function AwardWinners({ awards, seasonYear }) {
           try {
             const teamId = await fetchPlayerTeamBySeason(award.playerId, seasonYear);
             if (teamId) {
-              const teamColor = getTeamPrimaryColor(teamId);
+              const teamColor = getNeonTeamColor(teamId);
               teamColors[award.playerId] = teamColor;
             }
           } catch (error) {

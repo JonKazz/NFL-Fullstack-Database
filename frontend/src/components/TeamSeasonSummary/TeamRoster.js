@@ -1,11 +1,14 @@
 import React from 'react';
 import styles from './TeamRoster.module.css';
 import SortableTable from './SortableTable';
+import { getNeonTeamColor } from '../../utils';
 
-function TeamRoster({ playerStats }) {
+function TeamRoster({ playerStats, teamId }) {
   if (!playerStats || !Array.isArray(playerStats)) {
     return null;
   }
+
+  const neonColor = getNeonTeamColor(teamId);
 
   // Filter players by position
   const quarterbacks = playerStats.filter(player => player.position === 'QB');
@@ -17,7 +20,10 @@ function TeamRoster({ playerStats }) {
   const specialTeams = playerStats.filter(player => ['K', 'P', 'LS'].includes(player.position));
 
   return (
-    <div className={styles.section}>
+    <div 
+      className={styles.section}
+      style={{ '--team-neon-color': neonColor }}
+    >
       <h2 className={styles['section-title']}>Team Roster</h2>
       <div className={styles['players-section']}>
         

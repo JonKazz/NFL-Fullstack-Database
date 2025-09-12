@@ -6,7 +6,6 @@ function TeamStatistics({ teamInfo, teamStats, teamId }) {
   return (
     <div className={styles.section}>
       <div className={styles['stats-container']}>
-        <h2 className={styles['stats-title']}>Team Statistics</h2>
         <div className={styles['stats-section']}>
         
         {/* Offensive Statistics */}

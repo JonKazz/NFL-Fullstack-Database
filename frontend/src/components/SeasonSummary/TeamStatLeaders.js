@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './TeamStatLeaders.module.css';
 import { fetchTeamsBySeason } from '../../api/fetches';
-import { TEAM_MAP, getTeamPrimaryColor } from '../../utils';
+import { TEAM_MAP, getNeonTeamColor } from '../../utils';
 
 function TeamStatLeaders({ year }) {
   const [teamStats, setTeamStats] = useState([]);
@@ -97,7 +97,10 @@ function TeamStatLeaders({ year }) {
                 src={getTeamLogoUrl(topTeams[0].teamId)} 
                 alt={topTeams[0].teamId}
                 className={styles['team-image-large']}
-                style={{ borderColor: getTeamPrimaryColor(topTeams[0].teamId) }}
+                style={{ 
+                  borderColor: getNeonTeamColor(topTeams[0].teamId),
+                  boxShadow: `0 2px 2px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 255, 255, 0.8), 0 0 6px ${getNeonTeamColor(topTeams[0].teamId)}`
+                }}
               />
             </div>
           )}

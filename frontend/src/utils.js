@@ -41,7 +41,7 @@ export function getTeamPrimaryColor(teamId) {
     'rav': '#241773', // Baltimore Ravens
     'buf': '#00338D', // Buffalo Bills
     'car': '#0085CA', // Carolina Panthers
-    'chi': '#0B162A', // Chicago Bears
+    'chi': '#C83803', // Chicago Bears - Official orange
     'cin': '#FB4F14', // Cincinnati Bengals
     'cle': '#311D00', // Cleveland Browns
     'dal': '#003594', // Dallas Cowboys
@@ -71,6 +71,46 @@ export function getTeamPrimaryColor(teamId) {
   };
 
   return teamColors[teamId] || '#dc2626';
+}
+
+// Get team neon color - bright, vibrant version of primary color
+export function getNeonTeamColor(teamId) {
+  const neonTeamColors = {
+    'crd': '#FF1A5C', // Arizona Cardinals - Bright neon red
+    'atl': '#FF2D4A', // Atlanta Falcons - Bright neon red
+    'rav': '#4A2CFF', // Baltimore Ravens - Bright neon purple
+    'buf': '#0066FF', // Buffalo Bills - Bright neon blue
+    'car': '#00BFFF', // Carolina Panthers - Bright neon blue
+    'chi': '#FF6600', // Chicago Bears - Bright neon orange
+    'cin': '#FF6600', // Cincinnati Bengals - Bright neon orange
+    'cle': '#FF8C00', // Cleveland Browns - Bright neon orange
+    'dal': '#0066FF', // Dallas Cowboys - Bright neon blue
+    'den': '#FF6600', // Denver Broncos - Bright neon orange
+    'det': '#00BFFF', // Detroit Lions - Bright neon blue
+    'gnb': '#00FF7F', // Green Bay Packers - Bright neon green
+    'htx': '#0066CC', // Houston Texans - Darker neon blue
+    'clt': '#0066FF', // Indianapolis Colts - Bright neon blue
+    'jax': '#00CCCC', // Jacksonville Jaguars - Less green-shifted teal
+    'kan': '#FF1A5C', // Kansas City Chiefs - Bright neon red
+    'sdg': '#00BFFF', // Los Angeles Chargers - Bright neon blue
+    'ram': '#0066FF', // Los Angeles Rams - Bright neon blue
+    'rai': '#FFFFFF', // Las Vegas Raiders - Bright white
+    'mia': '#00FFBF', // Miami Dolphins - Bright neon teal
+    'min': '#BF00FF', // Minnesota Vikings - Bright neon purple
+    'nwe': '#00BFFF', // New England Patriots - Bright neon blue
+    'nor': '#F0D090', // New Orleans Saints - Brighter version of primary gold
+    'nyg': '#0066FF', // New York Giants - Bright neon blue
+    'nyj': '#00FF7F', // New York Jets - Bright neon green
+    'phi': '#00FFBF', // Philadelphia Eagles - Bright neon teal
+    'pit': '#FFFFFF', // Pittsburgh Steelers - Bright white
+    'sea': '#0080CC', // Seattle Seahawks - Darker neon blue
+    'sfo': '#FF0000', // San Francisco 49ers - Bright neon red
+    'tam': '#FF3333', // Tampa Bay Buccaneers - Bright neon red
+    'oti': '#00BFFF', // Tennessee Titans - Bright neon blue
+    'was': '#FF6666'  // Washington Commanders - Bright neon red
+  };
+
+  return neonTeamColors[teamId] || '#FF1A5C';
 }
 
 // Calculate team ranking for a specific stat
