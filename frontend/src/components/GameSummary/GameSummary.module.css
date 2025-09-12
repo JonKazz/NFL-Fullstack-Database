@@ -17,6 +17,9 @@
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
+  border: 2px solid #555555;
+  border-radius: 12px;
+  background: #1a1a1a;
 }
 
 .scoring-container {
