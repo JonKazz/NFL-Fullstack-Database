@@ -12,8 +12,7 @@ SEASON TEAM INFO
  * @returns {Promise<Object>} Team information object
  */
 export async function fetchTeam(teamId, year) {
-  const params = new URLSearchParams({ teamId, year });
-  const response = await fetch(`${API_BASE_URL}/api/teams/info?${params}`);
+  const response = await fetch(`${API_BASE_URL}/api/teams/${teamId}/${year}`);
   if (!response.ok) {
     throw new Error('Failed to fetch team info (api)');
   }
@@ -33,6 +32,27 @@ export async function fetchTeamsBySeason(year) {
   return response.json();
 }
 
+
+
+/*
+------------------------------------------------------------------------------------------------
+SEASON TEAM SEEDS
+------------------------------------------------------------------------------------------------
+*/
+/**
+ * Fetch team seeds for a specific conference and season
+ * @param {string} conference - The conference (e.g., "AFC", "NFC")
+ * @param {number} year - The season year
+ * @returns {Promise<Object>} Team seeds object containing seed information
+ */
+export async function fetchTeamSeeds(conference, year) {
+  const id = `${conference}_${year}`;
+  const response = await fetch(`${API_BASE_URL}/api/team-seeds/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch team seeds (api)');
+  }
+  return response.json();
+}
 
 
 /*

@@ -11,6 +11,11 @@
   z-index: 1000;
   overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: width 0.3s ease;
+}
+
+.navigation.collapsed {
+  width: 50px;
 }
 
 .navItem {
@@ -51,4 +56,33 @@
   color: #9ca3af;
   font-style: italic;
   font-size: 14px;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #e5e7eb;
+  width: 25px;
+  height: 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.toggleButton:hover {
+  background: #3a3a3a;
+  border-color: #555;
+}
+
+.toggleButton:active {
+  background: #1a1a1a;
 }

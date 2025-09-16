@@ -33,84 +33,208 @@ export const TEAM_MAP = {
     'was': { name: 'Washington Commanders', city: 'Washington', name_short: 'Commanders' }
 };
 
+export const TEAM_COLORS = {
+    'crd': { 
+        primary: '#97233F', 
+        secondary: '#FFB612', 
+        neon: '#FF1A5C',
+        secondaryNeon: '#FFD700'
+    },
+    'atl': { 
+        primary: '#A71930', 
+        secondary: '#000000', 
+        neon: '#FF2D4A',
+        secondaryNeon: '#FFFFFF'
+    },
+    'rav': { 
+        primary: '#241773', 
+        secondary: '#000000', 
+        neon: '#4A2CFF',
+        secondaryNeon: '#FFFFFF'
+    },
+    'buf': { 
+        primary: '#00338D', 
+        secondary: '#C60C30', 
+        neon: '#0066FF',
+        secondaryNeon: '#FF3333'
+    },
+    'car': { 
+        primary: '#0085CA', 
+        secondary: '#101820', 
+        neon: '#00BFFF',
+        secondaryNeon: '#FFFFFF'
+    },
+    'chi': { 
+        primary: '#C83803', 
+        secondary: '#C83803', 
+        neon: '#FF6600',
+        secondaryNeon: '#FF6600'
+    },
+    'cin': { 
+        primary: '#FB4F14', 
+        secondary: '#000000', 
+        neon: '#FF6600',
+        secondaryNeon: '#FFFFFF'
+    },
+    'cle': { 
+        primary: '#311D00', 
+        secondary: '#FF3C00', 
+        neon: '#FF8C00',
+        secondaryNeon: '#FF6600'
+    },
+    'dal': { 
+        primary: '#003594', 
+        secondary: '#869397', 
+        neon: '#0066FF',
+        secondaryNeon: '#CCCCCC'
+    },
+    'den': { 
+        primary: '#FB4F14', 
+        secondary: '#002244', 
+        neon: '#FF6600',
+        secondaryNeon: '#0066FF'
+    },
+    'det': { 
+        primary: '#0076B6', 
+        secondary: '#B0B7BC', 
+        neon: '#00BFFF',
+        secondaryNeon: '#E0E0E0'
+    },
+    'gnb': { 
+        primary: '#203731', 
+        secondary: '#FFB612', 
+        neon: '#00FF7F',
+        secondaryNeon: '#FFD700'
+    },
+    'htx': { 
+        primary: '#03202F', 
+        secondary: '#A71930', 
+        neon: '#0066CC',
+        secondaryNeon: '#FF3333'
+    },
+    'clt': { 
+        primary: '#002C5F', 
+        secondary: '#A5ACAF', 
+        neon: '#0066FF',
+        secondaryNeon: '#D0D0D0'
+    },
+    'jax': { 
+        primary: '#006778', 
+        secondary: '#9F2C55', 
+        neon: '#00CCCC',
+        secondaryNeon: '#FF66AA'
+    },
+    'kan': { 
+        primary: '#E31837', 
+        secondary: '#FFB81C', 
+        neon: '#FF1A5C',
+        secondaryNeon: '#FFD700'
+    },
+    'sdg': { 
+        primary: '#0080C6', 
+        secondary: '#FFC20E', 
+        neon: '#00BFFF',
+        secondaryNeon: '#FFD700'
+    },
+    'ram': { 
+        primary: '#003594', 
+        secondary: '#FFA300', 
+        neon: '#0066FF',
+        secondaryNeon: '#FFD700'
+    },
+    'rai': { 
+        primary: '#000000', 
+        secondary: '#C4C4C4', 
+        neon: '#FFFFFF',
+        secondaryNeon: '#FFFFFF'
+    },
+    'mia': { 
+        primary: '#008E97', 
+        secondary: '#FC4C02', 
+        neon: '#00FFBF',
+        secondaryNeon: '#FF6600'
+    },
+    'min': { 
+        primary: '#4F2683', 
+        secondary: '#FFC62F', 
+        neon: '#BF00FF',
+        secondaryNeon: '#FFD700'
+    },
+    'nwe': { 
+        primary: '#002244', 
+        secondary: '#C60C30', 
+        neon: '#00BFFF',
+        secondaryNeon: '#FF3333'
+    },
+    'nor': { 
+        primary: '#D3BC8D', 
+        secondary: '#101820', 
+        neon: '#F0D090',
+        secondaryNeon: '#FFFFFF'
+    },
+    'nyg': { 
+        primary: '#0B2265', 
+        secondary: '#A71930', 
+        neon: '#0066FF',
+        secondaryNeon: '#FF3333'
+    },
+    'nyj': { 
+        primary: '#0C371D', 
+        secondary: '#FFFFFF', 
+        neon: '#00FF7F',
+        secondaryNeon: '#FFFFFF'
+    },
+    'phi': { 
+        primary: '#004C54', 
+        secondary: '#A5ACAF', 
+        neon: '#00FFBF', secondaryNeon: '#D0D0D0'
+    },
+    'pit': { 
+        primary: '#000000', 
+        secondary: '#FFB612', 
+        neon: '#FFFFFF',
+        secondaryNeon: '#FFD700'
+    },
+    'sea': { 
+        primary: '#002244', 
+        secondary: '#69BE28', 
+        neon: '#0080CC',
+        secondaryNeon: '#00FF00'
+    },
+    'sfo': { 
+        primary: '#AA0000', 
+        secondary: '#B3995D', 
+        neon: '#FF0000',
+        secondaryNeon: '#FFD700'
+    },
+    'tam': { 
+        primary: '#D50A0A', 
+        secondary: '#FF7900', 
+        neon: '#FF3333',
+        secondaryNeon: '#FF9900'
+    },
+    'oti': { 
+        primary: '#0C2340', 
+        secondary: '#4B92DB', 
+        neon: '#00BFFF',
+        secondaryNeon: '#66B3FF'
+    },
+    'was': { 
+        primary: '#5A1414', 
+        secondary: '#FFB612', 
+        neon: '#FF6666',
+        secondaryNeon: '#FFD700'
+    }
+};
+
 // Get team primary color
 export function getTeamPrimaryColor(teamId) {
-  const teamColors = {
-    'crd': '#97233F', // Arizona Cardinals
-    'atl': '#A71930', // Atlanta Falcons
-    'rav': '#241773', // Baltimore Ravens
-    'buf': '#00338D', // Buffalo Bills
-    'car': '#0085CA', // Carolina Panthers
-    'chi': '#C83803', // Chicago Bears - Official orange
-    'cin': '#FB4F14', // Cincinnati Bengals
-    'cle': '#311D00', // Cleveland Browns
-    'dal': '#003594', // Dallas Cowboys
-    'den': '#FB4F14', // Denver Broncos
-    'det': '#0076B6', // Detroit Lions
-    'gnb': '#203731', // Green Bay Packers
-    'htx': '#03202F', // Houston Texans
-    'clt': '#002C5F', // Indianapolis Colts
-    'jax': '#006778', // Jacksonville Jaguars
-    'kan': '#E31837', // Kansas City Chiefs
-    'sdg': '#0080C6', // Los Angeles Chargers
-    'ram': '#003594', // Los Angeles Rams
-    'rai': '#000000', // Las Vegas Raiders
-    'mia': '#008E97', // Miami Dolphins
-    'min': '#4F2683', // Minnesota Vikings
-    'nwe': '#002244', // New England Patriots
-    'nor': '#D3BC8D', // New Orleans Saints
-    'nyg': '#0B2265', // New York Giants
-    'nyj': '#0C371D', // New York Jets
-    'phi': '#004C54', // Philadelphia Eagles
-    'pit': '#000000', // Pittsburgh Steelers
-    'sea': '#002244', // Seattle Seahawks
-    'sfo': '#AA0000', // San Francisco 49ers
-    'tam': '#D50A0A', // Tampa Bay Buccaneers
-    'oti': '#0C2340', // Tennessee Titans
-    'was': '#5A1414'  // Washington Commanders
-  };
-
-  return teamColors[teamId] || '#dc2626';
+  return TEAM_COLORS[teamId]?.primary || '#dc2626';
 }
 
 // Get team neon color - bright, vibrant version of primary color
 export function getNeonTeamColor(teamId) {
-  const neonTeamColors = {
-    'crd': '#FF1A5C', // Arizona Cardinals - Bright neon red
-    'atl': '#FF2D4A', // Atlanta Falcons - Bright neon red
-    'rav': '#4A2CFF', // Baltimore Ravens - Bright neon purple
-    'buf': '#0066FF', // Buffalo Bills - Bright neon blue
-    'car': '#00BFFF', // Carolina Panthers - Bright neon blue
-    'chi': '#FF6600', // Chicago Bears - Bright neon orange
-    'cin': '#FF6600', // Cincinnati Bengals - Bright neon orange
-    'cle': '#FF8C00', // Cleveland Browns - Bright neon orange
-    'dal': '#0066FF', // Dallas Cowboys - Bright neon blue
-    'den': '#FF6600', // Denver Broncos - Bright neon orange
-    'det': '#00BFFF', // Detroit Lions - Bright neon blue
-    'gnb': '#00FF7F', // Green Bay Packers - Bright neon green
-    'htx': '#0066CC', // Houston Texans - Darker neon blue
-    'clt': '#0066FF', // Indianapolis Colts - Bright neon blue
-    'jax': '#00CCCC', // Jacksonville Jaguars - Less green-shifted teal
-    'kan': '#FF1A5C', // Kansas City Chiefs - Bright neon red
-    'sdg': '#00BFFF', // Los Angeles Chargers - Bright neon blue
-    'ram': '#0066FF', // Los Angeles Rams - Bright neon blue
-    'rai': '#FFFFFF', // Las Vegas Raiders - Bright white
-    'mia': '#00FFBF', // Miami Dolphins - Bright neon teal
-    'min': '#BF00FF', // Minnesota Vikings - Bright neon purple
-    'nwe': '#00BFFF', // New England Patriots - Bright neon blue
-    'nor': '#F0D090', // New Orleans Saints - Brighter version of primary gold
-    'nyg': '#0066FF', // New York Giants - Bright neon blue
-    'nyj': '#00FF7F', // New York Jets - Bright neon green
-    'phi': '#00FFBF', // Philadelphia Eagles - Bright neon teal
-    'pit': '#FFFFFF', // Pittsburgh Steelers - Bright white
-    'sea': '#0080CC', // Seattle Seahawks - Darker neon blue
-    'sfo': '#FF0000', // San Francisco 49ers - Bright neon red
-    'tam': '#FF3333', // Tampa Bay Buccaneers - Bright neon red
-    'oti': '#00BFFF', // Tennessee Titans - Bright neon blue
-    'was': '#FF6666'  // Washington Commanders - Bright neon red
-  };
-
-  return neonTeamColors[teamId] || '#FF1A5C';
+  return TEAM_COLORS[teamId]?.neon || '#FF1A5C';
 }
 
 // Calculate team ranking for a specific stat
@@ -174,48 +298,18 @@ export function getStatValue(team, statField, format = 'number') {
 }
 
 export function getTeamSecondaryColor(teamId) {
-  const teamSecondaryColors = {
-    'crd': '#FFB612', // Arizona Cardinals - Gold
-    'atl': '#000000', // Atlanta Falcons - Black
-    'rav': '#000000', // Baltimore Ravens - Black
-    'buf': '#C60C30', // Buffalo Bills - Red
-    'car': '#101820', // Carolina Panthers - Black
-    'chi': '#C83803', // Chicago Bears - Orange
-    'cin': '#000000', // Cincinnati Bengals - Black
-    'cle': '#FF3C00', // Cleveland Browns - Orange
-    'dal': '#869397', // Dallas Cowboys - Silver
-    'den': '#002244', // Denver Broncos - Blue
-    'det': '#B0B7BC', // Detroit Lions - Silver
-    'gnb': '#FFB612', // Green Bay Packers - Gold
-    'htx': '#A71930', // Houston Texans - Red
-    'clt': '#A5ACAF', // Indianapolis Colts - Gray
-    'jax': '#9F2C55', // Jacksonville Jaguars - Teal
-    'kan': '#FFB81C', // Kansas City Chiefs - Gold
-    'sdg': '#FFC20E', // Los Angeles Chargers - Gold
-    'ram': '#FFA300', // Los Angeles Rams - Gold
-    'rai': '#C4C4C4', // Las Vegas Raiders - Silver
-    'mia': '#FC4C02', // Miami Dolphins - Orange
-    'min': '#FFC62F', // Minnesota Vikings - Gold
-    'nwe': '#C60C30', // New England Patriots - Red
-    'nor': '#101820', // New Orleans Saints - Black
-    'nyg': '#A71930', // New York Giants - Red
-    'nyj': '#FFFFFF', // New York Jets - White
-    'phi': '#A5ACAF', // Philadelphia Eagles - Gray
-    'pit': '#FFB612', // Pittsburgh Steelers - Gold
-    'sea': '#69BE28', // Seattle Seahawks - Green
-    'sfo': '#B3995D', // San Francisco 49ers - Gold
-    'tam': '#FF7900', // Tampa Bay Buccaneers - Orange
-    'oti': '#4B92DB', // Tennessee Titans - Blue
-    'was': '#FFB612'  // Washington Commanders - Gold
-  };
+  return TEAM_COLORS[teamId]?.secondary || '#ffffff';
+}
 
-  return teamSecondaryColors[teamId] || '#ffffff';
+// Get team secondary neon color - bright, vibrant version of secondary color
+export function getTeamSecondaryNeonColor(teamId) {
+  return TEAM_COLORS[teamId]?.secondaryNeon || '#ffffff';
 }
 
 // Get two contrasting colors for two teams
 export function getTeamColorsForGame(homeTeamId, awayTeamId) {
-  const homeTeamPrimary = getTeamPrimaryColor(homeTeamId);
-  const awayTeamPrimary = getTeamPrimaryColor(awayTeamId);
+  const homeTeamPrimary = TEAM_COLORS[homeTeamId]?.primary || '#dc2626';
+  const awayTeamPrimary = TEAM_COLORS[awayTeamId]?.primary || '#dc2626';
   
   // Simple conditional logic for known similar color combinations
   // Home team always keeps primary color, away team switches to secondary if needed
@@ -225,7 +319,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Cardinals vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // Cardinals keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -233,7 +327,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Falcons vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // Falcons keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -241,7 +335,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Chiefs vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // Chiefs keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -249,7 +343,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // 49ers vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // 49ers keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -257,7 +351,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Buccaneers vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // Buccaneers keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -265,7 +359,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Commanders vs other dark red teams
     return {
       homeTeamColor: homeTeamPrimary, // Commanders keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -274,7 +368,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Bills vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Bills keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -282,7 +376,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Cowboys vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Cowboys keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -290,7 +384,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Rams vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Rams keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -298,7 +392,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Colts vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Colts keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -306,7 +400,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Patriots vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Patriots keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -314,7 +408,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Seahawks vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Seahawks keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
@@ -322,16 +416,49 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Titans vs other blue teams
     return {
       homeTeamColor: homeTeamPrimary, // Titans keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Other team uses secondary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
     };
   }
   
+  // Orange teams
+  if (homeTeamId === 'chi' && ['cin', 'cle', 'den'].includes(awayTeamId)) {
+    // Bears vs other orange teams
+    return {
+      homeTeamColor: homeTeamPrimary, // Bears keep primary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
+    };
+  }
+  
+  if (homeTeamId === 'cin' && ['chi', 'cle', 'den'].includes(awayTeamId)) {
+    // Bengals vs other orange teams
+    return {
+      homeTeamColor: homeTeamPrimary, // Bengals keep primary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
+    };
+  }
+  
+  if (homeTeamId === 'cle' && ['chi', 'cin', 'den'].includes(awayTeamId)) {
+    // Browns vs other orange teams
+    return {
+      homeTeamColor: homeTeamPrimary, // Browns keep primary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
+    };
+  }
+  
+  if (homeTeamId === 'den' && ['chi', 'cin', 'cle'].includes(awayTeamId)) {
+    // Broncos vs other orange teams
+    return {
+      homeTeamColor: homeTeamPrimary, // Broncos keep primary
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Other team uses secondary
+    };
+  }
+
   // Black teams
   if (homeTeamId === 'rai' && awayTeamId === 'pit') {
     // Raiders vs Steelers
     return {
       homeTeamColor: homeTeamPrimary, // Raiders keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Steelers use gold
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Steelers use gold
     };
   }
   
@@ -339,7 +466,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Steelers vs Raiders
     return {
       homeTeamColor: homeTeamPrimary, // Steelers keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Raiders use silver
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Raiders use silver
     };
   }
   
@@ -348,7 +475,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Texans vs Jaguars
     return {
       homeTeamColor: homeTeamPrimary, // Texans keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Jaguars use teal
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Jaguars use teal
     };
   }
   
@@ -356,7 +483,7 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
     // Jaguars vs Texans
     return {
       homeTeamColor: homeTeamPrimary, // Jaguars keep primary
-      awayTeamColor: getTeamSecondaryColor(awayTeamId) // Texans use red
+      awayTeamColor: TEAM_COLORS[awayTeamId]?.secondary || '#ffffff' // Texans use red
     };
   }
   
@@ -372,74 +499,4 @@ export function getTeamColorsForGame(homeTeamId, awayTeamId) {
 export function formatNumber(num) {
   if (num === null || num === undefined) return '0';
   return num.toLocaleString();
-}
-
-// Calculate yards per carry
-export function calculateYPC(rushYds, rushAtt) {
-  if (!rushAtt || rushAtt === 0) return '0.0';
-  return (rushYds / rushAtt).toFixed(1);
-}
-
-// Calculate yards per catch
-export function calculateYPCatch(recYds, rec) {
-  if (!rec || rec === 0) return '0.0';
-  return (recYds / rec).toFixed(1);
-}
-
-// Calculate field goal percentage
-export function calculateFGPercentage(fgm, fga) {
-  if (!fga || fga === 0) return '0.0%';
-  return ((fgm / fga) * 100).toFixed(1) + '%';
-}
-
-// Calculate extra point percentage
-export function calculateXPPercentage(xpm, xpa) {
-  if (!xpa || xpa === 0) return '0.0%';
-  return ((xpm / xpa) * 100).toFixed(1) + '%';
-}
-
-// Calculate punt average
-export function calculatePuntAverage(puntYds, punt) {
-  if (!punt || punt === 0) return '0.0';
-  return (puntYds / punt).toFixed(1);
-}
-
-
-
-// Cache for player names to avoid repeated API calls
-const playerNameCache = new Map();
-
-// Get player name from player ID using the player_profiles API
-export async function getPlayerName(playerId) {
-  if (!playerId) return 'Unknown Player';
-  
-  // Check cache first
-  if (playerNameCache.has(playerId)) {
-    return playerNameCache.get(playerId);
-  }
-  
-  try {
-    const response = await fetch(`http://localhost:8080/api/player-profiles/player?playerId=${playerId}`);
-    
-    if (response.ok) {
-      const playerProfile = await response.json();
-      if (playerProfile && playerProfile.name) {
-        // Cache the name
-        playerNameCache.set(playerId, playerProfile.name);
-        return playerProfile.name;
-      }
-    }
-    
-    // Fallback if API fails or player not found
-    const fallbackName = playerId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    playerNameCache.set(playerId, fallbackName);
-    return fallbackName;
-    
-  } catch (error) {
-    console.warn(`Failed to fetch player name for ${playerId}:`, error);
-    // Fallback to formatted player ID
-    const fallbackName = playerId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    playerNameCache.set(playerId, fallbackName);
-    return fallbackName;
-  }
 }

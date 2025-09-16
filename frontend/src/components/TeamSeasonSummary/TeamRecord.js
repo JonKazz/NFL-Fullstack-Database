@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './TeamRecord.module.css';
 import { TEAM_MAP } from '../../utils';
+import { fetchTeamSeeds } from '../../api/fetches';
 import KeyPlayers from './KeyPlayers';
 
 /**
@@ -14,6 +15,8 @@ import KeyPlayers from './KeyPlayers';
  * @returns {JSX.Element} TeamRecord component
  */
 function TeamRecord({ games = [], teamInfo, playerStats, teamId, year }) {
+  const [teamSeed, setTeamSeed] = useState(null);
+
   // Sort games by date to ensure proper order
   const sortedGames = [...games].sort((a, b) => new Date(a.date) - new Date(b.date));
   
@@ -21,6 +24,38 @@ function TeamRecord({ games = [], teamInfo, playerStats, teamId, year }) {
   const regularSeasonGames = sortedGames.filter(game => {
     return game?.playoffGame === null || game?.playoffGame === undefined;
   });
+
+  /**
+   * Fetches team seeds and determines the current team's seed
+   * @param {string} conference - The team's conference (AFC/NFC)
+   * @param {number} seasonYear - The season year
+   * @param {string} currentTeamId - The current team's ID
+   */
+  const fetchAndDetermineTeamSeed = async (conference, seasonYear, currentTeamId) => {
+    try {
+      const seedsData = await fetchTeamSeeds(conference, seasonYear);
+      if (!seedsData) return;
+
+      // Iterate through seed_team_1 to seed_team_16 to find the team's seed
+      for (let i = 1; i <= 16; i++) {
+        const seedTeamKey = `seedTeam${i}`;
+        
+        if (seedsData[seedTeamKey] === currentTeamId) {
+          setTeamSeed(i);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching team seeds:', error);
+    }
+  };
+
+  // Fetch team seed when component mounts or when teamInfo changes
+  useEffect(() => {
+    if (teamInfo?.conference && year && teamId) {
+      fetchAndDetermineTeamSeed(teamInfo.conference, year, teamId);
+    }
+  }, [teamInfo?.conference, year, teamId]);
 
   // Extract team record and standings from teamInfo
   const teamRecord = {
@@ -34,9 +69,9 @@ function TeamRecord({ games = [], teamInfo, playerStats, teamId, year }) {
     ? `${teamInfo.division}: #${teamInfo.divisionRank}`
     : "TBD";
 
-  // Create conference ranking string
+  // Create conference ranking string using actual team seed
   const conferenceRanking = teamInfo?.conference 
-    ? `${teamInfo.conference}: #1`
+    ? `${teamInfo.conference.toUpperCase()}: #${teamSeed || 'TBD'}`
     : "TBD";
 
   // Get playoff status text

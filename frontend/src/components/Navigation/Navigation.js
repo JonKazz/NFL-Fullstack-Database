@@ -7,6 +7,7 @@ function Navigation() {
   const navigate = useNavigate();
   const [seasons, setSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const loadSeasons = async () => {
@@ -27,14 +28,17 @@ function Navigation() {
 
   // Add/remove body class to control main content margin
   useEffect(() => {
-    // Always show sidebar since navigation is visible on all pages
-    document.body.classList.add('has-sidebar');
+    if (!isCollapsed) {
+      document.body.classList.add('has-sidebar');
+    } else {
+      document.body.classList.remove('has-sidebar');
+    }
 
     // Cleanup function
     return () => {
       document.body.classList.remove('has-sidebar');
     };
-  }, []);
+  }, [isCollapsed]);
 
   const handleHomeClick = () => {
     navigate('/');
@@ -44,32 +48,47 @@ function Navigation() {
     navigate(`/season/${year}`);
   };
 
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   if (loading) {
     return (
-      <div className={styles.navigation}>
+      <div className={`${styles.navigation} ${isCollapsed ? styles.collapsed : ''}`}>
+        <button className={styles.toggleButton} onClick={toggleCollapse}>
+          {isCollapsed ? '→' : '←'}
+        </button>
         <div className={styles.loading}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className={styles.navigation}>
-      <div className={styles.navItem} onClick={handleHomeClick}>
-        Home
-      </div>
+    <div className={`${styles.navigation} ${isCollapsed ? styles.collapsed : ''}`}>
+      <button className={styles.toggleButton} onClick={toggleCollapse}>
+        {isCollapsed ? '→' : '←'}
+      </button>
       
-      <div className={styles.seasonsSection}>
-        <div className={styles.seasonsLabel}>Seasons</div>
-        {seasons.map(year => (
-          <div 
-            key={year} 
-            className={styles.navItem}
-            onClick={() => handleSeasonClick(year)}
-          >
-            {year}
+      {!isCollapsed && (
+        <>
+          <div className={styles.navItem} onClick={handleHomeClick}>
+            Home
           </div>
-        ))}
-      </div>
+          
+          <div className={styles.seasonsSection}>
+            <div className={styles.seasonsLabel}>Seasons</div>
+            {seasons.map(year => (
+              <div 
+                key={year} 
+                className={styles.navItem}
+                onClick={() => handleSeasonClick(year)}
+              >
+                {year}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
